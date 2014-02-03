@@ -1,24 +1,24 @@
 define(['min-cif/SocialNetwork'], function(SocialNetwork) {
 
     /**
-     * @class BuddyNetwork
+     * @class RomanceNetwork
      */
-    var bn = function() {
+    var rn = function() {
         var instance;
-        function BuddyNetwork() {
+        function RomanceNetwork() {
             if (instance) {
                 return instance;
             }
             instance = this;
         }
-        BuddyNetwork.prototype = new SocialNetwork();
-        BuddyNetwork.getInstance = function() {
-            return instance || new BuddyNetwork();
+        RomanceNetwork.prototype = new SocialNetwork();
+        RomanceNetwork.getInstance = function() {
+            return instance || new RomanceNetwork();
         }
-        return BuddyNetwork;
+        return RomanceNetwork;
     };
 
     //This feels slightly weird, but it returns the Singleton correctly
-    return bn();
+    return rn();
 });
 

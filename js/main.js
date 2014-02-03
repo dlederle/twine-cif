@@ -9,9 +9,9 @@ require.config({
     }
 });
 
-require(['underscore', 'min-cif/SocialNetwork', 'min-cif/CiFSingleton'], function(_, SocialNetwork, CiF) {
+require(['min-cif/CiFSingleton', 'min-cif/BuddyNetwork'], function(CiF, BuddyNetwork) {
     console.log("Starting Main");
     //POLLUTING GLOBAL FOR DEBUGGING, UNDO LATER
     cif = new CiF().getInstance();
-    sn = new SocialNetwork(5);
+    bn = new BuddyNetwork();
 });

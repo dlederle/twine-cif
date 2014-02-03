@@ -6,13 +6,18 @@ define([], function() {
      * the characters in the game space, with each node representing
      * a character and each edge representing the strength of the relationship.
      */
-    var SocialNetwork = function(numChars) {
-        numChars = numChars || 0;
+    var SocialNetwork = function(opts) {
+        var make_network = function() {
+            var network = new Array(numChars);
+            for(var i=0; i<numChars; i++) {
+                network[i] = new Array(numChars);
+                for(var j=0; j<numChars; j++) {
+                    network[i][j] = defaultNetworkValue;
+                }
+            }
+            return network;
+        }
 
-        this._DEFAULT_NETWORK_VALUE = 40;
-
-        var minRange = 0;
-        var maxRange = 100;
         var constrain = function(value) {
             if(value > maxRange) {
                 return maxRange;
@@ -23,12 +28,17 @@ define([], function() {
             return value;
         }
 
-        var network = new Array(numChars);
-        for(var i=0; i<numChars; i++) {
-            network[i] = new Array(numChars);
-            for(var j=0; j<numChars; j++) {
-                network[i][j] = this._DEFAULT_NETWORK_VALUE;
-            }
+        opts = opts || {};
+        //Default values, can be over ridden by sub-classes
+        var numChars = opts.numChars || 0;
+        var minRange = opts.minRange || 0;
+        var maxRange = opts.maxRange || 100;
+        var defaultNetworkValue = opts.defaultNetworkValue || 40;
+        var network = opts.network || make_network();
+
+        this.initialize = function(chars) {
+            numChars = chars;
+            network = make_network()
         }
 
         this.setRange = function(min, max) {
@@ -91,5 +101,5 @@ define([], function() {
             return network;
         }
     }
-    return SocialNetwork
+    return SocialNetwork;
 });
