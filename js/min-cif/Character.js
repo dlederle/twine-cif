@@ -1,4 +1,7 @@
 define(["min-cif/CiFSingleton", "min-cif/ProspectiveMemory", "min-cif/Trait"], function(CiFSingleton, ProspectiveMemory, Trait) {
+    /**
+     * @class Character
+     */
     //Const
     var LABELS = {
         "BEST_FRIEND" : 0,
