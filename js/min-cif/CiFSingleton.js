@@ -166,5 +166,5 @@ define(['underscore', 'min-cif/util'], function(_) {
 
         return Singleton;
     };
-    return CiFSingleton;
+    return CiFSingleton();
 });
