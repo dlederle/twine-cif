@@ -111,6 +111,19 @@ define(["min-cif/CiFSingleton", "min-cif/ProspectiveMemory", "min-cif/Trait"], f
             //}
         }
 
+        var getBestFriend = function() {
+        }
+        var getDating = function() {
+        }
+        var getIdol = function() {
+        }
+        var getTrueLove = function() {
+        }
+        var getWorstEnemy = function() {
+        }
+        var getBiggestLoser = function() {
+        }
+
         var getRelationship = function(label) {
             switch (label) {
                 case "BEST_FRIEND":
@@ -119,7 +132,7 @@ define(["min-cif/CiFSingleton", "min-cif/ProspectiveMemory", "min-cif/Trait"], f
                 case "DATING":
                     return getDating();
                     break;
-                case "IDOL:
+                case "IDOL":
                     return getIdol();
                     break;
                 case "TRUE_LOVE":
