@@ -1,74 +1,9 @@
 define([], function() {
     var DEFAULT_INITIAL_DURATION = 3;
 
-    var statuses = {};
-    //The first ones (through FIRST_NOT_DIRECTED_STATUS are status categories)
-    statuses.CAT_FEELING_BAD = 0;
-    statuses.CAT_FEELING_GOOD = 1;
-    statuses.CAT_FEELING_BAD_ABOUT_SOMEONE = 2;
-    statuses.CAT_FEELING_GOOD_ABOUT_SOMEONE = 3;
-    statuses.CAT_REPUTATION_BAD = 4;
-    statuses.CAT_REPUTATION_GOOD = 5;
-    statuses.LAST_CATEGORY_COUNT = 5;
-
-    statuses.FIRST_NOT_DIRECTED_STATUS = 6;
-    statuses.EMBARRASSED = 6;
-    statuses.CHEATER = 7;
-    statuses.SHAKEN = 8;
-    statuses.DESPERATE = 9;
-    statuses.CLASS_CLOWN = 10;
-    statuses.BULLY = 11;
-    statuses.LOVE_STRUCK = 12;
-    statuses.GROSSED_OUT = 13;
-    statuses.EXCITED = 14;
-    statuses.POPULAR = 15;
-    statuses.SAD = 16;
-    statuses.ANXIOUS = 17;
-    statuses.HONOR_ROLL = 18;
-    statuses.LOOKING_FOR_TROUBLE = 19;
-    statuses.GUILTY = 20;
-    statuses.FEELS_OUT_OF_PLACE = 21;
-    statuses.HEARTBROKEN = 22;
-    statuses.CHEERFUL = 23;
-    statuses.CONFUSED = 24;
-    statuses.LONELY = 25;
-    statuses.HOMEWRECKER = 26;
-
-    statuses.FIRST_TO_IGNORE_NON_DIRECTED = 27;
-    statuses.RESIDUAL_POPULAR = 27;
-    statuses.FIRST_DIRECTED_STATUS = 28;
-    statuses.HAS_A_CRUSH_ON = 28; //pink
-    statuses.ANGRY_AT = 29; //dark red
-    statuses.WANTS_TO_PICK_ON = 30; //dark orange
-    statuses.ANNOYED_WITH = 31; //
-    statuses.SCARED_OF = 32; //dark purple
-    statuses.PITIES = 33; //light blue
-    statuses.ENVIES = 34; //green
-    statuses.GRATEFUL_TOWARD = 35; //bright green
-    statuses.TRUSTS = 36; //solid blue
-    statuses.FEELS_SUPERIOR_TO = 37; //brown
-    statuses.CHEATING_ON = 38; //
-    statuses.CHEATED_ON_BY = 39; //
-    statuses.HOMEWRECKED = 40; //
-
-    statuses.STATUS_COUNT = 41;
-    statuses.CATEGORIES = {};
-
-    statuses.CATEGORIES[statuses.CAT_FEELING_BAD] = [statuses.EMBARRASSED, statuses.SHAKEN, statuses.DESPERATE, statuses.GROSSED_OUT, statuses.SAD, statuses.ANXIOUS, statuses.GUILTY, statuses.FEELS_OUT_OF_PLACE, statuses.HEARTBROKEN, statuses.CONFUSED, statuses.LONELY];
-
-    statuses.CATEGORIES[statuses.CAT_FEELING_GOOD] = [statuses.LOVE_STRUCK, statuses.EXCITED, statuses.CHEERFUL];
-
-    statuses.CATEGORIES[statuses.CAT_FEELING_BAD_ABOUT_SOMEONE] = [statuses.ANGRY_AT, statuses.ENVIES,statuses.WANTS_TO_PICK_ON, statuses.ANNOYED_WITH, statuses.SCARED_OF, statuses.FEELS_SUPERIOR_TO, statuses.CHEATED_ON_BY];
-
-    statuses.CATEGORIES[statuses.CAT_FEELING_GOOD_ABOUT_SOMEONE] = [statuses.HAS_A_CRUSH_ON, statuses.PITIES, statuses.GRATEFUL_TOWARD, statuses.TRUSTS];
-
-    statuses.CATEGORIES[statuses.CAT_REPUTATION_BAD] = [statuses.CHEATER, statuses.BULLY, statuses.HOMEWRECKER];
-
-    statuses.CATEGORIES[statuses.CAT_REPUTATION_GOOD] = [statuses.CLASS_CLOWN, statuses.POPULAR, statuses.HONOR_ROLL];
-
     var Status = function(opts) {
         opts = opts || {};
-        this.type = opts.type || statuses.DESPERATE;
+        this.type = opts.type || Status.DESPERATE;
         // The name of the character the status is directed toward.
         this.directedToward = opts.directedToward || "";
 
@@ -77,13 +12,13 @@ define([], function() {
         //How long the status has before it is removed.
         this.remainingDuration = opts.remainingDuration || this.initialDuration;
 
-
-        this.isStatusInCategory = function(statusID, catID) {
-            for (var sID in statuses.CATEGORIES[catID]) {
+    }
+        Status.isStatusInCategory = function(statusID, catID) {
+           Status.CATEGORIES[catID].forEach(function(sID) {
                 if (sID === statusID) {
                     return true;
                 }
-            }
+            });
             return false;
         }
 
@@ -94,178 +29,178 @@ define([], function() {
          * @return The String representation of the status denoted by the first
          * parameter or an empty string if the number did not match a status.
          */
-        this.getStatusNameByNumber = function (n) {
+        Status.getStatusNameByNumber = function (n) {
             switch(n) {
-                case statuses.CAT_FEELING_BAD:
+                case Status.CAT_FEELING_BAD:
                     return "cat: feeling bad";
-                case statuses.CAT_FEELING_GOOD:
+                case Status.CAT_FEELING_GOOD:
                     return "cat: feeling good";
-                case statuses.CAT_FEELING_BAD_ABOUT_SOMEONE:
+                case Status.CAT_FEELING_BAD_ABOUT_SOMEONE:
                     return "cat: feeling bad about someone";
-                case statuses.CAT_FEELING_GOOD_ABOUT_SOMEONE:
+                case Status.CAT_FEELING_GOOD_ABOUT_SOMEONE:
                     return "cat: feeling good about someone";
-                case statuses.CAT_REPUTATION_BAD:
+                case Status.CAT_REPUTATION_BAD:
                     return "cat: reputation bad";
-                case statuses.CAT_REPUTATION_GOOD:
+                case Status.CAT_REPUTATION_GOOD:
                     return "cat: reputation good";
-                case statuses.EMBARRASSED:
+                case Status.EMBARRASSED:
                     return "embarrassed";
-                case statuses.CHEATER:
+                case Status.CHEATER:
                     return "cheater";
-                case statuses.SHAKEN:
+                case Status.SHAKEN:
                     return "shaken";
-                case statuses.DESPERATE:
+                case Status.DESPERATE:
                     return "desperate";
-                case statuses.CLASS_CLOWN:
+                case Status.CLASS_CLOWN:
                     return "class clown";
-                case statuses.BULLY:
+                case Status.BULLY:
                     return "bully";
-                case statuses.LOVE_STRUCK:
+                case Status.LOVE_STRUCK:
                     return "love struck";
-                case statuses.GROSSED_OUT:
+                case Status.GROSSED_OUT:
                     return "grossed out";
-                case statuses.EXCITED:
+                case Status.EXCITED:
                     return "excited";
-                case statuses.POPULAR:
+                case Status.POPULAR:
                     return "popular";
-                case statuses.SAD:
+                case Status.SAD:
                     return "sad";
-                case statuses.ANXIOUS:
+                case Status.ANXIOUS:
                     return "anxious";
-                case statuses.HONOR_ROLL:
+                case Status.HONOR_ROLL:
                     return "honor roll";
-                case statuses.LOOKING_FOR_TROUBLE:
+                case Status.LOOKING_FOR_TROUBLE:
                     return "looking for trouble";
-                case statuses.GUILTY:
+                case Status.GUILTY:
                     return "guilty";
-                case statuses.FEELS_OUT_OF_PLACE:
+                case Status.FEELS_OUT_OF_PLACE:
                     return "feels out of place";
-                case statuses.HEARTBROKEN:
+                case Status.HEARTBROKEN:
                     return "heartbroken";
-                case statuses.CHEERFUL:
+                case Status.CHEERFUL:
                     return "cheerful";
-                case statuses.CONFUSED:
+                case Status.CONFUSED:
                     return "confused";
-                case statuses.LONELY:
+                case Status.LONELY:
                     return "lonely";
-                case statuses.HOMEWRECKER:
+                case Status.HOMEWRECKER:
                     return "homewrecker";
-                case statuses.HAS_A_CRUSH_ON:
+                case Status.HAS_A_CRUSH_ON:
                     return "has a crush on";
-                case statuses.ANGRY_AT:
+                case Status.ANGRY_AT:
                     return "angry at";
-                case statuses.WANTS_TO_PICK_ON:
+                case Status.WANTS_TO_PICK_ON:
                     return "wants to pick on";
-                case statuses.ANNOYED_WITH:
+                case Status.ANNOYED_WITH:
                     return "annoyed with";
-                case statuses.SCARED_OF:
+                case Status.SCARED_OF:
                     return "scared of";
-                case statuses.PITIES:
+                case Status.PITIES:
                     return "pities";
-                case statuses.ENVIES:
+                case Status.ENVIES:
                     return "envies";
-                case statuses.GRATEFUL_TOWARD:
+                case Status.GRATEFUL_TOWARD:
                     return "grateful toward";
-                case statuses.TRUSTS:
+                case Status.TRUSTS:
                     return "trusts";
-                case statuses.FEELS_SUPERIOR_TO:
+                case Status.FEELS_SUPERIOR_TO:
                     return "feels superior to";
-                case statuses.CHEATING_ON:
+                case Status.CHEATING_ON:
                     return "cheating on";
-                case statuses.CHEATED_ON_BY:
+                case Status.CHEATED_ON_BY:
                     return "cheated on by";
-                case statuses.HOMEWRECKED:
+                case Status.HOMEWRECKED:
                     return "homewrecked";
-                case statuses.RESIDUAL_POPULAR:
+                case Status.RESIDUAL_POPULAR:
                     return "residual popular";
                 default:
                     return "";
             }
         }
 
-        this.getShortStatusNameByNumber = function(n) {
+        Status.getShortStatusNameByNumber = function(n) {
             switch(n) {
-                case statuses.CAT_FEELING_BAD:
+                case Status.CAT_FEELING_BAD:
                     return "feels bad";
-                case statuses.CAT_FEELING_GOOD:
+                case Status.CAT_FEELING_GOOD:
                     return "feels good";
-                case statuses.CAT_FEELING_BAD_ABOUT_SOMEONE:
+                case Status.CAT_FEELING_BAD_ABOUT_SOMEONE:
                     return "negative";
-                case statuses.CAT_FEELING_GOOD_ABOUT_SOMEONE:
+                case Status.CAT_FEELING_GOOD_ABOUT_SOMEONE:
                     return "positive";
-                case statuses.CAT_REPUTATION_BAD:
+                case Status.CAT_REPUTATION_BAD:
                     return "bad rep";
-                case statuses.CAT_REPUTATION_GOOD:
+                case Status.CAT_REPUTATION_GOOD:
                     return "good rep";
-                case statuses.EMBARRASSED:
+                case Status.EMBARRASSED:
                     return "embarrass";
-                case statuses.CHEATER:
+                case Status.CHEATER:
                     return "cheater";
-                case statuses.SHAKEN:
+                case Status.SHAKEN:
                     return "shaken";
-                case statuses.DESPERATE:
+                case Status.DESPERATE:
                     return "desperate";
-                case statuses.CLASS_CLOWN:
+                case Status.CLASS_CLOWN:
                     return "class clown";
-                case statuses.BULLY:
+                case Status.BULLY:
                     return "bully";
-                case statuses.LOVE_STRUCK:
+                case Status.LOVE_STRUCK:
                     return "love struck";
-                case statuses.GROSSED_OUT:
+                case Status.GROSSED_OUT:
                     return "gross";
-                case statuses.EXCITED:
+                case Status.EXCITED:
                     return "excited";
-                case statuses.POPULAR:
+                case Status.POPULAR:
                     return "popular";
-                case statuses.SAD:
+                case Status.SAD:
                     return "sad";
-                case statuses.ANXIOUS:
+                case Status.ANXIOUS:
                     return "anxious";
-                case statuses.HONOR_ROLL:
+                case Status.HONOR_ROLL:
                     return "honors";
-                case statuses.LOOKING_FOR_TROUBLE:
+                case Status.LOOKING_FOR_TROUBLE:
                     return "trouble";
-                case statuses.GUILTY:
+                case Status.GUILTY:
                     return "guilty";
-                case statuses.FEELS_OUT_OF_PLACE:
+                case Status.FEELS_OUT_OF_PLACE:
                     return "out of place";
-                case statuses.HEARTBROKEN:
+                case Status.HEARTBROKEN:
                     return "heartbroke";
-                case statuses.CHEERFUL:
+                case Status.CHEERFUL:
                     return "cheerful";
-                case statuses.CONFUSED:
+                case Status.CONFUSED:
                     return "confused";
-                case statuses.LONELY:
+                case Status.LONELY:
                     return "lonely";
-                case statuses.HOMEWRECKER:
+                case Status.HOMEWRECKER:
                     return "homewrecker";
-                case statuses.HAS_A_CRUSH_ON:
+                case Status.HAS_A_CRUSH_ON:
                     return "crush on";
-                case statuses.ANGRY_AT:
+                case Status.ANGRY_AT:
                     return "angry at";
-                case statuses.WANTS_TO_PICK_ON:
+                case Status.WANTS_TO_PICK_ON:
                     return "pick on";
-                case statuses.ANNOYED_WITH:
+                case Status.ANNOYED_WITH:
                     return "annoyed with";
-                case statuses.SCARED_OF:
+                case Status.SCARED_OF:
                     return "scared of";
-                case statuses.PITIES:
+                case Status.PITIES:
                     return "pities";
-                case statuses.ENVIES:
+                case Status.ENVIES:
                     return "envies";
-                case statuses.GRATEFUL_TOWARD:
+                case Status.GRATEFUL_TOWARD:
                     return "grateful";
-                case statuses.TRUSTS:
+                case Status.TRUSTS:
                     return "trusts";
-                case statuses.FEELS_SUPERIOR_TO:
+                case Status.FEELS_SUPERIOR_TO:
                     return "superior to";
-                case statuses.CHEATING_ON:
+                case Status.CHEATING_ON:
                     return "cheat on";
-                case statuses.CHEATED_ON_BY:
+                case Status.CHEATED_ON_BY:
                     return "cheat on by";
-                case statuses.HOMEWRECKED:
+                case Status.HOMEWRECKED:
                     return "homewrecked";
-                case statuses.RESIDUAL_POPULAR:
+                case Status.RESIDUAL_POPULAR:
                     return "residual popular";
                 default:
                     return "";
@@ -279,95 +214,158 @@ define([], function() {
          * @return The number that corresponds to the name of the status or -1
          * if the name did not correspond to a status.
          */
-        this.getStatusNumberByName = function(name) {
+        Status.getStatusNumberByName = function(name) {
             switch(name.toLowerCase()) {
                 case "cat: feeling bad":
-                           return statuses.CAT_FEELING_BAD;
+                           return Status.CAT_FEELING_BAD;
                 case "cat: feeling good":
-                           return statuses.CAT_FEELING_GOOD;
+                           return Status.CAT_FEELING_GOOD;
                 case "cat: feeling bad about someone":
-                           return statuses.CAT_FEELING_BAD_ABOUT_SOMEONE;
+                           return Status.CAT_FEELING_BAD_ABOUT_SOMEONE;
                 case "cat: feeling good about someone":
-                           return statuses.CAT_FEELING_GOOD_ABOUT_SOMEONE;
+                           return Status.CAT_FEELING_GOOD_ABOUT_SOMEONE;
                 case "cat: reputation bad":
-                           return statuses.CAT_REPUTATION_BAD;
+                           return Status.CAT_REPUTATION_BAD;
                 case "cat: reputation good":
-                           return statuses.CAT_REPUTATION_GOOD;
+                           return Status.CAT_REPUTATION_GOOD;
                 case "embarrassed":
-                           return statuses.EMBARRASSED;
+                           return Status.EMBARRASSED;
                 case "cheater":
-                           return statuses.CHEATER;
+                           return Status.CHEATER;
                 case "shaken":
-                           return statuses.SHAKEN;
+                           return Status.SHAKEN;
                 case "desperate":
-                           return statuses.DESPERATE;
+                           return Status.DESPERATE;
                 case "class clown":
-                           return statuses.CLASS_CLOWN;
+                           return Status.CLASS_CLOWN;
                 case "bully":
-                           return statuses.BULLY;
+                           return Status.BULLY;
                 case "love struck":
-                           return statuses.LOVE_STRUCK;
+                           return Status.LOVE_STRUCK;
                 case "grossed out":
-                           return statuses.GROSSED_OUT;
+                           return Status.GROSSED_OUT;
                 case "excited":
-                           return statuses.EXCITED;
+                           return Status.EXCITED;
                 case "popular":
-                           return statuses.POPULAR;
+                           return Status.POPULAR;
                 case "sad":
-                           return statuses.SAD;
+                           return Status.SAD;
                 case "anxious":
-                           return statuses.ANXIOUS;
+                           return Status.ANXIOUS;
                 case "honor roll":
-                           return statuses.HONOR_ROLL;
+                           return Status.HONOR_ROLL;
                 case "looking for trouble":
-                           return statuses.LOOKING_FOR_TROUBLE;
+                           return Status.LOOKING_FOR_TROUBLE;
                 case "guilty":
-                           return statuses.GUILTY;
+                           return Status.GUILTY;
                 case "feels out of place":
-                           return statuses.FEELS_OUT_OF_PLACE;
+                           return Status.FEELS_OUT_OF_PLACE;
                 case "heartbroken":
-                           return statuses.HEARTBROKEN;
+                           return Status.HEARTBROKEN;
                 case "cheerful":
-                           return statuses.CHEERFUL;
+                           return Status.CHEERFUL;
                 case "confused":
-                           return statuses.CONFUSED;
+                           return Status.CONFUSED;
                 case "lonely":
-                           return statuses.LONELY;
+                           return Status.LONELY;
                 case "homewrecker":
-                           return statuses.HOMEWRECKER;
+                           return Status.HOMEWRECKER;
                 case "has a crush on":
-                           return statuses.HAS_A_CRUSH_ON;
+                           return Status.HAS_A_CRUSH_ON;
                 case "angry at":
-                           return statuses.ANGRY_AT;
+                           return Status.ANGRY_AT;
                 case "wants to pick on":
-                           return statuses.WANTS_TO_PICK_ON;
+                           return Status.WANTS_TO_PICK_ON;
                 case "annoyed with":
-                           return statuses.ANNOYED_WITH;
+                           return Status.ANNOYED_WITH;
                 case "scared of":
-                           return statuses.SCARED_OF;
+                           return Status.SCARED_OF;
                 case "pities":
-                           return statuses.PITIES;
+                           return Status.PITIES;
                 case "envies":
-                           return statuses.ENVIES;
+                           return Status.ENVIES;
                 case "grateful toward":
-                           return statuses.GRATEFUL_TOWARD;
+                           return Status.GRATEFUL_TOWARD;
                 case "trusts":
-                           return statuses.TRUSTS;
+                           return Status.TRUSTS;
                 case "feels superior to":
-                           return statuses.FEELS_SUPERIOR_TO;
+                           return Status.FEELS_SUPERIOR_TO;
                 case "cheating on":
-                           return statuses.CHEATING_ON;
+                           return Status.CHEATING_ON;
                 case "cheated on by":
-                           return statuses.CHEATED_ON_BY;
+                           return Status.CHEATED_ON_BY;
                 case "homewrecked":
-                           return statuses.HOMEWRECKED;
+                           return Status.HOMEWRECKED;
                 case "residual popular":
-                           return statuses.RESIDUAL_POPULAR;
+                           return Status.RESIDUAL_POPULAR;
                 default:
                            return -1;
             }
         }
-    }
+    //The first ones (through FIRST_NOT_DIRECTED_STATUS are status categories)
+    Status.CAT_FEELING_BAD = 0;
+    Status.CAT_FEELING_GOOD = 1;
+    Status.CAT_FEELING_BAD_ABOUT_SOMEONE = 2;
+    Status.CAT_FEELING_GOOD_ABOUT_SOMEONE = 3;
+    Status.CAT_REPUTATION_BAD = 4;
+    Status.CAT_REPUTATION_GOOD = 5;
+    Status.LAST_CATEGORY_COUNT = 5;
+
+    Status.FIRST_NOT_DIRECTED_STATUS = 6;
+    Status.EMBARRASSED = 6;
+    Status.CHEATER = 7;
+    Status.SHAKEN = 8;
+    Status.DESPERATE = 9;
+    Status.CLASS_CLOWN = 10;
+    Status.BULLY = 11;
+    Status.LOVE_STRUCK = 12;
+    Status.GROSSED_OUT = 13;
+    Status.EXCITED = 14;
+    Status.POPULAR = 15;
+    Status.SAD = 16;
+    Status.ANXIOUS = 17;
+    Status.HONOR_ROLL = 18;
+    Status.LOOKING_FOR_TROUBLE = 19;
+    Status.GUILTY = 20;
+    Status.FEELS_OUT_OF_PLACE = 21;
+    Status.HEARTBROKEN = 22;
+    Status.CHEERFUL = 23;
+    Status.CONFUSED = 24;
+    Status.LONELY = 25;
+    Status.HOMEWRECKER = 26;
+
+    Status.FIRST_TO_IGNORE_NON_DIRECTED = 27;
+    Status.RESIDUAL_POPULAR = 27;
+    Status.FIRST_DIRECTED_STATUS = 28;
+    Status.HAS_A_CRUSH_ON = 28; //pink
+    Status.ANGRY_AT = 29; //dark red
+    Status.WANTS_TO_PICK_ON = 30; //dark orange
+    Status.ANNOYED_WITH = 31; //
+    Status.SCARED_OF = 32; //dark purple
+    Status.PITIES = 33; //light blue
+    Status.ENVIES = 34; //green
+    Status.GRATEFUL_TOWARD = 35; //bright green
+    Status.TRUSTS = 36; //solid blue
+    Status.FEELS_SUPERIOR_TO = 37; //brown
+    Status.CHEATING_ON = 38; //
+    Status.CHEATED_ON_BY = 39; //
+    Status.HOMEWRECKED = 40; //
+
+    Status.STATUS_COUNT = 41;
+    Status.CATEGORIES = {};
+
+    Status.CATEGORIES[Status.CAT_FEELING_BAD] = [Status.EMBARRASSED, Status.SHAKEN, Status.DESPERATE, Status.GROSSED_OUT, Status.SAD, Status.ANXIOUS, Status.GUILTY, Status.FEELS_OUT_OF_PLACE, Status.HEARTBROKEN, Status.CONFUSED, Status.LONELY];
+
+    Status.CATEGORIES[Status.CAT_FEELING_GOOD] = [Status.LOVE_STRUCK, Status.EXCITED, Status.CHEERFUL];
+
+    Status.CATEGORIES[Status.CAT_FEELING_BAD_ABOUT_SOMEONE] = [Status.ANGRY_AT, Status.ENVIES,Status.WANTS_TO_PICK_ON, Status.ANNOYED_WITH, Status.SCARED_OF, Status.FEELS_SUPERIOR_TO, Status.CHEATED_ON_BY];
+
+    Status.CATEGORIES[Status.CAT_FEELING_GOOD_ABOUT_SOMEONE] = [Status.HAS_A_CRUSH_ON, Status.PITIES, Status.GRATEFUL_TOWARD, Status.TRUSTS];
+
+    Status.CATEGORIES[Status.CAT_REPUTATION_BAD] = [Status.CHEATER, Status.BULLY, Status.HOMEWRECKER];
+
+    Status.CATEGORIES[Status.CAT_REPUTATION_GOOD] = [Status.CLASS_CLOWN, Status.POPULAR, Status.HONOR_ROLL];
+
 
     return Status;
 });
