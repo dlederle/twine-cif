@@ -42,4 +42,4 @@ define(['min-cif/Character'], function(Character) {
         return Cast;
     }
     return cast();
-}
+});

@@ -1,4 +1,4 @@
-define(['underscore', 'min-cif/util'], function(_) {
+define(['min-cif/Util', 'min-cif/Cast'], function(Util, Cast) {
     /**
      * @class Cif_Singleton
      */
@@ -31,7 +31,7 @@ define(['underscore', 'min-cif/util'], function(_) {
             this.microtheoryCache = {};
             this.microtheories = [];
 
-            this.cast = "Cast";
+            this.cast = Cast.getInstance();
 
             this.socialStatusUpdates = [];
 

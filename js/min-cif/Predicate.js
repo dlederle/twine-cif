@@ -662,30 +662,30 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                     net.setWeight(first.networkID, second.networkID, this.networkValue);
                     break;
                 case Predicate.EVERYONEUP:
-                    for (character in cif.cast.characters) {
+                    cif.cast.characters.forEach(function(character) {
                         net.addWeight(this.networkValue, character.networkID, firstID);
-                    }
+                    });
                     break;
                 case Predicate.ALLFRIENDSUP:
-                    for (character in cif.cast.characters) {
+                    cif.cast.characters.forEach(function(character) {
                         if (cif.relationshipNetwork.getRelationship(RelationshipNetwork.FRIENDS, first, second)
                                 && first.characterName != character.characterName)
                             net.addWeight(this.networkValue, character.networkID, firstID);
-                    }
+                    });
                     break;
                 case Predicate.ALLDATINGUP:
-                    for (character in cif.cast.characters) {
+                    cif.cast.characters.forEach(function(character) {
                         if (cif.relationshipNetwork.getRelationship(RelationshipNetwork.DATING, first, second)
                                 && first.characterName != character.characterName)
                             net.addWeight(this.networkValue, character.networkID, firstID);
-                    }
+                    });
                     break;
                 case Predicate.ALLENEMYUP:
-                    for (character in cif.cast.characters) {
+                    cif.cast.characters.forEach(function(character) {
                         if (cif.relationshipNetwork.getRelationship(RelationshipNetwork.ENEMIES, first, second)
                                 && first.characterName != character.characterName)
                             net.addWeight(this.networkValue, character.networkID, firstID);
-                    }
+                    });
                     break;
             }
         }
@@ -830,8 +830,8 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                     if (!sg.intents) {
                         console.debug(this, "evaluate(): intent predicate evaluation: the social game context has no intent");
                     } else {
-                        for (rule in sg.intents) {
-                            for (pred in rule.predicates) {
+                        sg.intents.forEach(function(rule) {
+                            rule.predicates.forEach(function(pred) {
                                 if (pred.relationship == this.relationship &&
                                         pred.primary == this.primary &&
                                         pred.secondary == this.secondary &&
@@ -839,8 +839,8 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
 
                                             return true;
                                         }
-                            }
-                        }
+                            });
+                        });
                     }
                 }
                 //is it a network
@@ -848,8 +848,8 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                     if (!sg.intents) {
                         console.debug(this, "evaluate(): intent predicate evaluation: the social game context has no intent");
                     } else {
-                        for each(rule in sg.intents) {
-                            for each(pred in rule.predicates) {
+                        sg.intents.forEach(function(rule) {
+                            rule.predicates.forEach(function(pred) {
                                 if (pred.networkType == this.networkType &&
                                         pred.comparator == this.comparator &&
                                         pred.primary == this.primary &&
@@ -858,8 +858,8 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
 
                                             return true;
                                         }
-                            }
-                        }
+                            });
+                        });
                     }
                 }
                 //is it a sfdbLabel
@@ -868,8 +868,8 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                     if (!sg.intents) {
                         console.debug(this, "evaluate(): intent predicate evaluation: the social game context has no intent");
                     } else {
-                        for each(rule in sg.intents) {
-                            for each(pred in rule.predicates) {
+                        sg.intents.forEach(function(rule) {
+                            rule.predicates.forEach(function(pred) {
                                 if (pred.sfdbLabel == this.sfdbLabel &&
                                         pred.primary == this.primary &&
                                         pred.secondary == this.secondary &&
@@ -877,8 +877,8 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
 
                                             return true;
                                         }
-                            }
-                        }
+                            });
+                        });
                     }
                 }
                 /* We either have no predicate match to the sg's intent rules
@@ -986,14 +986,12 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
 
             var possibleChars = (charsToUse) ? charsToUse : CiFSingleton.getInstance().cast.characters;
 
-            for each (var responder in possibleChars)
-            {
+            possibleChars.forEach(function(responder) {
                 if (initiator.characterName != responder.characterName)
                 {
                     if (this.requiresThirdCharacter())
                     {
-                        for each (var other:Character in possibleChars)
-                        {
+                        possibleChars.forEach(function(other) {
                             if (other.characterName != initiator.characterName && other.characterName != initiator.characterName)
                             {
                                 if (this.evaluate(initiator, responder, other))
@@ -1001,7 +999,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                                     return true;
                                 }
                             }
-                        }
+                        });
                     }
                     else
                     {
@@ -1011,7 +1009,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                         }
                     }
                 }
-            }
+            });
             return false;
         }
 
@@ -1085,7 +1083,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                         console.debug(this, "evalForNumberUniquelyTrue() Doesn't make sense consider 'both' role type for pred types not CKB or SFDB " + this.type);
                 }
             } else {
-                for each (var char in cif.cast.characters) {
+                cif.cast.characters.forEach(function(char) {
                     //console.debug(this,"evalForNumberUniquelyTrue() "+this.toString());
                     predTrue = false;
                     //if (!primaryCharacterOfConsideration) return false;
@@ -1134,7 +1132,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                         }
                         if (predTrue) numTimesTrue++;
                     }
-                }
+                });
             }
 
             // This is a special case for where we want to count numTimesTrue for contexts labels that don't have the nonPrimary roile specified
@@ -1217,7 +1215,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                         console.debug(this, "evalForNumberUniquelyTrue() Doesn't make sense consider 'both' role type for pred types not CKB or SFDB " + this.type);
                 }
             } else {
-                for each (var char in cif.cast.characters) {
+                cif.cast.characters.forEach(function(char) {
                     //console.debug(this,"evalForNumberUniquelyTrue() "+this.toString());
                     predTrue = false;
                     if (char.characterName != primaryCharacterOfConsideration.characterName) {
@@ -1271,7 +1269,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                             charDictionary[char.characterName.toLowerCase()] = "false";
                         }
                     }
-                }
+                });
             }
             // This is a special case for where we want to count numTimesTrue for contexts labels that don't have the nonPrimary roile specified
             if (this.type == Predicate.SFDBLABEL && this.numTimesUniquelyTrueFlag) {
@@ -1398,7 +1396,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                         var relationshipCount = 0.0;
                         var i = 0;
 
-                        for each(var char in cast.characters) {
+                        cast.characters.forEach(function(char) {
                             //first's friends opinion about second
 
                             //are they first's friend? test example:
@@ -1426,7 +1424,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                                 }
                                 //if A's friend is the target, they don't count
                             }
-                        }
+                        });
                         if (relationshipCount < 1) {
                             return false;
                         }
@@ -1555,10 +1553,10 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
 
             //if it is a category of label
             if (this.sfdbLabel <= SocialFactsDB.LAST_CATEGORY_COUNT && this.sfdbLabel >= 0) {
-                for each (var fromCategoryLabel in CiF.SocialFactsDB.CATEGORIES[this.sfdbLabel]) {
+                cif.SocialFactsDB.CATEGORIES[this.sfdbLabel].forEach(function(fromCategoryLabel) {
                     if (cif.sfdb.findLabelFromValues(fromCategoryLabel, first, second, undefined, this.window, this).length > 0)
                         return (this.negated) ? false : true;
-                }
+                });
             } else {
                 //normal look up
                 if (cif.sfdb.findLabelFromValues(this.sfdbLabel, first, second, undefined, this.window, this).length > 0) {
@@ -2189,7 +2187,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
          * @param	tertiary The actual name of the tertiary "Robert"
          * @return The natural language name of the relationship
          */
-        this.traitPredicateToNaturalLanguage = function(primary = "Karen", secondary = "Edward", tertiary = "Robert") {
+        this.traitPredicateToNaturalLanguage = function(primary, secondary, tertiary) {
             //We care about what type of trait we are dealing with.
             var naturalLanguageName;
             naturalLanguageName = primary;
@@ -2425,13 +2423,12 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
             if (theStatus <= Status.LAST_CATEGORY_COUNT)// && !(theStatus >= Status.FIRST_TO_IGNORE_NON_DIRECTED && theStatus < Status.FIRST_DIRECTED_STATUS))
             {
                 //resolve which trait they actually have
-                for each (var s in Status.CATEGORIES[this.status])
-                {
+                Status.CATEGORIES[this.status].forEach(function(s) {
                     if (cif.cast.getCharByName(primary.toLowerCase()).getStatus(s))
                     {
                         theStatus = s;
                     }
-                }
+                });
             }
 
             switch(theStatus) {
@@ -2746,7 +2743,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
          * @param	tertiary The actual name of the tertiary "Robert"
          * @return The natural language name of the sfdb
          */
-        this.sfdbPredicateToNaturalLanguage(primary, secondary, tertiary) {
+        this.sfdbPredicateToNaturalLanguage = function(primary, secondary, tertiary) {
             var naturalLanguageName = "";
             var timeElapsed = "";
             var label = this.sfdbLabel;
@@ -3197,13 +3194,12 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                     if (theStatus <= Status.LAST_CATEGORY_COUNT)
                     {
                         //resolve which trait they actually have
-                        for each (var s in Status.CATEGORIES[this.status])
-                        {
+                        Status.CATEGORIES[this.status].forEach(function(s) {
                             if (cif.cast.getCharByName(heroName.toLowerCase()).getStatus(s))
                             {
                                 theStatus = s;
                             }
-                        }
+                        });
                     }
 
                     naturalLanguageName = heroName;
