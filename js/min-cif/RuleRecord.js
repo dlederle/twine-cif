@@ -1,8 +1,7 @@
-define(['min-cif/InfluenceRule', 'min-cif/CiFSingleton'], function(InfluenceRule, CiFSingleton) {
+define(['min-cif/InfluenceRule'], function(InfluenceRule) {
     /**
      * A record of influence rules that fire when forming intent. For use for displaying rules that were true;
      */
-    var cif = CiFSingleton.getInstance();
 
     //This class is kinda useless in JS, but whatever.
     var RuleRecord = function(opts) {

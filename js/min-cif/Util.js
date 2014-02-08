@@ -11,5 +11,17 @@ define([], function() {
         return lhs != rhs;
     }
 
+    /**
+     * Returns a random number between the minNum and maxNum
+     * 
+     * @param	minNum
+     * @param	maxNum
+     * @return
+     */
+    Util.randRange(minNum, maxNum) {
+        return (Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum);
+    }
+
+
     return Util;
 });
