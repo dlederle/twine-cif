@@ -1,4 +1,4 @@
-define(['min-cif/TriggerContext'], function(TriggerContext) {
+define(['min-cif/SocialFactsDB', 'min-cif/TriggerContext', 'min-cif/Effect', 'min-cif/Predicate'], function(SocialFactsDB, TriggerContext, Effect, Predicate) {
 
 	/**
 	 * The Trigger class consists of conditional rules that look over the recent
@@ -32,6 +32,7 @@ define(['min-cif/TriggerContext'], function(TriggerContext) {
 	 * @see CiF.TriggerContext
 	 */
     var Trigger = function() {
+        this.prototype = new Effect();
 		/**
 		 * This is used to help know when we are dealing with an actual authored trigger, or a trigger context which has
 		 * no condition, and is the result of the tatus timing out.
@@ -42,8 +43,7 @@ define(['min-cif/TriggerContext'], function(TriggerContext) {
 
 		this.evaluateCondition = function(initiator, responder, other) {
 			//console.debug(this, "evaluateCondition() about to evaluate trigger " + this.toXML());
-			return super.evaluateCondition(initiator, responder, other);
-
+			return this.protoype.evaluateCondition(initiator, responder, other);
 		}
 
 		/**
@@ -54,7 +54,7 @@ define(['min-cif/TriggerContext'], function(TriggerContext) {
 		 * @param	time The SFDB time with which to tag the SFDB entry.
 		 * @return	The SFDB entry for the Trigger.
 		 */
-		this.makeTriggerContext(timeNumber, x, y = undefined, z = undefined)TriggerContext {
+		this.makeTriggerContext = function(timeNumber, x, y, z) {
 			var tcTriggerContext = new TriggerContext();
 			var pPredicate;
 
@@ -67,10 +67,10 @@ define(['min-cif/TriggerContext'], function(TriggerContext) {
 			tc.time = time;
 			tc.id = this.id;
 			tc.initiator = x.characterName;
-			tc.responder = (y)?y.characterName"";
-			tc.other = (z)?z.characterName"";
+			tc.responder = y ? y.characterName : "";
+			tc.other = z ? z.characterName : "";
 
-			for each (p in this.change.predicates) {
+            this.change.predicates.forEach(function(p) {
 				if (Predicate.SFDBLABEL == p.type) {
 					var labelSFDBLabel = new SFDBLabel();
 					label.to = p.primaryCharacterNameFromVariables(x, y, z);
@@ -78,7 +78,7 @@ define(['min-cif/TriggerContext'], function(TriggerContext) {
 					label.type = SocialFactsDB.getLabelByNumber(p.type);
 					tc.SFDBLabels.push(label);
 				}
-			}
+			});
 			return tc;
 		}
 	} //End of Trigger
