@@ -1,4 +1,4 @@
-define(['min-cif/CiFSingleton', 'min-cif/Predicate', 'min-cif/Cast'], function(CiFSingleton, Predicate, Cast) {
+define(['./Predicate', './Cast'], function(Predicate, Cast) {
     var sfdb = function() {
         var instance;
         function SocialFactsDB() {
@@ -373,8 +373,7 @@ define(['min-cif/CiFSingleton', 'min-cif/Predicate', 'min-cif/Cast'], function(C
              * character. Meant to be called after platGame.
              */
             this.runTriggers = function(cast) {
-                var cif = CiFSingleton.getInstance();
-                var potentialCharacters = cast || cif.cast.characters;
+                var potentialCharacters = cast || Cast.getInstance().characters;
 
                 var towardChar;
                 var fromChar;
@@ -479,7 +478,7 @@ define(['min-cif/CiFSingleton', 'min-cif/Predicate', 'min-cif/Cast'], function(C
                             fromChar = thirdChar;
                             break;
                         default:
-                            fromChar = cif.cast.getCharByName(primaryValue);
+                            fromChar = Cast.getInstance().getCharByName(primaryValue);
                     }
 
                     if (changePred.type == Predicate.STATUS)
@@ -501,7 +500,7 @@ define(['min-cif/CiFSingleton', 'min-cif/Predicate', 'min-cif/Cast'], function(C
                                     towardChar = thirdChar;
                                     break;
                                 default:
-                                    towardChar = cif.cast.getCharByName(secondaryValue);
+                                    towardChar = Cast.getInstance().getCharByName(secondaryValue);
                             }
                         }
 

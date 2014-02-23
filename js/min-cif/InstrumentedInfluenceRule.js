@@ -194,8 +194,8 @@ define(['min-cif/InfluenceRule', 'min-cif/Predicate', 'min-cif/CiFSingleton', 'm
             return output;
 
         }
+        this.prototype = new InfluenceRule();
     } //End of InstrumentedInfluenceRule
-    InstrumentedInfluenceRule.prototype = new InfluenceRule();
     InstrumentedInfluenceRule.counter = 0;
     /**
      * Holds reference to all InstrumentedInfluenceRules by keys of their unique IDs.

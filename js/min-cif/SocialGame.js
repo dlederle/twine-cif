@@ -1,5 +1,4 @@
-define(['min-cif/CiFSingleton', 'min-cif/Rule'], function(CiFSingleton, Rule) {
-    var CiF = CiFSingleton.getInstance();
+define(['min-cif/InfluenceRuleSet', 'min-cif/Rule', 'min-cif/Cast'], function(InfluenceRuleSet, Rule, Cast) {
     /**
      * The SocialGame class stores social games in their declarative form; the
      * social game preconditions, influence sets, and effects are stored. What
@@ -16,8 +15,8 @@ define(['min-cif/CiFSingleton', 'min-cif/Rule'], function(CiFSingleton, Rule) {
         this.intents =  opts.intents || [];
         this.instantiations = opts.instantiations || [];
         this.preconditions = opts.preconditions || [];
-        this.initiatorIRS = opts.initiatorIRS || new CiF.InfluenceRuleSet();
-        this.responderIRS = opts.responderIRS || new CiF.InfluenceRuleSet();
+        this.initiatorIRS = opts.initiatorIRS || new InfluenceRuleSet();
+        this.responderIRS = opts.responderIRS || new InfluenceRuleSet();
         this.effects = opts.effects || [];
         this.thirdPartyTalkAboutSomeone = opts.thirdPartyTalkAboutSomeone || false;
         this.thirdPartyGetSomeoneToDoSomethingForYou = opts.thirdPartyGetSomeoneToDoSomethingForYou || false;
@@ -83,7 +82,7 @@ define(['min-cif/CiFSingleton', 'min-cif/Rule'], function(CiFSingleton, Rule) {
          */
         //NOTE: this is old news....
         this.getInitiatorScore = function(initiator, responder, other, sg, activeOtherCast) {
-            var possibleOthers = activeOtherCast || CiF.cast.characters;
+            var possibleOthers = activeOtherCast || Cast.getInstance().characters;
             return this.initiatorIRS.scoreRules(initiator, responder, other, sg,possibleOthers);
         }
 
@@ -138,7 +137,7 @@ define(['min-cif/CiFSingleton', 'min-cif/Rule'], function(CiFSingleton, Rule) {
          */
         this.scoreGame = function(initiator, responder, activeOtherCast, isResponder) {
             isResponder = isResponder || false;
-            var possibleOthers = activeOtherCast || CiF.cast.characters;
+            var possibleOthers = activeOtherCast || Cast.getInstancE().characters;
             var influenceRuleSet = (!isResponder) ? this.initiatorIRS : this.responderIRS;
 
             var totalScore = 0.0;
@@ -179,7 +178,7 @@ define(['min-cif/CiFSingleton', 'min-cif/Rule'], function(CiFSingleton, Rule) {
          * @return
          */
         this.getResponderScore = function(initiator, responder, other, sg, activeOtherCast) {
-            var possibleOthers = activeOtherCast || CiF.cast.characters;
+            var possibleOthers = activeOtherCast || Cast.getInstance().characters;
             return this.responderIRS.scoreRules(initiator, responder, other, sg, possibleOthers);
         }
 
@@ -197,7 +196,7 @@ define(['min-cif/CiFSingleton', 'min-cif/Rule'], function(CiFSingleton, Rule) {
         this.checkPreconditionsVariableOther = function(initiator, responder, activeOtherCast) {
             if (this.preconditions.length < 1) return true; //no preconditions is automatically true
 
-            var possibleOthers = activeOtherCast || CiF.cast.characters;
+            var possibleOthers = activeOtherCast || Cast.getInstance().characters;
             var requiresOther = false;
             var isOtherSuitable;
 

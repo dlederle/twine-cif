@@ -1,4 +1,4 @@
-define(['min-cif/CiFSingleton', 'min-cif/Predicate', 'min-cif/Rule', 'min-cif/Effect', 'min-cif/Util', 'min-cif/SocialFactsDB'], function(CiFSingleton, Predicate, Rule, Effect, Util, SocialFactsDB) {
+define(['./CiFSingleton', './Predicate', './Rule', './Effect', './Util', './SocialFactsDB'], function(CiFSingleton, Predicate, Rule, Effect, Util, SocialFactsDB) {
     /**
      * The SocialGameContext class is were the details of a played social game
      * (known as a historical context) are kept. Contexts are stored in the

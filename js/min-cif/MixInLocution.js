@@ -1,4 +1,4 @@
-define(['min-cif/Character'], function(Character) {
+define(['./Character'], function(Character) {
     var MixInLocution = function() {
         this.mixInType = "";
         this.content = "";

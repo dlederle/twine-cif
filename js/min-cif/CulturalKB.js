@@ -1,4 +1,4 @@
-define(['min-cif/CKBPath'], function(CKBPath) {
+define(['./CKBPath'], function(CKBPath) {
 	/**
 	 * The CulturalKB class contains/creates vectors of propositions, a singleton instance, toString function, and loading of XML
 	 * Currently working on findItem function to compare Char subjectivity items with Truth items

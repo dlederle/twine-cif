@@ -1,4 +1,4 @@
-define(['min-cif/SkeinNode'], function(SkeinNode) {
+define(['./SkeinNode'], function(SkeinNode) {
     /**
      * The Skein class represents a path through social games in the form of
      * a tree consisting of character/user that branches when a social game

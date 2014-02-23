@@ -1,4 +1,4 @@
-define(['min-cif/SocialNetwork'], function(SocialNetwork) {
+define(['./SocialNetwork'], function(SocialNetwork) {
 
     /**
      * This class holds a separate instance of the SocialNetwork class for each
@@ -59,13 +59,14 @@ define(['min-cif/SocialNetwork'], function(SocialNetwork) {
              * RelationshipNetwork.
              */
             this.initialize = function(numChars) {
-                network = new Array(numChars);
+                numChars = numChars || 0;
+                network = [];
                 var i;
                 var j;
                 for (i = 0; i < numChars; i++) {
-                    network[i] = new Array(numChars);
+                    network[i] = [];
                     for (j = 0; j < numChars; j++) {
-                        this.network[i][j] = 0;
+                        network[i][j] = 0;
                     }
                 }
             }

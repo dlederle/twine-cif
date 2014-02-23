@@ -1,4 +1,4 @@
-define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-cif/BuddyNetwork", "min-cif/RomanceNetwork", "min-cif/CoolNetwork", "min-cif/Util", "min-cif/Cast", "min-cif/CulturalKB", "min-cif/SocialFactsDB", "min-cif/Status"], function(CiFSingleton, Rule, SocialNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, Util, Cast, CulturalKB, SocialFactsDB, Status) {
+define(["./RelationshipNetwork", "./Rule", "./SocialNetwork", "./BuddyNetwork", "./RomanceNetwork", "./CoolNetwork", "./Util", "./Cast", "./CulturalKB", "./SocialFactsDB", "./Status"], function(RelationshipNetwork, Rule, SocialNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, Util, Cast, CulturalKB, SocialFactsDB, Status) {
     /**
      * @class Predicate
      * The Predicate class is the terminal and functional end of the logic
@@ -278,7 +278,6 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
          * @return The value based on the value class of the primary property.
          */
         this.getPrimaryValue = function() {
-            var cif = CiFSingleton.getInstance();
             switch (this.primary.toLowerCase()) {
                 case "init":
                 case "initiator":
@@ -302,7 +301,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                         return "";
                         console.debug(this, "getPrimaryValue(): primary was not set.");
                 default:
-                        if (cif.cast.getCharByName(this.primary))
+                        if (Cast.getInstance().getCharByName(this.primary))
                             return this.primary;
                         console.debug(this, "getPrimaryValue() primary could not be placed in a known class: " + this.primary + " " + this);
             }
@@ -318,7 +317,6 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
          * @return The value based on the value class of the secondary property.
          */
         this.getSecondaryValue = function() {
-            var cif = CiFSingleton.getInstance();
             switch (this.secondary.toLowerCase()) {
                 case "i":
                 case "init":
@@ -342,7 +340,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                         //console.debug(this, "getSecondaryValue(): secondary was not set.");
                         return "";
                 default:
-                        if (cif.cast.getCharByName(this.secondary))
+                        if (Cast.getInstance().getCharByName(this.secondary))
                             return this.secondary;
                         //console.debug(this, "getSecondaryValue() primary could not be placed in a known class: " + this.secondary);
             }
@@ -358,7 +356,6 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
          * @return The value based on the value class of the teriary property.
          */
         this.getTertiaryValue = function() {
-            var cif = CiFSingleton.getInstance();
             switch (this.tertiary.toLowerCase()) {
                 case "i":
                 case "init":
@@ -382,7 +379,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                         //console.debug(this, "getTertiaryValue(): tertiary was not set.");
                         return "";
                 default:
-                        if (cif.cast.getCharByName(this.tertiary))
+                        if (Cast.getInstance().getCharByName(this.tertiary))
                             return this.tertiary;
                         console.debug(this, "getTertiaryValue(): tertiary could not be placed in a known class: " + this.tertiary);
             }
@@ -415,7 +412,6 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
          */
         this.isVariableExplicitlyBound = function(variable) {
             var slot;
-            var cif = CiFSingleton.getInstance();
 
             switch(variable) {
                 case "first":
@@ -451,7 +447,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                     //console.debug(this, "getTertiaryValue(): tertiary was not set.");
                     return false;
                 default:
-                    if (cif.cast.getCharByName(slot))
+                    if (Cast.getInstance().getCharByName(slot))
                         return true;
                     console.debug(this, "isVariableExplicitlyBound(): slot was not a role type or a recognized character. slot: " + slot.toLowerCase());
             }
@@ -474,8 +470,6 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
             var second;
             var third;
 
-            var cif = CiFSingleton.getInstance();
-
             Predicate.valuationCount++;
 
             //trace(Predicate.getNameByType(this.type));
@@ -487,7 +481,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
              */
             //if this.primary is not a reference to a character, determine if 
             //it is either a role or a generic variable
-            if (!(first = cif.cast.getCharByName(this.primary))) {
+            if (!(first = Cast.getInstance().getCharByName(this.primary))) {
                 switch (this.getPrimaryValue()) {
                     case "initiator":
                     case "x":
@@ -509,7 +503,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                 }
             }
 
-            if (!(second = cif.cast.getCharByName(this.secondary))) {
+            if (!(second = Cast.getInstance().getCharByName(this.secondary))) {
                 switch (this.getSecondaryValue()) {
                     case "initiator":
                     case "x":
@@ -528,7 +522,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                 }
             }
 
-            if (!(third = cif.cast.getCharByName(this.tertiary))) {
+            if (!(third = Cast.getInstance().getCharByName(this.tertiary))) {
                 switch (this.getTertiaryValue()) {
                     case "initiator":
                     case "x":
@@ -634,7 +628,6 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
             var net;
             var firstID = first.networkID;
             var secondID;
-            var cif = CiFSingleton.getInstance();
             var character;
 
             if (second)
@@ -662,27 +655,27 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                     net.setWeight(first.networkID, second.networkID, this.networkValue);
                     break;
                 case Predicate.EVERYONEUP:
-                    cif.cast.characters.forEach(function(character) {
+                    Cast.getInstance().characters.forEach(function(character) {
                         net.addWeight(this.networkValue, character.networkID, firstID);
                     });
                     break;
                 case Predicate.ALLFRIENDSUP:
-                    cif.cast.characters.forEach(function(character) {
-                        if (cif.relationshipNetwork.getRelationship(RelationshipNetwork.FRIENDS, first, second)
+                    Cast.getInstance().characters.forEach(function(character) {
+                        if (RelationshipNetwork.getInstance().getRelationship(RelationshipNetwork.FRIENDS, first, second)
                                 && first.characterName != character.characterName)
                             net.addWeight(this.networkValue, character.networkID, firstID);
                     });
                     break;
                 case Predicate.ALLDATINGUP:
-                    cif.cast.characters.forEach(function(character) {
-                        if (cif.relationshipNetwork.getRelationship(RelationshipNetwork.DATING, first, second)
+                    Cast.getInstance().characters.forEach(function(character) {
+                        if (RelationshipNetwork.getInstance().getRelationship(RelationshipNetwork.DATING, first, second)
                                 && first.characterName != character.characterName)
                             net.addWeight(this.networkValue, character.networkID, firstID);
                     });
                     break;
                 case Predicate.ALLENEMYUP:
-                    cif.cast.characters.forEach(function(character) {
-                        if (cif.relationshipNetwork.getRelationship(RelationshipNetwork.ENEMIES, first, second)
+                    Cast.getInstance().characters.forEach(function(character) {
+                        if (RelationshipNetwork.getInstance().getRelationship(RelationshipNetwork.ENEMIES, first, second)
                                 && first.characterName != character.characterName)
                             net.addWeight(this.networkValue, character.networkID, firstID);
                     });
@@ -708,7 +701,6 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
             var first;
             var second;
             var third;
-            var cif = CiFSingleton.getInstance();
             //there is a third character we need to account for.
             var isThird = false;
             var pred;
@@ -724,7 +716,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
              */
             //if this.primary is not a reference to a character, determine if
             //it is either a role or a generic variable
-            if (!(first = cif.cast.getCharByName(this.primary))) {
+            if (!(first = Cast.getInstance().getCharByName(this.primary))) {
                 switch (this.getPrimaryValue()) {
                     case "initiator":
                     case "x":
@@ -744,7 +736,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                         //default first is not bound
                 }
             }
-            if (!(second = cif.cast.getCharByName(this.secondary))) {
+            if (!(second = Cast.getInstance().getCharByName(this.secondary))) {
                 switch (this.getSecondaryValue()) {
                     case "initiator":
                     case "x":
@@ -763,7 +755,7 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                 }
             }
 
-            if (!(third = cif.cast.getCharByName(this.tertiary))) {
+            if (!(third = Cast.getInstance().getCharByName(this.tertiary))) {
                 switch (this.getTertiaryValue()) {
                     case "initiator":
                     case "x":
@@ -1036,7 +1028,6 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
          * @return True of the predicate evaluates to true. False if it does not.
          */
         this.evalForNumberUniquelyTrue = function(x, y, z, sg) {
-            var cif = CiFSingleton.getInstance();
 
             var numTimesTrue = 0;
 
@@ -1076,14 +1067,14 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                         numTimesTrue = evalCKBEntryForObjects(primaryCharacterOfConsideration, secondaryCharacterOfConsideration).length;
                         break;
                     case SFDBLABEL:
-                        numTimesTrue = cif.sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, secondaryCharacterOfConsideration, z, this.window,this).length;
+                        numTimesTrue = SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, secondaryCharacterOfConsideration, z, this.window,this).length;
                         //console.debug(this, "numTimes(): primary ("+primaryCharacterOfConsideration.characterName + ") did a "+SocialFactsDB.getLabelByNumber(this.sfdbLabel)+" thing to secondary ("+ secondaryCharacterOfConsideration.characterName+") "+numTimesTrue+" times.");
                         break;
                     default:
                         console.debug(this, "evalForNumberUniquelyTrue() Doesn't make sense consider 'both' role type for pred types not CKB or SFDB " + this.type);
                 }
             } else {
-                cif.cast.characters.forEach(function(char) {
+                Cast.getInstance().characters.forEach(function(char) {
                     //console.debug(this,"evalForNumberUniquelyTrue() "+this.toString());
                     predTrue = false;
                     //if (!primaryCharacterOfConsideration) return false;
@@ -1113,10 +1104,10 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                             case SFDBLABEL:
                                 if ("second" == numTimesRoleSlot) {
                                     //predTrue = evalSFDBLABEL(char, primaryCharacterOfConsideration, z);
-                                    numTimesTrue += cif.sfdb.findLabelFromValues(this.sfdbLabel, char, primaryCharacterOfConsideration, undefined, this.window, this).length;
+                                    numTimesTrue += SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, char, primaryCharacterOfConsideration, undefined, this.window, this).length;
                                 } else {
                                     //predTrue = evalSFDBLABEL(primaryCharacterOfConsideration, char, z);
-                                    numTimesTrue += cif.sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, char, undefined, this.window, this).length;
+                                    numTimesTrue += SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, char, undefined, this.window, this).length;
                                 }
                                 break;
                             case RELATIONSHIP:
@@ -1137,14 +1128,8 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
 
             // This is a special case for where we want to count numTimesTrue for contexts labels that don't have the nonPrimary roile specified
             if (this.type == Predicate.SFDBLABEL && this.numTimesUniquelyTrueFlag) {
-                //commented out this because because it handles a case that doesn't make sense: i.e. sfdblabel having no from and only a to.
-                //if ("second" == numTimesRoleSlot)
-                //{
-                //numTimesTrue += cif.sfdb.findLabelFromValues(this.sfdbLabel, null, primaryCharacterOfConsideration, null, this.window, this).length;
-                //}
-                //else
                 if ("first" == numTimesRoleSlot) {
-                    numTimesTrue += cif.sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, null, null, this.window, this).length;
+                    numTimesTrue += SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, null, null, this.window, this).length;
                 }
             }
 
@@ -1167,7 +1152,6 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
          * @return True of the predicate evaluates to true. False if it does not.
          */
         this.evalForNumberUniquelyTrueKeepChars = function(x, y, z, sg) {
-            var cif = CiFSingleton.getInstance();
             var charDictionary = {}; // will store the names of people who satisfy the requirements.
             var numTimesTrue = 0;
 
@@ -1208,14 +1192,14 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                         numTimesTrue = evalCKBEntryForObjects(primaryCharacterOfConsideration, secondaryCharacterOfConsideration).length;
                         break;
                     case SFDBLABEL:
-                        numTimesTrue = cif.sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, secondaryCharacterOfConsideration, z, this.window,this).length;
+                        numTimesTrue = SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, secondaryCharacterOfConsideration, z, this.window,this).length;
                         //console.debug(this, "numTimes(): primary ("+primaryCharacterOfConsideration.characterName + ") did a "+SocialFactsDB.getLabelByNumber(this.sfdbLabel)+" thing to secondary ("+ secondaryCharacterOfConsideration.characterName+") "+numTimesTrue+" times.");
                         break;
                     default:
                         console.debug(this, "evalForNumberUniquelyTrue() Doesn't make sense consider 'both' role type for pred types not CKB or SFDB " + this.type);
                 }
             } else {
-                cif.cast.characters.forEach(function(char) {
+                Cast.getInstance().characters.forEach(function(char) {
                     //console.debug(this,"evalForNumberUniquelyTrue() "+this.toString());
                     predTrue = false;
                     if (char.characterName != primaryCharacterOfConsideration.characterName) {
@@ -1244,10 +1228,10 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                             case SFDBLABEL:
                                 if ("second" == numTimesRoleSlot) {
                                     //predTrue = evalSFDBLABEL(char, primaryCharacterOfConsideration, z);
-                                    numTimesTrue += cif.sfdb.findLabelFromValues(this.sfdbLabel, char, primaryCharacterOfConsideration, undefined, this.window, this).length;
+                                    numTimesTrue += SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, char, primaryCharacterOfConsideration, undefined, this.window, this).length;
                                 } else {
                                     //predTrue = evalSFDBLABEL(primaryCharacterOfConsideration, char, z);
-                                    numTimesTrue += cif.sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, char, undefined, this.window, this).length;
+                                    numTimesTrue += SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, char, undefined, this.window, this).length;
                                 }
                                 break;
                             case RELATIONSHIP:
@@ -1273,14 +1257,8 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
             }
             // This is a special case for where we want to count numTimesTrue for contexts labels that don't have the nonPrimary roile specified
             if (this.type == Predicate.SFDBLABEL && this.numTimesUniquelyTrueFlag) {
-                //commented out this because because it handles a case that doesn't make sense: i.e. sfdblabel having no from and only a to.
-                //if ("second" == numTimesRoleSlot)
-                //{
-                //numTimesTrue += cif.sfdb.findLabelFromValues(this.sfdbLabel, null, primaryCharacterOfConsideration, null, this.window, this).length;
-                //}
-                //else
                 if ("first" == numTimesRoleSlot) {
-                    numTimesTrue += cif.sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, undefined, undefined, this.window, this).length;
+                    numTimesTrue += SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, undefined, undefined, this.window, this).length;
                 }
             }
 
@@ -1547,19 +1525,17 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
          * @return
          */
         this.evalSFDBLABEL = function(first, second, third) {
-            var cif = CiFSingleton.getInstance();
 
-            //console.debug(this, "evalSFDBLABEL() result: " + cif.sfdb.findLabelFromValues(this.sfdbLabel, first, second, third, this.window).length + " toString: "+this.toString());
 
             //if it is a category of label
             if (this.sfdbLabel <= SocialFactsDB.LAST_CATEGORY_COUNT && this.sfdbLabel >= 0) {
-                cif.SocialFactsDB.CATEGORIES[this.sfdbLabel].forEach(function(fromCategoryLabel) {
-                    if (cif.sfdb.findLabelFromValues(fromCategoryLabel, first, second, undefined, this.window, this).length > 0)
+                SocialFactsDB.CATEGORIES[this.sfdbLabel].forEach(function(fromCategoryLabel) {
+                    if (SocialFactsDB.getInstance().findLabelFromValues(fromCategoryLabel, first, second, undefined, this.window, this).length > 0)
                         return (this.negated) ? false : true;
                 });
             } else {
                 //normal look up
-                if (cif.sfdb.findLabelFromValues(this.sfdbLabel, first, second, undefined, this.window, this).length > 0) {
+                if (SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, first, second, undefined, this.window, this).length > 0) {
                     return (this.negated) ? false : true;
                 }
             }
@@ -2198,7 +2174,6 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
 
             var theTrait = this.trait;
 
-            var cif = CiFSingleton.getInstance();
 
             if (theTrait <= Trait.LAST_CATEGORY_COUNT) {
                 switch(theTrait) {
@@ -2418,14 +2393,11 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
             }
             var theStatus = this.status;
 
-            var cif = CiFSingleton.getInstance();
-
             if (theStatus <= Status.LAST_CATEGORY_COUNT)// && !(theStatus >= Status.FIRST_TO_IGNORE_NON_DIRECTED && theStatus < Status.FIRST_DIRECTED_STATUS))
             {
                 //resolve which trait they actually have
                 Status.CATEGORIES[this.status].forEach(function(s) {
-                    if (cif.cast.getCharByName(primary.toLowerCase()).getStatus(s))
-                    {
+                    if (Cast.getInstance().getCharByName(primary.toLowerCase()).getStatus(s)) {
                         theStatus = s;
                     }
                 });
@@ -3189,14 +3161,11 @@ define(["min-cif/CiFSingleton", "min-cif/Rule", "min-cif/SocialNetwork", "min-ci
                     //We don't care babout role in that case, and we only care if IsSFDB has been checked.
                     var theStatus = this.status;
 
-                    var cif = CiFSingleton.getInstance();
-
                     if (theStatus <= Status.LAST_CATEGORY_COUNT)
                     {
                         //resolve which trait they actually have
                         Status.CATEGORIES[this.status].forEach(function(s) {
-                            if (cif.cast.getCharByName(heroName.toLowerCase()).getStatus(s))
-                            {
+                            if (Cast.getInstance().getCharByName(heroName.toLowerCase()).getStatus(s)) {
                                 theStatus = s;
                             }
                         });

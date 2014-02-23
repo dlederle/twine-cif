@@ -1,4 +1,4 @@
-define(['min-cif/InfluenceRule'], function(InfluenceRule) {
+define([], function() {
     /**
      * A record of influence rules that fire when forming intent. For use for displaying rules that were true;
      */
@@ -29,7 +29,6 @@ define(['min-cif/InfluenceRule'], function(InfluenceRule) {
     RuleRecord.equals = function(x, y) {
         if (x.type != y.type) return false;
         if (x.name != y.name) return false;
-        if (!InfluenceRule.equals(x.influenceRule, y.influenceRule)) return false;
         if (x.initiator != y.initiator) return false;
         if (x.responder != y.responder) return false;
         if (x.other != y.other) return false;

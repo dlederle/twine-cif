@@ -1,4 +1,4 @@
-define(["min-cif/CiFSingleton", "min-cif/Status", "min-cif/ProspectiveMemory", "min-cif/Trait"], function(CiFSingleton, Status, ProspectiveMemory, Trait) {
+define(["min-cif/Cast", "min-cif/Status", "min-cif/ProspectiveMemory", "min-cif/Trait"], function(Cast, Status, ProspectiveMemory, Trait) {
 
     /**
      * The Character class stores the basic information a character needs to
@@ -58,7 +58,6 @@ define(["min-cif/CiFSingleton", "min-cif/Status", "min-cif/ProspectiveMemory", "
 
         //defaultLocutions["buddyMale"] = "dude";
         //defaultLocutions["buddyFemale"] = "dudette";
-        var cif = CiFSingleton.getInstance();
 
         this.characterLabels = [];
         for (var i = 0; i < Character.NUM_LABELS; i++ ) {
@@ -215,7 +214,7 @@ define(["min-cif/CiFSingleton", "min-cif/Status", "min-cif/ProspectiveMemory", "
          */
         this.setTrait = function(t) {
             if (t <= Trait.LAST_CATEGORY_COUNT) {
-                CiF.Trait.CATEGORIES.forEach(function(i) {
+                Trait.CATEGORIES.forEach(function(i) {
                     this.traits.push(i);
                 });
             }
@@ -234,7 +233,7 @@ define(["min-cif/CiFSingleton", "min-cif/Status", "min-cif/ProspectiveMemory", "
         this.hasTrait = function(t) {
             var i = 0;
             if (t <= Trait.LAST_CATEGORY_COUNT) {
-                CiF.Trait.CATEGORIES[t].forEach(function(cat_trait) {
+                Trait.CATEGORIES[t].forEach(function(cat_trait) {
                     for (i = 0; i < this.traits.length; ++i) {
                         if (this.traits[i] == cat_trait) return true;
                     }
@@ -466,7 +465,7 @@ define(["min-cif/CiFSingleton", "min-cif/Status", "min-cif/ProspectiveMemory", "
                 if (status.type != Status.POPULAR) {
                     status.remainingDuration -= timeElapsed;
                     if (status.remainingDuration <= 0) {
-                        removeStatus(status.type,CiFSingleton.getInstance().cast.getCharByName(status.directedToward));
+                        removeStatus(status.type, Cast.getCharByName(status.directedToward));
                     }
                 }
             });
@@ -479,7 +478,6 @@ define(["min-cif/CiFSingleton", "min-cif/Status", "min-cif/ProspectiveMemory", "
             var ch = new Character();
             var status;
             var locution;
-            var cif = CiFSingleton.getInstance();
             ch.characterName = this.characterName;
             ch.networkID = this.networkID;
             ch.prospectiveMemory = this.prospectiveMemory;

@@ -1,5 +1,4 @@
-define(['min-cif/CiFSingleton', 'min-cif/Status', 'min-cif/Predicate', 'min-cif/Util'], function(CiFSingleton, Status, Predicate, Util) {
-
+define(['./Status', './Predicate', './Util', './Cast', './SocialFactsDB'], function(Status, Predicate, Util, Cast, SocialFactsDB) {
 
     /**
      * Generates the 'intent' portion of the generated rule name
@@ -738,7 +737,7 @@ define(['min-cif/CiFSingleton', 'min-cif/Status', 'min-cif/Predicate', 'min-cif/
                             networkPreds.push(pred);
                             break;
                         case Predicate.STATUS:
-                            if (pred.status < CiF.Status.FIRST_DIRECTED_STATUS) {
+                            if (pred.status < Status.FIRST_DIRECTED_STATUS) {
                                 if (pred.status != Status.CAT_FEELING_BAD_ABOUT_SOMEONE && pred.status != Status.CAT_FEELING_GOOD_ABOUT_SOMEONE) {
                                     //this is an exception pertaining to categories
                                     pred.second = "";
@@ -1085,7 +1084,7 @@ define(['min-cif/CiFSingleton', 'min-cif/Status', 'min-cif/Predicate', 'min-cif/
          */
         this.getPercentageTrueForInitiator = function(initiatorCharacter,charsToUse,responder,other) {
 
-            var possibleChars = charsToUse || CiFSingleton.getInstance().cast.characters;
+            var possibleChars = charsToUse || Cast.getInstance().characters;
             var numTrue = 0;
             var maxNumTrue = -1;
             var pred;
@@ -1351,7 +1350,7 @@ define(['min-cif/CiFSingleton', 'min-cif/Status', 'min-cif/Predicate', 'min-cif/
 
 
         this.evaluateRuleForInitiatorAndCast = function(initiator, charsToUse) {
-            var possibleChars = charsToUse || CiFSingleton.getInstance().cast.characters;
+            var possibleChars = charsToUse || Cast.getInstance().characters;
             possibleChars.forEach(function(responder) {
                 if (initiator.characterName != responder.characterName) {
                     if (this.requiresThirdCharacter()) {
@@ -1420,12 +1419,11 @@ define(['min-cif/CiFSingleton', 'min-cif/Status', 'min-cif/Predicate', 'min-cif/
          * the time ordering of the Predicates in the rule.
          */
         this.evaluateTimeOrdedRule = function(x, y, z) {
-            var cif = CiFSingleton.getInstance();
             //The max order value of the rule.
             var maxOrderInRule = this.highestSFDBOrder();
             //when evaluating an order, this is value is updated with the highest truth time for the order.
             //when evaluating an order, this is value is updated with the highest truth time for the order.
-            var curOrderTruthTime = cif.sfdb.getLowestContextTime();
+            var curOrderTruthTime = SocialFactsDB.getInstance().getLowestContextTime();
             //the highest truth time of all the predicates in the previous order.
             var lastOrderTruthTime = curOrderTruthTime;
             //the truth time of the current predicate.
@@ -1439,7 +1437,7 @@ define(['min-cif/CiFSingleton', 'min-cif/Status', 'min-cif/Predicate', 'min-cif/
                     if (pred.sfdbOrder == order) {
                         startTime = getTimer();
                         //the predicate is of the order we are currently concerned with
-                        time = cif.sfdb.timeOfPredicateInHistory(pred, x, y, z);
+                        time = SocialFactsDB.getInstance().timeOfPredicateInHistory(pred, x, y, z);
                         Predicate.evalutionComputationTime += getTimer() - startTime;
                         //was the predicate true at all in history? If not, return false.
                         if (SocialFactsDB.PREDICATE_NOT_FOUND == time) return false;

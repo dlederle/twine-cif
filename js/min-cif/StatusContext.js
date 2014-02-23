@@ -1,4 +1,4 @@
-define(['min-cif/Rule', 'min-cif/Predicate', 'min-cif/Status'], function(Rule, Predicate, Status) {
+define(['./Rule', './Predicate', './Status'], function(Rule, Predicate, Status) {
     /**
      * Consists of a predicate and a time.
      */

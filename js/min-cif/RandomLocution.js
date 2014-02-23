@@ -1,4 +1,4 @@
-define(['min-cif/Util'], function(Util) {
+define(['./Util'], function(Util) {
     var RandomLocution = function() {
         this.realizedString = "";
 

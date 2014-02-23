@@ -1,4 +1,4 @@
-define(['min-cif/SocialNetwork'], function(SocialNetwork) {
+define(['./SocialNetwork'], function(SocialNetwork) {
 
     /**
      * @class RomanceNetwork

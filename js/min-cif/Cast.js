@@ -1,37 +1,37 @@
-define(['min-cif/Character'], function(Character) {
+define([], function() {
     /**
      * @class Cast
      */
     var cast = function() {
-        var characters = [];
-        var charactersByName = {};
         var instance;
         function Cast() {
             if (instance) {
                 return instance;
             }
             instance = this;
+            this.characters = [];
+            this.charactersByName = {};
 
             this.length = function() {
-                return characters.length;
+                return this.characters.length;
             }
 
             this.getCharByName = function(name) {
-                return charactersByName[name];
+                return this.charactersByName[name];
             }
 
             this.getCharByID = function(id) {
-                for (var char in characters) {
+                this.characters.forEach(function(char) {
                     if(char.networkID === id) {
                         return char;
                     }
-                }
+                });
             }
 
             this.addCharacter = function(char) {
-                characters.push(char);
-                charactersByName[char.characterName] = char;
-                charactersByName[char.characterName.toLowerCase()] = char;
+                this.characters.push(char);
+                this.charactersByName[char.characterName] = char;
+                this.charactersByName[char.characterName.toLowerCase()] = char;
             }
 
 

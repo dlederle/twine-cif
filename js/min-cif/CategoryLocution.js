@@ -1,4 +1,4 @@
-define(['min-cif/Character', 'min-cif/Trait', 'min-cif/Status'], function(Character, Trait, Status) {
+define(['./Trait', './Status'], function(Trait, Status) {
     /* INTERFACE CiF.Locution */
     var CategoryLocution = function() {
         this.realizedString;

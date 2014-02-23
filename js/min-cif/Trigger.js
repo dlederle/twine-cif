@@ -1,4 +1,4 @@
-define(['min-cif/SocialFactsDB', 'min-cif/TriggerContext', 'min-cif/Effect', 'min-cif/Predicate'], function(SocialFactsDB, TriggerContext, Effect, Predicate) {
+define(['./SocialFactsDB', './TriggerContext', './Effect', './Predicate'], function(SocialFactsDB, TriggerContext, Effect, Predicate) {
 
 	/**
 	 * The Trigger class consists of conditional rules that look over the recent

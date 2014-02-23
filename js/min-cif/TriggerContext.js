@@ -1,4 +1,4 @@
-define(['min-cif/Status', 'min-cif/Predicate', 'min-cif/Trigger', 'min-cif/CiFSingleton', 'min-cif/SocialFactsDB', 'min-cif/Util'], function(Status, Predicate, Trigger, CiFSingleton, SocialFactsDB, Util) {
+define(['./Status', './Predicate', './Trigger', './SocialFactsDB', './Util'], function(Status, Predicate, Trigger, SocialFactsDB, Util) {
     /**
      * Consists of a predicate and a time.
      */
@@ -29,12 +29,12 @@ define(['min-cif/Status', 'min-cif/Predicate', 'min-cif/Trigger', 'min-cif/CiFSi
                 return statusTimeoutChange;
 
             }
-            var trigger = CiFSingleton.getInstance().sfdb.getTriggerByID(this.id);
+            var trigger = SocialFactsDB.getInstance().getTriggerByID(this.id);
             return trigger.change;
         }
 
         this.getCondition = function() {
-            var trigger = CiFSingleton.getInstance().sfdb.getTriggerByID(this.id);
+            var trigger = SocialFactsDB.getInstance().sfdb.getTriggerByID(this.id);
             return trigger.condition;
         }
 
@@ -49,7 +49,6 @@ define(['min-cif/Status', 'min-cif/Predicate', 'min-cif/Trigger', 'min-cif/CiFSi
          * of p. False if not.
          */
         this.isPredicateInChange = function(p, x, y, z) {
-            var cif = CiFSingleton.getInstance();
             var changeRule = this.getChange();
             changeRule.predicates.forEach(function(predInChange) {
                 if(Predicate.equalsValuationStructure(p, predInChange)) {

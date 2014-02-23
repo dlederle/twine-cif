@@ -1,4 +1,5 @@
-define(['min-cif/Rule'], function(Rule) {
+define(['./Rule'], function(Rule) {
+
     /**
      * @class InfluenceRule
      */

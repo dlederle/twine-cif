@@ -275,9 +275,11 @@ define(['min-cif/ToCLocution', 'min-cif/Rule', 'min-cif/LineOfDialogue'], functi
             i.name = this.name;
             i.lines = this.lines.slice(0);
 
-            this.conditionRules.forEach(function(r) {
-                i.conditionalRules.push(r.clone());
-            });
+            if(this.conditionRules) {
+                this.conditionRules.forEach(function(r) {
+                    i.conditionalRules.push(r.clone());
+                });
+            }
 
 
             i.toc1.rawString = this.toc1.rawString;

@@ -1,4 +1,4 @@
-define(['min-cif/CiFSingleton', 'min-cif/Rule', 'min-cif/Character', 'min-cif/Predicate', 'min-cif/SocialGameContext', 'min-cif/Status', 'min-cif/RelationshipNetwork'], function(CiFSingleton, Rule, Character, Predicate, SocialGameContext, Status, RelationshipNetwork) {
+define(['./CiFSingleton', './Rule', './Character', './Predicate', './SocialGameContext', './Status', './RelationshipNetwork'], function(CiFSingleton, Rule, Character, Predicate, SocialGameContext, Status, RelationshipNetwork) {
     /**
      * This class implements the pairing of a Rule class with a set of
      * SocialChange classes. Multiple Effect classes are aggregated by

@@ -1,4 +1,4 @@
-define(['min-cif/CiFSingleton', 'min-cif/GameScore', 'min-cif/RuleRecord', 'min-cif/Predicate'], function(CiFSingleton, GameScore, RuleRecord, Predicate) {
+define(['./GameScore', './RuleRecord', './Predicate', './Cast'], function(GameScore, RuleRecord, Predicate, Cast) {
 
     var ProspectiveMemory = function() {
         this.scores = [];
@@ -10,8 +10,7 @@ define(['min-cif/CiFSingleton', 'min-cif/GameScore', 'min-cif/RuleRecord', 'min-
          * This is used for both performace increases and for the network line length calculations
          */
         this.initializeIntentScoreCache = function() {
-            var cif = CiFSingleton.getInstance();
-            var numChars = cif.cast.characters.length;
+            var numChars = Cast.getInstance().characters.length;
             this.intentScoreCache = [];
             this.intentPosScoreCache = [];
             this.intentNegScoreCache = [];
