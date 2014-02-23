@@ -1,4 +1,4 @@
-define(['./SocialNetwork', './RelationshipNetwork', './BuddyNetwork', './RomanceNetwork', './CoolNetwork', './CulturalKB', './SocialFactsDB', './SocialGamesLib', './Predicate', './SocialGameContext', './Cast', './ProspectiveMemory', './GameScore', './RuleRecord', './Util', './InfluenceRule', './Rule', './Character', './SocialGame', './Trait', './Status', './Effect', './Instantiation', './LineOfDialogue'], function(SocialNetwork, RelationshipNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, CulturalKB, SocialFactsDB, SocialGamesLib, Predicate, SocialGameContext, Cast, ProspectiveMemory, GameScore, RuleRecord, Util, InfluenceRule, Rule, Character, SocialGame, Trait, Status, Effect, Instantiation, LineOfDialogue) {
+define(['./SocialNetwork', './RelationshipNetwork', './BuddyNetwork', './RomanceNetwork', './CoolNetwork', './CulturalKB', './SocialFactsDB', './SocialGamesLib', './Predicate', './SocialGameContext', './Cast', './ProspectiveMemory', './GameScore', './RuleRecord', './Util', './InfluenceRule', './Rule', './Character', './SocialGame', './Trait', './Status', './Effect', './Instantiation', './LineOfDialogue', './StatusContext'], function(SocialNetwork, RelationshipNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, CulturalKB, SocialFactsDB, SocialGamesLib, Predicate, SocialGameContext, Cast, ProspectiveMemory, GameScore, RuleRecord, Util, InfluenceRule, Rule, Character, SocialGame, Trait, Status, Effect, Instantiation, LineOfDialogue, StatusContext) {
     var cif = function() {
         var instance;
         function CiFSingleton() {
@@ -1766,7 +1766,6 @@ define(['./SocialNetwork', './RelationshipNetwork', './BuddyNetwork', './Romance
                 brag.instantiations.push(inst.clone());
 
 
-
                 //II (Accept with better results)
 
                 //III (Reject flavorless)
@@ -1780,14 +1779,14 @@ define(['./SocialNetwork', './RelationshipNetwork', './BuddyNetwork', './Romance
 
 
                 //Add our game to the social games library!
-                //this.socialGamesLib.addGame(brag);
+                this.socialGamesLib.addGame(brag);
 
                 //SFDB
-                //p.setStatusPredicate("Edward", "Karen", Status.HAS_A_CRUSH_ON);
-                //var sc:StatusContext = new StatusContext();
-                //sc.time = 0;
-                //sc.predicate = p.clone();
-                //this.sfdb.contexts.push(sc);
+                p.setStatusPredicate("Edward", "Karen", Status.HAS_A_CRUSH_ON);
+                var sc =  new StatusContext();
+                sc.time = 0;
+                sc.predicate = p.clone();
+                this.sfdb.contexts.push(sc);
 
             }
 
