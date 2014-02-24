@@ -1,4 +1,5 @@
-define(['./Predicate', './Cast'], function(Predicate, Cast) {
+define(['Predicate', 'Cast'], function(Predicate, Cast) {
+    console.log("entering SFDB");
     var sfdb = function() {
         var instance;
         function SocialFactsDB() {

@@ -1,4 +1,4 @@
-define(['min-cif/InfluenceRule', 'min-cif/Predicate', 'min-cif/CiFSingleton', 'min-cif/SocialFactsDB'], function(InfluenceRule, Predicate, CiFSingleton, SocialFactsDB) {
+define(['InfluenceRule', 'Predicate', 'CiFSingleton', 'SocialFactsDB'], function(InfluenceRule, Predicate, CiFSingleton, SocialFactsDB) {
     var InstrumentedInfluenceRule = function() {
         InstrumentedInfluenceRule.counter++;
 

@@ -1,4 +1,4 @@
-define(["./RelationshipNetwork", "./Rule", "./SocialNetwork", "./BuddyNetwork", "./RomanceNetwork", "./CoolNetwork", "./Util", "./Cast", "./CulturalKB", "./SocialFactsDB", "./Status"], function(RelationshipNetwork, Rule, SocialNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, Util, Cast, CulturalKB, SocialFactsDB, Status) {
+define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "RomanceNetwork", "CoolNetwork", "Util", "Cast", "CulturalKB", "Status", "SocialFactsDB"], function(require, RelationshipNetwork, Rule, SocialNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, Util, Cast, CulturalKB, Status, SocialFactsDB) {
     /**
      * @class Predicate
      * The Predicate class is the terminal and functional end of the logic
@@ -662,21 +662,21 @@ define(["./RelationshipNetwork", "./Rule", "./SocialNetwork", "./BuddyNetwork", 
                 case Predicate.ALLFRIENDSUP:
                     Cast.getInstance().characters.forEach(function(character) {
                         if (RelationshipNetwork.getInstance().getRelationship(RelationshipNetwork.FRIENDS, first, second)
-                                && first.characterName != character.characterName)
+                            && first.characterName != character.characterName)
                             net.addWeight(this.networkValue, character.networkID, firstID);
                     });
                     break;
                 case Predicate.ALLDATINGUP:
                     Cast.getInstance().characters.forEach(function(character) {
                         if (RelationshipNetwork.getInstance().getRelationship(RelationshipNetwork.DATING, first, second)
-                                && first.characterName != character.characterName)
+                            && first.characterName != character.characterName)
                             net.addWeight(this.networkValue, character.networkID, firstID);
                     });
                     break;
                 case Predicate.ALLENEMYUP:
                     Cast.getInstance().characters.forEach(function(character) {
                         if (RelationshipNetwork.getInstance().getRelationship(RelationshipNetwork.ENEMIES, first, second)
-                                && first.characterName != character.characterName)
+                            && first.characterName != character.characterName)
                             net.addWeight(this.networkValue, character.networkID, firstID);
                     });
                     break;
@@ -825,12 +825,12 @@ define(["./RelationshipNetwork", "./Rule", "./SocialNetwork", "./BuddyNetwork", 
                         sg.intents.forEach(function(rule) {
                             rule.predicates.forEach(function(pred) {
                                 if (pred.relationship == this.relationship &&
-                                        pred.primary == this.primary &&
-                                        pred.secondary == this.secondary &&
-                                        pred.negated == this.negated) {
+                                    pred.primary == this.primary &&
+                                    pred.secondary == this.secondary &&
+                                    pred.negated == this.negated) {
 
-                                            return true;
-                                        }
+                                        return true;
+                                    }
                             });
                         });
                     }
@@ -843,13 +843,13 @@ define(["./RelationshipNetwork", "./Rule", "./SocialNetwork", "./BuddyNetwork", 
                         sg.intents.forEach(function(rule) {
                             rule.predicates.forEach(function(pred) {
                                 if (pred.networkType == this.networkType &&
-                                        pred.comparator == this.comparator &&
-                                        pred.primary == this.primary &&
-                                        pred.secondary == this.secondary &&
-                                        pred.negated == this.negated) {
+                                    pred.comparator == this.comparator &&
+                                    pred.primary == this.primary &&
+                                    pred.secondary == this.secondary &&
+                                    pred.negated == this.negated) {
 
-                                            return true;
-                                        }
+                                        return true;
+                                    }
                             });
                         });
                     }
@@ -863,12 +863,12 @@ define(["./RelationshipNetwork", "./Rule", "./SocialNetwork", "./BuddyNetwork", 
                         sg.intents.forEach(function(rule) {
                             rule.predicates.forEach(function(pred) {
                                 if (pred.sfdbLabel == this.sfdbLabel &&
-                                        pred.primary == this.primary &&
-                                        pred.secondary == this.secondary &&
-                                        pred.negated == this.negated) {
+                                    pred.primary == this.primary &&
+                                    pred.secondary == this.secondary &&
+                                    pred.negated == this.negated) {
 
-                                            return true;
-                                        }
+                                        return true;
+                                    }
                             });
                         });
                     }
@@ -880,7 +880,7 @@ define(["./RelationshipNetwork", "./Rule", "./SocialNetwork", "./BuddyNetwork", 
                 return false;
             }
 
-            if (numTimesUniquelyTrueFlag) {
+            if (this.numTimesUniquelyTrueFlag) {
                 //console.debug(this, this.toString());
                 var numTimesResult = evalForNumberUniquelyTrue(first, second, third, sg);
                 return (this.negated) ? !numTimesResult : numTimesResult;
@@ -888,24 +888,24 @@ define(["./RelationshipNetwork", "./Rule", "./SocialNetwork", "./BuddyNetwork", 
 
             switch (this.type)
             {
-                case TRAIT:
+                case Predicate.TRAIT:
                     return this.negated ? !evalTrait(first) : evalTrait(first);
-                case NETWORK:
+                case Predicate.NETWORK:
                     //var isNetworkEvalTrue:Boolean = this.negated ? !evalNetwork(first, second) : evalNetwork(first, second);
                     //console.debug(this, "evaluate() ^ returned " + isNetworkEvalTrue);
                     return evalNetwork(first, second);
-                case STATUS:
+                case Predicate.STATUS:
                     //if (first == null) console.debug(this, "found it: "+this.toString());
                     return this.negated ? !evalStatus(first, second) : evalStatus(first, second);
-                case CKBENTRY:
+                case Predicate.CKBENTRY:
                     return evalCKBEntry(first, second);
-                case SFDBLABEL:
-                    return evalSFDBLABEL(first, second, third);
-                case RELATIONSHIP:
+                case Predicate.SFDBLABEL:
+                    return this.evalSFDBLABEL(first, second, third);
+                case Predicate.RELATIONSHIP:
                     //console.debug(this, "Going in here: "+this.toString() + " first: " + first.characterName);
                     //console.debug(this, "Going in here: "+this.toString() + " second: " + second.characterName);
                     return this.negated ? !evalRelationship(first, second) : evalRelationship(first, second);
-                case CURRENTSOCIALGAME:
+                case Predicate.CURRENTSOCIALGAME:
                     if (!sg) return false;
                     if (this.negated) {
                         return this.currentGameName.toLowerCase() != sg.name.toLowerCase();
@@ -980,27 +980,27 @@ define(["./RelationshipNetwork", "./Rule", "./SocialNetwork", "./BuddyNetwork", 
 
             possibleChars.forEach(function(responder) {
                 if (initiator.characterName != responder.characterName)
+            {
+                if (this.requiresThirdCharacter())
+            {
+                possibleChars.forEach(function(other) {
+                    if (other.characterName != initiator.characterName && other.characterName != initiator.characterName)
                 {
-                    if (this.requiresThirdCharacter())
-                    {
-                        possibleChars.forEach(function(other) {
-                            if (other.characterName != initiator.characterName && other.characterName != initiator.characterName)
-                            {
-                                if (this.evaluate(initiator, responder, other))
-                                {
-                                    return true;
-                                }
-                            }
-                        });
-                    }
-                    else
-                    {
-                        if (this.evaluate(initiator, responder))
-                        {
-                            return true;
-                        }
-                    }
+                    if (this.evaluate(initiator, responder, other))
+                {
+                    return true;
                 }
+                }
+                });
+            }
+                else
+            {
+                if (this.evaluate(initiator, responder))
+            {
+                return true;
+            }
+            }
+            }
             });
             return false;
         }
@@ -1526,12 +1526,14 @@ define(["./RelationshipNetwork", "./Rule", "./SocialNetwork", "./BuddyNetwork", 
          */
         this.evalSFDBLABEL = function(first, second, third) {
 
+            console.log("evaling SFDBLabel");
+            console.log("SFDB:", SocialFactsDB);
 
             //if it is a category of label
             if (this.sfdbLabel <= SocialFactsDB.LAST_CATEGORY_COUNT && this.sfdbLabel >= 0) {
                 SocialFactsDB.CATEGORIES[this.sfdbLabel].forEach(function(fromCategoryLabel) {
                     if (SocialFactsDB.getInstance().findLabelFromValues(fromCategoryLabel, first, second, undefined, this.window, this).length > 0)
-                        return (this.negated) ? false : true;
+                    return (this.negated) ? false : true;
                 });
             } else {
                 //normal look up
@@ -3993,4 +3995,5 @@ define(["./RelationshipNetwork", "./Rule", "./SocialNetwork", "./BuddyNetwork", 
     Predicate.NUM_INTENT_TYPES = 12;
 
     return Predicate;
-});
+    //    });
+    });

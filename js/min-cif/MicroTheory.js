@@ -1,4 +1,4 @@
-define(['./Rule', './InfluenceRuleSet'], function(Rule, InfluenceRuleSet) {
+define(['Rule', 'InfluenceRuleSet'], function(Rule, InfluenceRuleSet) {
 	/**
 	 * The Microtheory class stores a domain dependent set of rules that govern
 	 * CiF. These rules get included when scoring intent formation and the

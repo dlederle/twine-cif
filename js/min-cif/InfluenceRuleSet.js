@@ -1,4 +1,4 @@
-define(['min-cif/CiFSingleton', 'min-cif/InfluenceRule', 'min-cif/Rule', 'min-cif/RuleRecord'], function(CiFSingleton, InfluenceRule, Rule, RuleRecord) {
+define(['CiFSingleton', 'InfluenceRule', 'Rule', 'RuleRecord'], function(CiFSingleton, InfluenceRule, Rule, RuleRecord) {
     /**
      * Manages a set of influence rules. Has the ability to evalute the truth
      * of all the rules and return a weight corresponding to the sum of the

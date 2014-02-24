@@ -985,7 +985,7 @@ define(['./Status', './Predicate', './Util', './Cast', './SocialFactsDB'], funct
         this.requiresThirdCharacter = function() {
             var thirdNeeded = false;
 
-            this.predicates.forEach(function(pred) {
+            this.predicates.forEach(function(p) {
                 //We can't allow ourselves to be mis-lead by predicates that are 'num times uniquely true'
                 //predicates.  We ONLY want those to count as requiring an other if there is an other specified
                 //in the role slot that we care about (first, second, or either first or second if 'both' is checked.
@@ -1392,12 +1392,12 @@ define(['./Status', './Predicate', './Util', './Cast', './SocialFactsDB'], funct
 
             this.predicates.forEach(function(p) {
                 //console.debug(this, "evaluating predicate of type: " + Predicate.getNameByType(p.type), 0);
-                var startTime = getTimer();
+                //var startTime = getTimer();
                 if (!p.evaluate(initiator, responder, other, sg)) {
-                    Predicate.evalutionComputationTime += getTimer() - startTime;
+                    //Predicate.evalutionComputationTime += getTimer() - startTime;
                     return false;
                 }
-                Predicate.evalutionComputationTime += getTimer() - startTime;
+                //Predicate.evalutionComputationTime += getTimer() - startTime;
                 ++this.lastTrueCount;
             });
             return true;

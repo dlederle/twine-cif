@@ -1,4 +1,4 @@
-define(['./Predicate', './SocialFactsDB'], function(Predicate, SocialFactsDB) {
+define(['Predicate', 'SocialFactsDB'], function(Predicate, SocialFactsDB) {
 
 	var SFDBLabelLocution = function() {
         this.speaker;

@@ -1,4 +1,4 @@
-define(['./Status', './Predicate', './Trigger', './SocialFactsDB', './Util'], function(Status, Predicate, Trigger, SocialFactsDB, Util) {
+define(['Status', 'Predicate', 'Trigger', 'SocialFactsDB', 'Util'], function(Status, Predicate, Trigger, SocialFactsDB, Util) {
     /**
      * Consists of a predicate and a time.
      */

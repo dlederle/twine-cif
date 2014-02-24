@@ -1,4 +1,4 @@
-define(["min-cif/Cast", "min-cif/Status", "min-cif/ProspectiveMemory", "min-cif/Trait"], function(Cast, Status, ProspectiveMemory, Trait) {
+define(["Cast", "Status", "ProspectiveMemory", "Trait"], function(Cast, Status, ProspectiveMemory, Trait) {
 
     /**
      * The Character class stores the basic information a character needs to

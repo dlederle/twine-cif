@@ -1,4 +1,4 @@
-define(['./Predicate'], function(Predicate) {
+define(['Predicate'], function(Predicate) {
     var CKBLocution = function() {
         this.pred = new Predicate();
         pred.setByTypeDefault(Predicate.CKBENTRY);

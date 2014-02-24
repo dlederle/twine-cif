@@ -1,4 +1,4 @@
-define(['min-cif/ToCLocution', 'min-cif/Rule', 'min-cif/LineOfDialogue'], function(ToCLocution, Rule, LineOfDialogue) {
+define(['ToCLocution', 'Rule', 'LineOfDialogue'], function(ToCLocution, Rule, LineOfDialogue) {
 
     /**
      * Instantiations store the performance realization for a particular Effect

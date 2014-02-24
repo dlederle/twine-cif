@@ -1,4 +1,4 @@
-define(['min-cif/InfluenceRuleSet', 'min-cif/Rule', 'min-cif/Cast'], function(InfluenceRuleSet, Rule, Cast) {
+define(['InfluenceRuleSet', 'Rule', 'Cast'], function(InfluenceRuleSet, Rule, Cast) {
     /**
      * The SocialGame class stores social games in their declarative form; the
      * social game preconditions, influence sets, and effects are stored. What

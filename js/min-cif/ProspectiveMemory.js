@@ -1,4 +1,4 @@
-define(['./GameScore', './RuleRecord', './Predicate', './Cast'], function(GameScore, RuleRecord, Predicate, Cast) {
+define(['GameScore', 'RuleRecord', 'Cast'], function(GameScore, RuleRecord, Cast) {
 
     var ProspectiveMemory = function() {
         this.scores = [];
@@ -17,10 +17,11 @@ define(['./GameScore', './RuleRecord', './Predicate', './Cast'], function(GameSc
             var i;
             var j;
             for (i = 0; i < numChars; i++) {
-                this.intentScoreCache[i] = new Array(Predicate.NUM_INTENT_TYPES);
-                this.intentPosScoreCache[i] = new Array(Predicate.NUM_INTENT_TYPES);
-                this.intentNegScoreCache[i] = new Array(Predicate.NUM_INTENT_TYPES);
-                for (j = 0; j < Predicate.NUM_INTENT_TYPES; j++) {
+                this.intentScoreCache[i] = [];
+                this.intentPosScoreCache[i] = [];
+                this.intentNegScoreCache[i] = [];
+                var numIntentTypes = 12; //Comes from Predicate, bad hack
+                for (j = 0; j < numIntentTypes; j++) {
                     this.intentScoreCache[i][j] = ProspectiveMemory.DEFAULT_INTENT_SCORE;
                     this.intentPosScoreCache[i][j] = ProspectiveMemory.DEFAULT_INTENT_SCORE;
                     this.intentNegScoreCache[i][j] = ProspectiveMemory.DEFAULT_INTENT_SCORE;

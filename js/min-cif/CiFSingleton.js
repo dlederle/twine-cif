@@ -1,5 +1,14 @@
-define(['./SocialNetwork', './RelationshipNetwork', './BuddyNetwork', './RomanceNetwork', './CoolNetwork', './CulturalKB', './SocialFactsDB', './SocialGamesLib', './Predicate', './SocialGameContext', './Cast', './ProspectiveMemory', './GameScore', './RuleRecord', './Util', './InfluenceRule', './Rule', './Character', './SocialGame', './Trait', './Status', './Effect', './Instantiation', './LineOfDialogue', './StatusContext'], function(SocialNetwork, RelationshipNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, CulturalKB, SocialFactsDB, SocialGamesLib, Predicate, SocialGameContext, Cast, ProspectiveMemory, GameScore, RuleRecord, Util, InfluenceRule, Rule, Character, SocialGame, Trait, Status, Effect, Instantiation, LineOfDialogue, StatusContext) {
+var CiFDeps = ['SocialNetwork', 'RelationshipNetwork', 'BuddyNetwork', 'RomanceNetwork', 'CoolNetwork', 'CulturalKB', 'SocialFactsDB', 'SocialGamesLib', 'Predicate', 'SocialGameContext', 'Cast', 'ProspectiveMemory', 'GameScore', 'RuleRecord', 'Util', 'InfluenceRule', 'Rule', 'Character', 'SocialGame', 'Trait', 'Status', 'Effect', 'Instantiation', 'LineOfDialogue', 'StatusContext']
+
+define(['require'],
+        function(require, SocialNetwork, RelationshipNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, CulturalKB, SocialFactsDB, SocialGamesLib, Predicate, SocialGameContext, Cast, ProspectiveMemory, GameScore, RuleRecord, Util, InfluenceRule, Rule, Character, SocialGame, Trait, Status, Effect, Instantiation, LineOfDialogue, StatusContext) {
+    console.log("Entering CiFSingleton");
+
+    require(CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, CulturalKB, SocialFactsDB, SocialGamesLib, Predicate, SocialGameContext, Cast, ProspectiveMemory, GameScore, RuleRecord, Util, InfluenceRule, Rule, Character, SocialGame, Trait, Status, Effect, Instantiation, LineOfDialogue, StatusContext) {
+
     var cif = function() {
+        console.log("Entering cif");
+
         var instance;
         function CiFSingleton() {
             if(instance) { return instance; }
@@ -61,8 +70,9 @@ define(['./SocialNetwork', './RelationshipNetwork', './BuddyNetwork', './Romance
 
                 character.prospectiveMemory = new ProspectiveMemory();
 
+                var that = this;
                 this.cast.characters.forEach(function(potentialResponder) {
-                    var start = getTimer();
+                    var start = that.getTime();
                     if(potentialResponder.characterName != character.characterName) {
                         /* To save the re-evaluation of many
                          * predicates in microtheory rules,
@@ -149,8 +159,9 @@ define(['./SocialNetwork', './RelationshipNetwork', './BuddyNetwork', './Romance
             this.formIntentForAll = function(activeInitiatorAndResponderCast, activeOtherCast) {
                 this.clearProspectiveMemory();
                 var castToUse = activeInitiatorAndResponderCast || this.cast.characters;
-                castToUse.forEach(function(car) {
-                    this.formIntent(char, activeInitiatorAndResponderCast, activeOtherCast);
+                var that = this;
+                castToUse.forEach(function(char) {
+                    that.formIntent(char, activeInitiatorAndResponderCast, activeOtherCast);
                 });
             }
 
@@ -166,25 +177,27 @@ define(['./SocialNetwork', './RelationshipNetwork', './BuddyNetwork', './Romance
                 var possibleOthers = activeOtherCast || this.cast.characters;
                 var currentSetOfSocialGames = setOfGames || this.socialGamesLib.games;
 
+                var that = this;
                 possibleResponders.forEach(function(responder) {
-                    var start = getTimer();
+                    var start = that.getTime();
                     if(responder.characterName != initiator.characterName) {
-                        formIntentForSocialGames(initiator, responder, possibleOthers, currentSetOfSocialGames);
+                        that.formIntentForSocialGames(initiator, responder, possibleOthers, currentSetOfSocialGames);
                     }
                 });
             }
 
-            this.forIntentForSocialGames = function(initiator, responder, activeOtherCast, setOfGames) {
+            this.formIntentForSocialGames = function(initiator, responder, activeOtherCast, setOfGames) {
                 var possibleOthers = activeOtherCast || this.cast.characters;
                 var currentSetOfSocialGames = setOfGames || this.socialGamesLib.games;
+                var that = this;
                 currentSetOfSocialGames.forEach(function(sg) {
-                    formIntentForASocialGame(sg, initiator, responder, possibleOthers);
+                    that.formIntentForASocialGame(sg, initiator, responder, possibleOthers);
                 });
             }
 
-            this.formIntentforASocialGame = function(sg, initiator, responder, activeOtherCast) {
-                var possibleResponders = activeInitiatorAndResponderCast || this.cast.characters;
-                formIntentThirdPart(sg, initiator, responder, possibleOthers);
+            this.formIntentForASocialGame = function(sg, initiator, responder, activeOtherCast) {
+                var possibleResponders = activeOtherCast || this.cast.characters;
+                this.formIntentThirdParty(sg, initiator, responder, possibleResponders);
             }
 
             this.getResponderScore = function(sg, initiator, responder, activeOtherCast) {
@@ -1395,14 +1408,14 @@ define(['./SocialNetwork', './RelationshipNetwork', './BuddyNetwork', './Romance
             /**
              * Virtual setter for time.
              */
-            this.settime = function(t) {
+            this.setTime = function(t) {
                 this._time = t;
             }
 
             /**
              * Virtual getter for time.
              */
-            this.gettime = function(){
+            this.getTime = function(){
                 return this._time;
             }
 
@@ -1812,5 +1825,7 @@ define(['./SocialNetwork', './RelationshipNetwork', './BuddyNetwork', './Romance
         return CiFSingleton;
     }
 
+
     return cif();
+    });
 });

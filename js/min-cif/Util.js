@@ -1,4 +1,4 @@
-define(['./CategoryLocution', './CharacterReferenceLocution', './CKBLocution', './ConditionalLocution', './GenderLocution', './ListLocution', './LiteralLocution', './MixInLocution', './POVLocution', './PronounLocution', './RandomLocution', './SFDBLabelLocution', './ToCLocution'], function(CategoryLocution, CharacterReferenceLocution, CKBLocution, ConditionalLocution, GenderLocution, ListLocution, LiteralLocution, MixInLocution, POVLocution, PronounLocution, RandomLocution, SFDBLabelLocution, ToCLocution) {
+define(['CategoryLocution', 'CharacterReferenceLocution', 'CKBLocution', 'ConditionalLocution', 'GenderLocution', 'ListLocution', 'LiteralLocution', 'MixInLocution', 'POVLocution', 'PronounLocution', 'RandomLocution', 'SFDBLabelLocution', 'ToCLocution'], function(CategoryLocution, CharacterReferenceLocution, CKBLocution, ConditionalLocution, GenderLocution, ListLocution, LiteralLocution, MixInLocution, POVLocution, PronounLocution, RandomLocution, SFDBLabelLocution, ToCLocution) {
     var Util = function() {
     }
 

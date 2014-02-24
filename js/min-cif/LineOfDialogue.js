@@ -1,4 +1,4 @@
-define(['min-cif/SocialFactsDB', 'min-cif/Rule', 'min-cif/CiFSingleton', 'min-cif/CKBLocution', 'min-cif/SFDBLabelLocution', 'min-cif/CharacterReferenceLocution', 'min-cif/MixInLocution', 'min-cif/ToCLocution', 'min-cif/LiteralLocution'], function(SocialFactsDB, Rule, CiFSingleton, CKBLocution, SFDBLabelLocution, CharacterReferenceLocution, MixInLocution, ToCLocution, LiteralLocution) {
+define(['SocialFactsDB', 'Rule', 'CiFSingleton', 'CKBLocution', 'SFDBLabelLocution', 'CharacterReferenceLocution', 'MixInLocution', 'ToCLocution', 'LiteralLocution'], function(SocialFactsDB, Rule, CiFSingleton, CKBLocution, SFDBLabelLocution, CharacterReferenceLocution, MixInLocution, ToCLocution, LiteralLocution) {
     var LineOfDialogue = function() {
         /**
          * TODO: fill out header documentation

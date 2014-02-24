@@ -1,4 +1,4 @@
-define(['min-cif/CiFSingleton', 'min-cif/Predicate', 'min-cif/Status', 'min-cif/RelationshipNetwork'], function(CiFSingleton, Predicate, Status, RelationshipNetwork) {
+define(['CiFSingleton', 'Predicate', 'Status', 'RelationshipNetwork'], function(CiFSingleton, Predicate, Status, RelationshipNetwork) {
     var SocialStatusUpdateEntry = function() {
         /**
          * Locutions that comprise this effect's performance realization string
