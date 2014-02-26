@@ -1,4 +1,6 @@
-define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "RomanceNetwork", "CoolNetwork", "Util", "Cast", "CulturalKB", "Status", "SocialFactsDB"], function(require, RelationshipNetwork, Rule, SocialNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, Util, Cast, CulturalKB, Status, SocialFactsDB) {
+define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "RomanceNetwork", "CoolNetwork", "Util", "Cast", "CulturalKB", "Status", "SocialFactsDB"], function(RelationshipNetwork, Rule, SocialNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, Util, Cast, CulturalKB, Status, SocialFactsDB) {
+
+    console.log("Predicate loaded");
     /**
      * @class Predicate
      * The Predicate class is the terminal and functional end of the logic
@@ -12,23 +14,25 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
      *
      */
 
-    var Predicate = function() {
-        this.type = -1;
-        this.trait = -1;
-        this.description = "";
-        this.primary = "";
-        this.secondary = "";
-        this.tertiary = "";
-        this.networkValue = 0;
+    var Predicate = function(opts) {
+        opts = opts || {};
+        this.type = opts.type || -1;
+        this.trait = opts.trait || -1;
+        this.description = opts.description || "";
+        this.primary = opts.primary || "";
+        this.secondary = opts.secondary || "";
+        this.tertiary = opts.tertiary || "";
+        this.networkValue = opts.networkValue || 0;
+        this.status = opts.status || 0;
         this.comparator = "~";
         this.status = -1;
         this.networkType = -1;
         this.firstSubjectiveLink = "";
         this.secondSubjectiveLink = "";
         this.truthLabel = "";
-        this.negated = false;
+        this.negated = opts.negated || false;
         this.window = 0;
-        this.isSFDB = false;
+        this.isSFDB = opts.isSFDB || false;
         this.sfdbLabel = -1;
         this.intent = false;
         this.currentGameName = "";
@@ -1034,6 +1038,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
             var predTrue = false;
             var primaryCharacterOfConsideration;
             var secondaryCharacterOfConsideration;
+            var sfdb = CiFSingleton().getInstance().sfdb;
 
             if (!this.numTimesRoleSlot) {
                 this.numTimesRoleSlot = "first";
@@ -1067,7 +1072,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                         numTimesTrue = evalCKBEntryForObjects(primaryCharacterOfConsideration, secondaryCharacterOfConsideration).length;
                         break;
                     case SFDBLABEL:
-                        numTimesTrue = SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, secondaryCharacterOfConsideration, z, this.window,this).length;
+                        numTimesTrue = sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, secondaryCharacterOfConsideration, z, this.window,this).length;
                         //console.debug(this, "numTimes(): primary ("+primaryCharacterOfConsideration.characterName + ") did a "+SocialFactsDB.getLabelByNumber(this.sfdbLabel)+" thing to secondary ("+ secondaryCharacterOfConsideration.characterName+") "+numTimesTrue+" times.");
                         break;
                     default:
@@ -1104,10 +1109,10 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                             case SFDBLABEL:
                                 if ("second" == numTimesRoleSlot) {
                                     //predTrue = evalSFDBLABEL(char, primaryCharacterOfConsideration, z);
-                                    numTimesTrue += SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, char, primaryCharacterOfConsideration, undefined, this.window, this).length;
+                                    numTimesTrue += sfdb.findLabelFromValues(this.sfdbLabel, char, primaryCharacterOfConsideration, undefined, this.window, this).length;
                                 } else {
                                     //predTrue = evalSFDBLABEL(primaryCharacterOfConsideration, char, z);
-                                    numTimesTrue += SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, char, undefined, this.window, this).length;
+                                    numTimesTrue += sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, char, undefined, this.window, this).length;
                                 }
                                 break;
                             case RELATIONSHIP:
@@ -1129,7 +1134,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
             // This is a special case for where we want to count numTimesTrue for contexts labels that don't have the nonPrimary roile specified
             if (this.type == Predicate.SFDBLABEL && this.numTimesUniquelyTrueFlag) {
                 if ("first" == numTimesRoleSlot) {
-                    numTimesTrue += SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, null, null, this.window, this).length;
+                    numTimesTrue += sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, null, null, this.window, this).length;
                 }
             }
 
@@ -1192,7 +1197,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                         numTimesTrue = evalCKBEntryForObjects(primaryCharacterOfConsideration, secondaryCharacterOfConsideration).length;
                         break;
                     case SFDBLABEL:
-                        numTimesTrue = SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, secondaryCharacterOfConsideration, z, this.window,this).length;
+                        numTimesTrue = sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, secondaryCharacterOfConsideration, z, this.window,this).length;
                         //console.debug(this, "numTimes(): primary ("+primaryCharacterOfConsideration.characterName + ") did a "+SocialFactsDB.getLabelByNumber(this.sfdbLabel)+" thing to secondary ("+ secondaryCharacterOfConsideration.characterName+") "+numTimesTrue+" times.");
                         break;
                     default:
@@ -1228,10 +1233,10 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                             case SFDBLABEL:
                                 if ("second" == numTimesRoleSlot) {
                                     //predTrue = evalSFDBLABEL(char, primaryCharacterOfConsideration, z);
-                                    numTimesTrue += SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, char, primaryCharacterOfConsideration, undefined, this.window, this).length;
+                                    numTimesTrue += sfdb.findLabelFromValues(this.sfdbLabel, char, primaryCharacterOfConsideration, undefined, this.window, this).length;
                                 } else {
                                     //predTrue = evalSFDBLABEL(primaryCharacterOfConsideration, char, z);
-                                    numTimesTrue += SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, char, undefined, this.window, this).length;
+                                    numTimesTrue += sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, char, undefined, this.window, this).length;
                                 }
                                 break;
                             case RELATIONSHIP:
@@ -1258,7 +1263,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
             // This is a special case for where we want to count numTimesTrue for contexts labels that don't have the nonPrimary roile specified
             if (this.type == Predicate.SFDBLABEL && this.numTimesUniquelyTrueFlag) {
                 if ("first" == numTimesRoleSlot) {
-                    numTimesTrue += SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, undefined, undefined, this.window, this).length;
+                    numTimesTrue += sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, undefined, undefined, this.window, this).length;
                 }
             }
 
@@ -1525,9 +1530,12 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
          * @return
          */
         this.evalSFDBLABEL = function(first, second, third) {
-
-            console.log("evaling SFDBLabel");
-            console.log("SFDB:", SocialFactsDB);
+            //c is a global instance of CiFSingleton
+            if(c === undefined && CiFSingleton === undefined) {
+                throw new Error("CiFSingleton undefined");
+            }
+            var sfdb = c.sfdb;
+            var SocialFactsDB = c.SocialFactsDB;
 
             //if it is a category of label
             if (this.sfdbLabel <= SocialFactsDB.LAST_CATEGORY_COUNT && this.sfdbLabel >= 0) {
@@ -3493,7 +3501,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
         }
 
 
-    }; //End of Predicate
+    } //End of Predicate
 
     Predicate.getIntentNameByNumber = function(intentID) {
         switch(intentID)
@@ -3793,19 +3801,19 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
      */
     Predicate.getNameByType = function(t) {
         switch (t) {
-            case TRAIT:
+            case Predicate.TRAIT:
                 return "trait";
-            case NETWORK:
+            case Predicate.NETWORK:
                 return "network";
-            case STATUS:
+            case Predicate.STATUS:
                 return "status";
-            case CKBENTRY:
+            case Predicate.CKBENTRY:
                 return "CKB";
-            case SFDBLABEL:
+            case Predicate.SFDBLABEL:
                 return "SFDBLabel";
-            case RELATIONSHIP:
+            case Predicate.RELATIONSHIP:
                 return "relationship";
-            case CURRENTSOCIALGAME:
+            case Predicate.CURRENTSOCIALGAME:
                 return "currentSocialGame";
             default:
                 return "type not declared";
@@ -3815,19 +3823,19 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
     Predicate.getTypeByName = function(name) {
         switch (name.toLowerCase()) {
             case "trait":
-                return TRAIT;
+                return Predicate.TRAIT;
             case "network":
-                return NETWORK;
+                return Predicate.NETWORK;
             case "status":
-                return STATUS;
+                return Predicate.STATUS;
             case "ckb":
-                return CKBENTRY;
+                return Predicate.CKBENTRY;
             case "sfdblabel":
-                return SFDBLABEL;
+                return Predicate.SFDBLABEL;
             case "relationship":
-                return RELATIONSHIP;
+                return Predicate.RELATIONSHIP;
             case "currentSocialGame":
-                return CURRENTSOCIALGAME;
+                return Predicate.CURRENTSOCIALGAME;
             default:
                 return -1;
         }
@@ -3835,17 +3843,17 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
 
     Predicate.getCompatorByNumber = function(n) {
         switch (n) {
-            case LESSTHAN:
+            case Predicate.LESSTHAN:
                 return "lessthan";
-            case GREATERTHAN:
+            case Predicate.GREATERTHAN:
                 return "greaterthan";
-            case AVERAGEOPINION:
+            case Predicate.AVERAGEOPINION:
                 return "AverageOpinion";
-            case FRIENDSOPINION:
+            case Predicate.FRIENDSOPINION:
                 return "FriendsOpinion";
-            case DATINGOPINION:
+            case Predicate.DATINGOPINION:
                 return "DatingOpinion";
-            case ENEMIESOPINION:
+            case Predicate.ENEMIESOPINION:
                 return "EnemiesOpinion";
             default:
                 return "";
@@ -3858,30 +3866,30 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
             case "lessthan":
             case "less than":
             case "less":
-                return LESSTHAN;
+                return Predicate.LESSTHAN;
             case ">":
             case "greaterthan":
             case "greater than":
             case "greater":
-                return GREATERTHAN;
+                return Predicate.GREATERTHAN;
             case "average opinion":
             case "averageopinion":
-                return AVERAGEOPINION;
+                return Predicate.AVERAGEOPINION;
             case "friendsopinion":
             case "friends opinion":
             case "friends'opinion":
             case "friends' opinion":
-                return FRIENDSOPINION;
+                return Predicate.FRIENDSOPINION;
             case "datingopinion":
             case "dates opinion":
             case "Dates' opinion":
             case "Date's opinion":
-                return DATINGOPINION;
+                return Predicate.DATINGOPINION;
             case "enemiesopinion":
             case "enemies opinion":
             case "enemies'opinion":
             case "enemy's opinion":
-                return ENEMIESOPINION;
+                return Predicate.ENEMIESOPINION;
 
             default:
                 return -1;
@@ -3890,21 +3898,21 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
 
     Predicate.getOperatorByNumber = function(n) {
         switch (n) {
-            case ADD:
+            case Predicate.ADD:
                 return "+";
-            case SUBTRACT:
+            case Predicate.SUBTRACT:
                 return "-";
-            case MULTIPLY:
+            case Predicate.MULTIPLY:
                 return "*";
-            case ASSIGN:
+            case Predicate.ASSIGN:
                 return "=";
-            case EVERYONEUP:
+            case Predicate.EVERYONEUP:
                 return "EveryoneUp";
-            case ALLFRIENDSUP:
+            case Predicate.ALLFRIENDSUP:
                 return "AllFriendsUp";
-            case ALLDATINGUP:
+            case Predicate.ALLDATINGUP:
                 return "AllDatingUp";
-            case ALLENEMYUP:
+            case Predicate.ALLENEMYUP:
                 return "AllEnemyUp";
             default:
                 return "";
@@ -3914,21 +3922,21 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
     Predicate.getOperatorByName = function(name) {
         switch (name.toLowerCase()) {
             case "+":
-                return ADD;
+                return Predicate.ADD;
             case "-":
-                return SUBTRACT;
+                return Predicate.SUBTRACT;
             case "*":
-                return MULTIPLY;
+                return Predicate.MULTIPLY;
             case "=":
-                return ASSIGN;
+                return Predicate.ASSIGN;
             case "everyoneup":
-                return EVERYONEUP;
+                return Predicate.EVERYONEUP;
             case "allfriendsup":
-                return ALLFRIENDSUP;
+                return Predicate.ALLFRIENDSUP;
             case "alldatingup":
-                return ALLDATINGUP;
+                return Predicate.ALLDATINGUP;
             case "allenemyup":
-                return ALLENEMYUP;
+                return Predicate.ALLENEMYUP;
             default:
                 return -1;
         }
@@ -3995,5 +4003,4 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
     Predicate.NUM_INTENT_TYPES = 12;
 
     return Predicate;
-    //    });
-    });
+});

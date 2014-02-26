@@ -14,48 +14,46 @@ define(['CiFSingleton', 'Rule', 'Character', 'Predicate', 'SocialGameContext', '
      * @see CiF.Predicate
      */
 
-    var Effect = function() {
+    var Effect = function(opts) {
+        opts = opts || {};
         this._salience;
 
         /**
          * The conditions for which this effect can be take.
          */
-        this.condition;
+        this.condition = opts.condition || new Rule();
         /**
          * The rule containing the social change associated with the effect.
          */
-        this.change;
+        this.change = opts.change || new Rule();
         /**
          * Stores what last cif.time the instantiation was seen last
          */
-        this.lastSeenTime = -1;
+        this.lastSeenTime = opts.lastSeenTime || -1;
         /**
          * Salience Score is an approximate measure of how "awesome" we we think this effect oughta be
          */
-        this.salienceScore;
+        this.salienceScore = opts.salienceScore; //Defaults to undefined
         /**
          * Locutions that comprise this effect's performance realization string
          */
-        this.locutions = [];
+        this.locutions = opts.locutions || [];
         /**
          * True if the Effect is in the accept branch of the social game and
          * false if the Effect is in the reject branch.
          */
-        this.isAccept = true;
+        this.isAccept = opts.isAccept || true;
         /**
          * The english interpretation of the Effect's outcome to be used when
          * this effect is referenced in later game play.
          */
-        this.referenceAsNaturalLanguage;
+        this.referenceAsNaturalLanguage = opts.referenceAsNaturalLanguage || "";
         /**
          * The ID of the instantiation this effect uses for performance
          * realization.
          */
-        this.instantiationID;
-        this.condition = new Rule();
-        this.change = new Rule();
-        this.id = -1;
-        this.instantiationID = -1;
+        this.instantiationID = opts.instantiationID || -1;
+        this.id = opts.id || -1;
 
         /**
          * Evaluations the condition of the Effect for truth given the current

@@ -215,6 +215,7 @@ define([], function() {
          * if the name did not correspond to a status.
          */
         Status.getStatusNumberByName = function(name) {
+            if(name === undefined) { return -1; }
             switch(name.toLowerCase()) {
                 case "cat: feeling bad":
                            return Status.CAT_FEELING_BAD;

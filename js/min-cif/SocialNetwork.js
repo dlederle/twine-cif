@@ -28,6 +28,12 @@ define([], function() {
             return value;
         }
 
+        var update_edges= function(edges) {
+            edges.forEach(function(edge) {
+                network[edge.from][edge.to] = parseInt(edge.value);
+            });
+        }
+
         opts = opts || {};
         //Default values, can be over ridden by sub-classes
         var numChars = opts.numChars || 0;
@@ -35,10 +41,14 @@ define([], function() {
         var maxRange = opts.maxRange || 100;
         var defaultNetworkValue = opts.defaultNetworkValue || 40;
         var network = opts.network || make_network();
+        //Passing in an array of edges works to
 
-        this.initialize = function(chars) {
-            numChars = chars;
+        this.initialize = function(chars, edges) {
+            numChars = chars || numChars;
             network = make_network()
+            if(edges != undefined) {
+                update_edges(edges);
+            }
         }
 
         this.setRange = function(min, max) {

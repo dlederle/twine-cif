@@ -1,24 +1,25 @@
 define(['SocialFactsDB', 'Rule', 'CiFSingleton', 'CKBLocution', 'SFDBLabelLocution', 'CharacterReferenceLocution', 'MixInLocution', 'ToCLocution', 'LiteralLocution'], function(SocialFactsDB, Rule, CiFSingleton, CKBLocution, SFDBLabelLocution, CharacterReferenceLocution, MixInLocution, ToCLocution, LiteralLocution) {
-    var LineOfDialogue = function() {
+    var LineOfDialogue = function(opts) {
+        opts = opts || {};
         /**
          * TODO: fill out header documentation
          * TODO: make toString make sense
          * TODO: SFDB locutions in createLocutionVectors().
          */
         //The number in sequence this line of dialog is in it's instantition.
-        this.lineNumber = -1;
+        this.lineNumber = opts.lineNumber || -1;
         //The initiator's dialogue.
-        this.initiatorLine = "";
+        this.initiatorLine = opts.initiatorLine || "";
         //The responders's dialogue.
-        this.responderLine = "";
+        this.responderLine = opts.responderLine || "";
         //Other's dialogue.
-        this.otherLine = "";
+        this.otherLine = opts.otherLine || "";
         /**
          *  Though multiple people might talk at the same time, (e.g. initiator: "I love you" responder="gasp!" simultaneously)
          *  it might be useful to keep track of the 'important' speaker at any given time stamp (in the example above, "I Love you"
          *  is a more important line to the narrative of the exchange than the gasp, for example)
          */
-        this.primarySpeaker = "";
+        this.primarySpeaker = opts.primarySpeaker || "";
         //Initiator's body animation.
         this.initiatorBodyAnimation = "";
         //initiator's face animation.
@@ -35,41 +36,41 @@ define(['SocialFactsDB', 'Rule', 'CiFSingleton', 'CKBLocution', 'SFDBLabelLocuti
         this.otherFaceAnimation = "";
         this.otherFaceState = "";
         //The performance time of the line of dialogue.
-        this.time = 0;
+        this.time = opts.time || 0;
         /**
          * A flag to mark whether the initiator's line of dialog is spoken aloud
          * (isThought=false) or meant to be a thought bubble (isThought=true)
          */
-        this.initiatorIsThought = false;
+        this.initiatorIsThought = opts.initiatorIsThought || false;
         /**
          * A flag to mark whether the responder's line of dialog is spoken aloud
          * (isThought=false) or meant to be a thought bubble (isThought=true)
          */
-        this.responderIsThought = false;
+        this.responderIsThought = opts.responderIsThought || false;
         /**
          * A flag to mark whether the other's line of dialog is spoken aloud
          * (isThought=false) or meant to be a thought bubble (isThought=true)
          */
-        this.otherIsThought = false;
+        this.otherIsThought = opts.otherIsThought || false;
         /**
          * A flag to mark whether any CKB references in the initiator's line of
          * dialogue should be referenced textually (isPicture=false) or
          * pictorally (isPicture=true)
          */
-        this.initiatorIsPicture = false;
+        this.initiatorIsPicture = opts.initiatorIsPicture || false;
         /**
          * A flag to mark whether any CKB references in the responder's line of
          * dialogue should be referenced textually (isPicture=false) or
          * pictorally (isPicture=true)
          */
-        this.responderIsPicture = false;
+        this.responderIsPicture = opts.responderIsPicture || false;
         /**
          * A flag to mark whether any CKB references in the other's line of
          * dialogue should be referenced textually (isPicture=false) or
          * pictorally (isPicture=true)
          */
-        this.otherIsPicture = false;
-        this.initiatorIsDelayed = false;
+        this.otherIsPicture = opts.otherIsPicture || false;
+        this.initiatorIsDelayed = opts.initiatorIsDelayed || false;
         this.responderIsDelayed = false;
         this.otherIsDelayed = false;
 

@@ -1,4 +1,5 @@
 define(['CiFSingleton', 'Predicate', 'Rule', 'Effect', 'Util', 'SocialFactsDB'], function(CiFSingleton, Predicate, Rule, Effect, Util, SocialFactsDB) {
+
     /**
      * The SocialGameContext class is were the details of a played social game
      * (known as a historical context) are kept. Contexts are stored in the
@@ -19,6 +20,7 @@ define(['CiFSingleton', 'Predicate', 'Rule', 'Effect', 'Util', 'SocialFactsDB'],
      */
 
     var SocialGameContext = function() {
+        console.log("In SGC");
         this.isBackstory = false;
         this.queryCKB = new Predicate();
         this.gameName = "";

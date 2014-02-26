@@ -2,9 +2,10 @@ define(['Rule', 'Predicate', 'Status'], function(Rule, Predicate, Status) {
     /**
      * Consists of a predicate and a time.
      */
-    var StatusContext = function() {
-        //public var predicate:Predicate;
-        this.time = -1;
+    var StatusContext = function(opts) {
+        opts = opts || {};
+        this.predicate = opts.Predicate || new Predicate();
+        this.time = opts.time || -1;
         this.statusType;
         this.negated;
         this.from;

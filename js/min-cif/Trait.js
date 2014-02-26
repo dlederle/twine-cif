@@ -322,6 +322,7 @@ define([], function() {
      * @return The Number representation of the Label type.
      */
     Trait.getNumberByName = function(name) {
+        if(name === undefined) { return -1; }
         switch (name.toLowerCase()) {
             case "cat: sexy":
                        return Trait.CAT_SEXY;

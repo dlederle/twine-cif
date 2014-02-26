@@ -8,17 +8,18 @@ define(['ToCLocution', 'Rule', 'LineOfDialogue'], function(ToCLocution, Rule, Li
      * @see CiF.LineOfDialog
      */
 
-    var Instantiation = function() {
+    var Instantiation = function(opts) {
+        opts = opts || {};
         /**
          * The vector of LineOfDialogue class that comprises the animations,
          * dialogue, and timing of an instantiation.
          */
-        this.lines = [];
+        this.lines = opts.lines || [];
         /**
          * The ID of the instantiation used to link social game effects with
          * instantiations.
          */
-        this.name;
+        this.name = opts.name || "";
 
         /**
          * The bank of conditional rules for use in performance

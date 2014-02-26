@@ -6,9 +6,9 @@ define([], function() {
     var Proposition = function(opts) {
         opts = opts || {};
         this.type = opts.type || "";
-        this.head = opts.type || "";
-        this.connection = opts.type || "";
-        this.tail = opts.type || "";
+        this.head = opts.head || "";
+        this.connection = opts.connection || "";
+        this.tail = opts.tail || "";
 
         this.toString = function() {
             var returnstr = "";

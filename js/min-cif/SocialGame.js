@@ -22,7 +22,7 @@ define(['InfluenceRuleSet', 'Rule', 'Cast'], function(InfluenceRuleSet, Rule, Ca
         this.thirdPartyGetSomeoneToDoSomethingForYou = opts.thirdPartyGetSomeoneToDoSomethingForYou || false;
         this.patsyRule = opts.patsyRule || new Rule();
         this.italic = opts.italic || false;
-        this.name = opts.name | "";
+        this.name = opts.name || "";
 
         /**
          * Adds an effect to the effects list and gives it an ID.

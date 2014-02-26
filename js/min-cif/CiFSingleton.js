@@ -1,18 +1,22 @@
-var CiFDeps = ['SocialNetwork', 'RelationshipNetwork', 'BuddyNetwork', 'RomanceNetwork', 'CoolNetwork', 'CulturalKB', 'SocialFactsDB', 'SocialGamesLib', 'Predicate', 'SocialGameContext', 'Cast', 'ProspectiveMemory', 'GameScore', 'RuleRecord', 'Util', 'InfluenceRule', 'Rule', 'Character', 'SocialGame', 'Trait', 'Status', 'Effect', 'Instantiation', 'LineOfDialogue', 'StatusContext']
+//Its Global. Woops
+var _CiFDeps = ['SocialNetwork', 'RelationshipNetwork', 'BuddyNetwork', 'RomanceNetwork', 'CoolNetwork', 'CulturalKB', 'SocialFactsDB', 'SocialGamesLib', 'Predicate', 'SocialGameContext', 'Cast', 'ProspectiveMemory', 'GameScore', 'RuleRecord', 'Util', 'InfluenceRule', 'Rule', 'Character', 'SocialGame', 'Trait', 'Status', 'Effect', 'Instantiation', 'LineOfDialogue', 'StatusContext', 'Proposition'];
 
-define(['require'],
-        function(require, SocialNetwork, RelationshipNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, CulturalKB, SocialFactsDB, SocialGamesLib, Predicate, SocialGameContext, Cast, ProspectiveMemory, GameScore, RuleRecord, Util, InfluenceRule, Rule, Character, SocialGame, Trait, Status, Effect, Instantiation, LineOfDialogue, StatusContext) {
-    console.log("Entering CiFSingleton");
+var CiFSingleton;
 
-    require(CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, CulturalKB, SocialFactsDB, SocialGamesLib, Predicate, SocialGameContext, Cast, ProspectiveMemory, GameScore, RuleRecord, Util, InfluenceRule, Rule, Character, SocialGame, Trait, Status, Effect, Instantiation, LineOfDialogue, StatusContext) {
+define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, CulturalKB, SocialFactsDB, SocialGamesLib, Predicate, SocialGameContext, Cast, ProspectiveMemory, GameScore, RuleRecord, Util, InfluenceRule, Rule, Character, SocialGame, Trait, Status, Effect, Instantiation, LineOfDialogue, StatusContext, Proposition) {
 
     var cif = function() {
-        console.log("Entering cif");
 
         var instance;
         function CiFSingleton() {
+
             if(instance) { return instance; }
             instance = this;
+
+            //Global pollution
+            CiFSingleton = this;
+            //Hack to expose SFDB do dependent modules
+            CiFSingleton.SocialFactsDB = SocialFactsDB;
 
             this._time = 0;
 
@@ -231,13 +235,17 @@ define(['require'],
                 //score the social games
                 if (sg.checkPreconditionsVariableOther(initiator, responder, possibleOthers)) {
                     score += sg.scoreGame(initiator, responder, possibleOthers);
-                    if (initiator.prospectiveMemory.intentScoreCache[responder.networkID][sg.intents[0].predicates[0].getIntentType()] == ProspectiveMemory.DEFAULT_INTENT_SCORE) {
-                        singleScore = scoreAllMicrotheoriesForType(sg, initiator, responder, possibleOthers);
-                        initiator.prospectiveMemory.intentScoreCache[responder.networkID][sg.intents[0].predicates[0].getIntentType()] = singleScore;
-                        score += singleScore;
-                    }
-                    else {
-                        score += initiator.prospectiveMemory.intentScoreCache[responder.networkID][sg.intents[0].predicates[0].getIntentType()];
+                    if(sg.intents[0]) {
+                        if (initiator.prospectiveMemory.intentScoreCache[responder.networkID][sg.intents[0].predicates[0].getIntentType()] == ProspectiveMemory.DEFAULT_INTENT_SCORE) {
+                            singleScore = scoreAllMicrotheoriesForType(sg, initiator, responder, possibleOthers);
+                            initiator.prospectiveMemory.intentScoreCache[responder.networkID][sg.intents[0].predicates[0].getIntentType()] = singleScore;
+                            score += singleScore;
+                        }
+                        else {
+                            score += initiator.prospectiveMemory.intentScoreCache[responder.networkID][sg.intents[0].predicates[0].getIntentType()];
+                        }
+                    } else {
+                        console.debug("Social game doesn't have any intents", sg);
                     }
                 }
                 else {
@@ -1717,7 +1725,7 @@ define(['require'],
                 lod3.otherIsPicture = false;
                 lod3.initiatorAddressing = "responder";
                 lod3.responderAddressing = "initiator";
-                lod3.otherAddressing = "initiator";	
+                lod3.otherAddressing = "initiator";
                 lod3.isOtherChorus = false;
 
                 inst.lines.push(lod3);
@@ -1816,16 +1824,178 @@ define(['require'],
                 this.sfdb.contexts = [];
             }
 
+            //Loading
+            this.loadJSON = function(loadData) {
+                this.clear();
+                for(var klass in loadData) {
+                    if(this.load[klass]) {
+                        this.load[klass](loadData[klass]);
+                    } else {
+                        throw new Error("Incorrect input. No such class " + klass);
+                    }
+                }
+            }
+            this.load = {};
+
+            this.load.Cast = function(cast) {
+                var load = this;
+                cast.forEach(function(character) {
+                    if(character.Character) {
+                        Cast.getInstance().addCharacter(load.Character(character.Character))
+                    } else {
+                        throw new Error("Incorrectly formatted character " + character);
+                    }
+                });
+            }
+
+            this.load.Character = function(character) {
+                var load = this;
+                if(character.traits) {
+                    character.traits.forEach(function(trait, i) {
+                        character.traits[i] = load.Trait(trait);
+                    });
+                }
+                return new Character(character);
+            }
+
+            this.load.Trait = function(trait) {
+                return Trait.getNumberByName(trait);
+            }
+
+            this.load.SocialFactsDB = function(sfdb) {
+                for(var context in sfdb) {
+                    //Creates a new context and pushes it into the SFDB
+                    SocialFactsDB.getInstance().addContext(this[context](sfdb[context]));
+                }
+            }
+
+            this.load.StatusContext = function(context) {
+                //Instantiate a new Predicate
+                context.Predicate = this.Predicate(context.Predicate);
+                return new StatusContext(context);
+            }
+
+            this.load.Predicate = function(predicate) {
+                predicate.type = Predicate.getTypeByName(predicate.type);
+                predicate.status = this.Status(predicate.status);
+                predicate.trait = this.Trait(predicate.trait);
+                return new Predicate(predicate);
+            }
+
+            this.load.Status = function(statusName) {
+                return Status.getStatusNumberByName(statusName);
+            }
+
+            this.load.SocialGamesLib = function(sgl) {
+                var load = this;
+                sgl.forEach(function(sg) {
+                    SocialGamesLib.getInstance().addGame(load.SocialGame(sg))
+                });
+            }
+
+            this.load.SocialGame = function(sg) {
+                var load = this;
+                sg = sg.SocialGame;
+                for(var type in sg) {
+                    //Names don't need anything special
+                    if(type !== "name") {
+                        //SG types are all arrays
+                        sg[type].forEach(function(obj) {
+                            for(var key in obj) {
+                                sg[type] = load[key](obj[key]);
+                            }
+                        });
+                    }
+                }
+                return new SocialGame(sg);
+            }
+
+            this.load.InfluenceRule = function(ir) {
+                ir.predicates = [];
+                if(ir.Predicate) {
+                    ir.predicates.push(this.Predicate(ir.Predicate));
+                }
+                return new InfluenceRule(ir);
+            }
+
+            this.load.Rule = function(rule) {
+                rule.predicates = [];
+                if(rule.Predicate) {
+                    rule.predicates.push(this.Predicate(rule.Predicate));
+                }
+                return new Rule(rule);
+            }
+
+            this.load.Effect = function(effect) {
+                if(effect.change) {
+                    effect.change = this.Rule(effect.change);
+                }
+                if(effect.condition) {
+                    effect.condition = this.Rule(effect.condition);
+                }
+
+                return new Effect(effect);
+            }
+
+            this.load.Instantiation = function(i) {
+                i.lines = [];
+                if(i.LineOfDialogue) {
+                    i.lines.push(this.LineOfDialogue(i.LineOfDialogue));
+                } else {
+                    throw new Error("Loading instantiation without Line of Dialogue");
+                }
+                return new Instantiation(i);
+            }
+
+            this.load.LineOfDialogue = function(line) {
+                return new LineOfDialogue(line);
+            }
+
+            this.load.CulturalKB = function(ckb) {
+                var load = this;
+                var tmp;
+                ckb.forEach(function(prop) {
+                    tmp = load.Proposition(prop.Proposition);
+                    if(tmp.type === "subjective") {
+                        CulturalKB.getInstance().propsSubjective.push(tmp);
+                    } else if(tmp.type === "truth") {
+                        CulturalKB.getInstance().propsTruth.push(tmp);
+                    } else {
+                        throw new Error("Invalid Proposition: ", tmp);
+                    }
+                });
+            }
+
+            this.load.Proposition = function(prop) {
+                return new Proposition(prop);
+            }
+
+            //One loader for the Networks
+            this.load.SocialNetwork = function(sn) {
+                switch(sn.type) {
+                    case "romance":
+                        RomanceNetwork.getInstance().initialize(sn.numChars, sn.edges);
+                        break;
+                    case "cool":
+                        CoolNetwork.getInstance().initialize(sn.numChars, sn.edges);
+                        break;
+                    case "buddy":
+                        BuddyNetwork.getInstance().initialize(sn.numChars, sn.edges);
+                        break;
+                }
+            }
+
         } //End of CiFSingleton
 
         CiFSingleton.getInstance = function() {
             return instance || new CiFSingleton();
         }
 
+
+        //Hack to solve some dependency problems
+
         return CiFSingleton;
     }
 
-
     return cif();
-    });
 });

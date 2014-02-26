@@ -9,27 +9,29 @@ define(["Cast", "Status", "ProspectiveMemory", "Trait"], function(Cast, Status, 
      * @see CiF.ProspectiveMemory
      * TODO: if a trait is already assigned to a character, make sure it doesn't appear twice.
      */
-    var Character = function() {
+    var Character = function(opts) {
+        opts = opts || {};
         /**
          * The name of the character.
          */
-        this.characterName = "";
+        this.characterName = opts.characterName || "";
         /**
          * The traits associated with a character.
          */
-        this.traits = [];
+        this.traits = opts.traits || [];
         /**
          * The gender of the character.
          */
-        this.gender;
+        this.gender = opts.gender || "";
         /**
          * The statuses associated with a character.
          */
-        this.statuses = [];
+        this.statuses = opts.statuses || [];
         /**
          * The character's unique ID wrt social networks.
          */
-        this.networkID = -1;
+        //Edgecase where it can be 0
+        this.networkID = opts.networkID === undefined ? -1 : opts.networkID;
         /**
          * The character's prospective memory used by intent formation and
          * goal setting.

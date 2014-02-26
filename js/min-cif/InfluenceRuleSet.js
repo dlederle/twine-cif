@@ -38,7 +38,7 @@ define(['CiFSingleton', 'InfluenceRule', 'Rule', 'RuleRecord'], function(CiFSing
             this.lastScores = [];
             this.lastTruthValues = [];
 
-            this.influencerules.forEach(function(ir) {
+            this.influenceRules.forEach(function(ir) {
                 if (ir.weight != 0) {
                     if (ir.requiresThirdCharacter()) {
                         possibleOthers.forEach(function(other1) {

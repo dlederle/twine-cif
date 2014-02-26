@@ -7,6 +7,7 @@ define(['Rule'], function(Rule) {
         opts = opts || {};
         this.weight = opts.weight || 0.0;
         this.evaluatedWeight = opts.evaluatedWeight || 0.0;
+        this.predicates = opts.predicates || [];
 
         this.toString = function() {
             return this.weight + ": " + InfluenceRule.prototype.toString();
