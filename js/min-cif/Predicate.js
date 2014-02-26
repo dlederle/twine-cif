@@ -13,8 +13,29 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
      * functions to enact the logical statement within CiFs data structures.</p>
      *
      */
+    var getSFDB = function() {
+        //Hack to get around some dependency issues :(
+        //c is a global instance of CiFSingleton
+        if(c === undefined && CiFSingleton === undefined) {
+            throw new Error("CiFSingleton undefined");
+        }
+        if(SocialFactsDB === undefined) {
+            if(CiFSingleton !== undefined) {
+                //We'd prefer to get it from the class
+                return CiFSingleton.getInstance().SocialFactsDB;
+            } else if (c !== undefined) {
+                //But we'll settle for the global
+                return SocialFactsDB = c.SocialFactsDB;
+            } else {
+                throw new Error("Can't get the SFDB anywhere");
+            }
+        } else {
+            return SocialFactsDB;
+        }
+    }
 
     var Predicate = function(opts) {
+
         opts = opts || {};
         this.type = opts.type || -1;
         this.trait = opts.trait || -1;
@@ -109,8 +130,8 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
         this.setNetworkPredicate = function(first, second, op, networkValue, networkType, isNegated, isSFDB) {
             this.type = Predicate.NETWORK;
             this.networkValue = networkValue || 0;
-            this.networkType = networkType || 0
-                this.primary = first || "initiator";
+            this.networkType = networkType || 0;
+            this.primary = first || "initiator";
             this.secondary = second || "responder";
             this.comparator = op || "lessthan";
             this.operator = op || "lessthan";
@@ -809,7 +830,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
              * being true.
              */
             if (this.isSFDB && this.type != Predicate.SFDBLABEL) {
-                return evalIsSFDB(x, y, z, sg);
+                return this.evalIsSFDB(x, y, z, sg);
             }
 
             /*
@@ -980,7 +1001,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
 
         this.evaluatePredicateForInitiatorAndCast = function(initiator, charsToUse) {
 
-            var possibleChars = (charsToUse) ? charsToUse : CiFSingleton.getInstance().cast.characters;
+            var possibleChars = (charsToUse) ? charsToUse : Cast.getInstance().characters;
 
             possibleChars.forEach(function(responder) {
                 if (initiator.characterName != responder.characterName)
@@ -1017,7 +1038,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
          * @return True if the predicate evaluates to true. False if it does not.
          */
         this.evalIsSFDB = function(x, y, z, sg) {
-            return CiFSingleton.getInstance().sfdb.isPredicateInHistory(this, x, y, z);
+            return SocialFactsDB.getInstance().isPredicateInHistory(this, x, y, z);
         }
 
         /**
@@ -1038,7 +1059,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
             var predTrue = false;
             var primaryCharacterOfConsideration;
             var secondaryCharacterOfConsideration;
-            var sfdb = CiFSingleton().getInstance().sfdb;
+            var sfdb = SocialFactsDB.getInstance();
 
             if (!this.numTimesRoleSlot) {
                 this.numTimesRoleSlot = "first";
@@ -1530,12 +1551,8 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
          * @return
          */
         this.evalSFDBLABEL = function(first, second, third) {
-            //c is a global instance of CiFSingleton
-            if(c === undefined && CiFSingleton === undefined) {
-                throw new Error("CiFSingleton undefined");
-            }
-            var sfdb = c.sfdb;
-            var SocialFactsDB = c.SocialFactsDB;
+            var SocialFactsDB = getSFDB();
+            var sfdb = SocialFactsDB.getInstance();
 
             //if it is a category of label
             if (this.sfdbLabel <= SocialFactsDB.LAST_CATEGORY_COUNT && this.sfdbLabel >= 0) {
@@ -2726,6 +2743,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
          * @return The natural language name of the sfdb
          */
         this.sfdbPredicateToNaturalLanguage = function(primary, secondary, tertiary) {
+            var SocialFactsDB = getSFDB();
             var naturalLanguageName = "";
             var timeElapsed = "";
             var label = this.sfdbLabel;
@@ -2814,6 +2832,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
          * @return  The natural language of the num times uniquely true predicate
          */
         this.numTimesUniquelyTruePredicateToNaturalLanguage = function(primary, secondary, tertiary) {
+            var SocialFactsDB = getSFDB();
             var heroName = "";
             var naturalLanguageName = "";
             var numTimes = this.numTimesUniquelyTrue;

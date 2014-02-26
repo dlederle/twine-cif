@@ -1,9 +1,9 @@
 //Its Global. Woops
-var _CiFDeps = ['SocialNetwork', 'RelationshipNetwork', 'BuddyNetwork', 'RomanceNetwork', 'CoolNetwork', 'CulturalKB', 'SocialFactsDB', 'SocialGamesLib', 'Predicate', 'SocialGameContext', 'Cast', 'ProspectiveMemory', 'GameScore', 'RuleRecord', 'Util', 'InfluenceRule', 'Rule', 'Character', 'SocialGame', 'Trait', 'Status', 'Effect', 'Instantiation', 'LineOfDialogue', 'StatusContext', 'Proposition'];
+var _CiFDeps = ['SocialNetwork', 'RelationshipNetwork', 'BuddyNetwork', 'RomanceNetwork', 'CoolNetwork', 'CulturalKB', 'SocialFactsDB', 'SocialGamesLib', 'Predicate', 'SocialGameContext', 'Cast', 'ProspectiveMemory', 'GameScore', 'RuleRecord', 'Util', 'InfluenceRule', 'Rule', 'Character', 'SocialGame', 'Trait', 'Status', 'Effect', 'Instantiation', 'LineOfDialogue', 'StatusContext', 'Proposition', "InfluenceRuleSet"];
 
 var CiFSingleton;
 
-define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, CulturalKB, SocialFactsDB, SocialGamesLib, Predicate, SocialGameContext, Cast, ProspectiveMemory, GameScore, RuleRecord, Util, InfluenceRule, Rule, Character, SocialGame, Trait, Status, Effect, Instantiation, LineOfDialogue, StatusContext, Proposition) {
+define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, CulturalKB, SocialFactsDB, SocialGamesLib, Predicate, SocialGameContext, Cast, ProspectiveMemory, GameScore, RuleRecord, Util, InfluenceRule, Rule, Character, SocialGame, Trait, Status, Effect, Instantiation, LineOfDialogue, StatusContext, Proposition, InfluenceRuleSet) {
 
     var cif = function() {
 
@@ -1824,6 +1824,14 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                 this.sfdb.contexts = [];
             }
 
+            var checkUndefined = function(obj, reqs) {
+                reqs.forEach(function(req) {
+                    if(obj[req] === undefined) {
+                        throw new Error("Invalid loading, missing " + req + "from: ", obj);
+                    }
+                });
+            }
+
             //Loading
             this.loadJSON = function(loadData) {
                 this.clear();
@@ -1850,11 +1858,10 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
 
             this.load.Character = function(character) {
                 var load = this;
-                if(character.traits) {
-                    character.traits.forEach(function(trait, i) {
-                        character.traits[i] = load.Trait(trait);
-                    });
-                }
+                checkUndefined(character, ["traits"]);
+                character.traits.forEach(function(trait, i) {
+                    character.traits[i] = load.Trait(trait);
+                });
                 return new Character(character);
             }
 
@@ -1863,10 +1870,15 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
             }
 
             this.load.SocialFactsDB = function(sfdb) {
-                for(var context in sfdb) {
+                checkUndefined(sfdb, ["contexts"]);
+                var load = this;
+                sfdb.contexts.forEach(function(context) {
                     //Creates a new context and pushes it into the SFDB
-                    SocialFactsDB.getInstance().addContext(this[context](sfdb[context]));
-                }
+                    var type = Object.keys(context)[0];
+                    //Calls different load functions depending on the context type
+                    var ctx = load[type](context[type]);
+                    SocialFactsDB.getInstance().addContext(ctx);
+                });
             }
 
             this.load.StatusContext = function(context) {
@@ -1896,33 +1908,46 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
             this.load.SocialGame = function(sg) {
                 var load = this;
                 sg = sg.SocialGame;
-                for(var type in sg) {
-                    //Names don't need anything special
-                    if(type !== "name") {
-                        //SG types are all arrays
-                        sg[type].forEach(function(obj) {
-                            for(var key in obj) {
-                                sg[type] = load[key](obj[key]);
-                            }
-                        });
-                    }
-                }
+                checkUndefined(sg, ["preconditions", "initiatorIRS", "responderIRS", "effects", "instantiations"]);
+
+                sg.preconditions.forEach(function(rule, i) {
+                    sg.preconditions[i] = load.Rule(rule.Rule);
+                });
+                sg.initiatorIRS = load.InfluenceRuleSet(sg.initiatorIRS);
+                sg.responderIRS = load.InfluenceRuleSet(sg.responderIRS);
+                sg.effects.forEach(function(e, i) {
+                    sg.effects[i] = load.Effect(e.Effect);
+                });
+                sg.instantiations.forEach(function(ins, i) {
+                    sg.instantiations[i] = load.Instantiation(ins.Instantiation);
+                });
                 return new SocialGame(sg);
             }
 
+            this.load.InfluenceRuleSet = function(irs) {
+                var set = { "influenceRules" :  []};
+                var load = this;
+                irs.forEach(function(ir, i) {
+                    set.influenceRules[i] = load.InfluenceRule(ir.InfluenceRule);
+                });
+                return new InfluenceRuleSet(set);
+            }
+
             this.load.InfluenceRule = function(ir) {
-                ir.predicates = [];
-                if(ir.Predicate) {
-                    ir.predicates.push(this.Predicate(ir.Predicate));
-                }
+                checkUndefined(ir, ["predicates"]);
+                var load = this;
+                ir.predicates.forEach(function(pred, i) {
+                    ir.predicates[i] = load.Predicate(pred.Predicate);
+                });
                 return new InfluenceRule(ir);
             }
 
             this.load.Rule = function(rule) {
-                rule.predicates = [];
-                if(rule.Predicate) {
-                    rule.predicates.push(this.Predicate(rule.Predicate));
-                }
+                checkUndefined(rule, ["predicates"]);
+                var load = this;
+                rule.predicates.forEach(function(pred, i) {
+                    rule.predicates[i] = load.Predicate(pred.Predicate);
+                });
                 return new Rule(rule);
             }
 
@@ -1937,14 +1962,13 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                 return new Effect(effect);
             }
 
-            this.load.Instantiation = function(i) {
-                i.lines = [];
-                if(i.LineOfDialogue) {
-                    i.lines.push(this.LineOfDialogue(i.LineOfDialogue));
-                } else {
-                    throw new Error("Loading instantiation without Line of Dialogue");
-                }
-                return new Instantiation(i);
+            this.load.Instantiation = function(ins) {
+                checkUndefined(ins, ["lines"]);
+                var load = this;
+                ins.lines.forEach(function(l, i) {
+                    ins[i] = load.LineOfDialogue(l.LineOfDialogue);
+                });
+                return new Instantiation(ins);
             }
 
             this.load.LineOfDialogue = function(line) {
@@ -1971,18 +1995,20 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
             }
 
             //One loader for the Networks
-            this.load.SocialNetwork = function(sn) {
-                switch(sn.type) {
-                    case "romance":
-                        RomanceNetwork.getInstance().initialize(sn.numChars, sn.edges);
-                        break;
-                    case "cool":
-                        CoolNetwork.getInstance().initialize(sn.numChars, sn.edges);
-                        break;
-                    case "buddy":
-                        BuddyNetwork.getInstance().initialize(sn.numChars, sn.edges);
-                        break;
-                }
+            this.load.SocialNetworks = function(networks) {
+                networks.forEach(function(sn) {
+                    switch(sn.type) {
+                        case "romance":
+                            RomanceNetwork.getInstance().initialize(sn.numChars, sn.edges);
+                            break;
+                        case "cool":
+                            CoolNetwork.getInstance().initialize(sn.numChars, sn.edges);
+                            break;
+                        case "buddy":
+                            BuddyNetwork.getInstance().initialize(sn.numChars, sn.edges);
+                            break;
+                    }
+                });
             }
 
         } //End of CiFSingleton

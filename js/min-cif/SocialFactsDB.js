@@ -100,13 +100,11 @@ define(['Predicate', 'Cast'], function(Predicate, Cast) {
                 var window = (p.window > 0 && p.isSFDB && p.sfdbOrder < 1) ?  p.window : latestTimeInSFDB + 1;
                 //time iterator
                 var t = latestTimeInSFDB;
-                var i = 0; //context vector iterator
 
-                //the context vector is sorted going in to this function
-                for (; this.contexts[i].getTime() > latestTimeInSFDB - window; ++i) {
-                    if (this.contexts[i].isPredicateInChange(p, x, y, z))
-                        return this.contexts[i].getTime();
-                }
+                this.contexts.forEach(function(ctx) {
+                    if (ctx.isPredicateInChange(p, x, y, z))
+                        return ctx.getTime();
+                });
 
                 if (p.sfdbOrder != 0) {
                     if ((latestTimeInSFDB - window) <= 0) {
