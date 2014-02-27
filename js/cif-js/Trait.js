@@ -2,6 +2,14 @@ define([], function() {
     var Trait = function() {
 
     }
+    Trait.getTraitList = function() {
+        var list = [];
+        for(var i = Trait.LAST_CATEGORY_COUNT + 1; i < Trait.FIRST_TO_IGNORE; i++) {
+            list.push(Trait.getNameByNumber(i));
+        }
+        return list;
+    }
+
     Trait.CAT_SEXY = 0;
     Trait.CAT_JERK = 1;
     Trait.CAT_NICE = 2;

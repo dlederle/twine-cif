@@ -420,8 +420,22 @@ _CiFState.SocialGamesLib = [
                             "window": 0
                         }
                     }
-
                     ]
+                }
+            }
+        ], //end of Preconditions
+        "initiatorIRS": [
+            {
+                "InfluenceRule": {
+                    "weight": 10,
+                    "predicates": {
+                        "type": "trait",
+                        "trait": "aggressive",
+                        "first": "responder",
+                        "negated": false,
+                        "isSFDB": false,
+                        "window": 0
+                    }
                 }
             }
         ]

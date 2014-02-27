@@ -38,6 +38,8 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
             this.useMicrotheoryCache;
             this.microtheoryCache;
 
+            this.traits = Trait.getTraitList();
+
             this.resetNetworks = function() {
                 this.relationshipNetwork.initialize(this.cast.characters.length);
                 this.buddyNetwork.initialize(this.cast.characters.length);
