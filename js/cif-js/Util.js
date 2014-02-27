@@ -1,4 +1,4 @@
-define(['CategoryLocution', 'CharacterReferenceLocution', 'CKBLocution', 'ConditionalLocution', 'GenderLocution', 'ListLocution', 'LiteralLocution', 'MixInLocution', 'POVLocution', 'PronounLocution', 'RandomLocution', 'SFDBLabelLocution', 'ToCLocution'], function(CategoryLocution, CharacterReferenceLocution, CKBLocution, ConditionalLocution, GenderLocution, ListLocution, LiteralLocution, MixInLocution, POVLocution, PronounLocution, RandomLocution, SFDBLabelLocution, ToCLocution) {
+define(['CategoryLocution', 'CharacterReferenceLocution', 'CKBLocution', 'ConditionalLocution', 'GenderLocution', 'ListLocution', 'LiteralLocution', 'MixInLocution', 'POVLocution', 'PronounLocution', 'RandomLocution', 'SFDBLabelLocution', 'ToCLocution', "SocialFactsDB"], function(CategoryLocution, CharacterReferenceLocution, CKBLocution, ConditionalLocution, GenderLocution, ListLocution, LiteralLocution, MixInLocution, POVLocution, PronounLocution, RandomLocution, SFDBLabelLocution, ToCLocution, SocialFactsDB) {
     var Util = function() {
     }
 
@@ -30,6 +30,7 @@ define(['CategoryLocution', 'CharacterReferenceLocution', 'CKBLocution', 'Condit
      * easier.
      */
     Util.createLocutionVectors = function(unparsedLine) {
+        var SocialFactsDB = SocialFactsDB || CiF.SocialFactsDB;
         var locutions = [];
 
         var parsedLine;
@@ -295,7 +296,7 @@ define(['CategoryLocution', 'CharacterReferenceLocution', 'CKBLocution', 'Condit
                 pronounLocution.who = piece.substr(5, 1);
                 //the rest will be one of the pronouns, -2 because we don't want the closing ')'
                 //and 7 because we don't want the ','
-                pronounLocution.type = piece.substring(7, piece.length - 1);					
+                pronounLocution.type = piece.substring(7, piece.length - 1);
                 locutions.push(pronounLocution);
             }
             else if (piece.substr(0, 6) == "gender") {
@@ -403,29 +404,29 @@ define(['CategoryLocution', 'CharacterReferenceLocution', 'CKBLocution', 'Condit
                 //console.debug(this, "createLocutionVectors(): contents of initiator vector pushed ckbref:" + locutions.toString());
                 //console.debug(this, "sanity check: " + locutions[0]);
             }
-            else if (piece.substr(0, 5) == "SFDB_"){ // And here we are working with an SFDB Locution!
+            else if (piece.substr(0, 5) == "SFDB_") { // And here we are working with an SFDB Locution!
                 mySFDBLocution = new SFDBLabelLocution();
                 template = piece.substr(5, piece.length - 5);
                 labelType = "";
                 window = -999; // window is optional -- it may not be included in what we initially read in.
-                //console.debug(this, template);
+                //console.debug("SFDB template= ", template);
 
-                //Look at the next part of the piece, up until the '(' 
-                //symbol, to discover what type of SFDB label we are going 
+                //Look at the next part of the piece, up until the '('
+                //symbol, to discover what type of SFDB label we are going
                 //to be working with!
 
                 openParenIndex = template.indexOf("(");
                 labelType = template.substr(0, openParenIndex);
-                //console.debug(this, "SFDB label type: " + labelType);
+                //console.debug("SFDB label type: ", labelType);
                 template = template.substr(openParenIndex + 1, template.length - openParenIndex - 2);
-                //console.debug(this, "After label type: " + template);
-
-
 
                 if (template.indexOf(",") != -1) {
                     parsedSFDBTag = [];
                     parsedSFDBTag = template.split(undirectedTagRegEx);
-                }else {
+                    parsedSFDBTag.forEach(function(tag, i) {
+                        parsedSFDBTag[i] = tag.trim();
+                    });
+                } else {
                     console.debug(Util, "createLocutionVectors() SFDB_ has no parameters: " + piece);
                 }
 
@@ -435,9 +436,9 @@ define(['CategoryLocution', 'CharacterReferenceLocution', 'CKBLocution', 'Condit
                  * potential values. The first value is the label, second
                  * is the first character role, third is the second
                  * character role, and fourth is the SFDB window.
-                 * 
+                 *
                  * Parse each one in turn.
-                 * 
+                 *
                  * Directional SFDB labels aren't being checked yet.
                  */
 
@@ -453,7 +454,7 @@ define(['CategoryLocution', 'CharacterReferenceLocution', 'CKBLocution', 'Condit
                         case "r" : mySFDBLocution.pred.primary = "responder"; break;
                         case "o" : mySFDBLocution.pred.primary = "other"; break;
                         case "" : mySFDBLocution.pred.primary = ""; break;
-                        default : 
+                        default :
                                   console.debug(Util, "createLocutionVectors() the first SFDB role is not a valid i,r,o,\"\": " + parsedSFDBTag[1]);
                     }
                     //third should be a role specifier
@@ -462,7 +463,7 @@ define(['CategoryLocution', 'CharacterReferenceLocution', 'CKBLocution', 'Condit
                         case "r" : mySFDBLocution.pred.secondary = "responder"; break;
                         case "o" : mySFDBLocution.pred.secondary = "other"; break;
                         case "" : mySFDBLocution.pred.secondary = ""; break;
-                        default : 
+                        default :
                                   console.debug(Util, "createLocutionVectors() the first SFDB role is not a valid i,r,o,\"\": " + parsedSFDBTag[2]);
                     }
                     //fourth, if it exists, should be the SFDBENTRY window
@@ -476,8 +477,8 @@ define(['CategoryLocution', 'CharacterReferenceLocution', 'CKBLocution', 'Condit
                 locutions.push(mySFDBLocution);
             }
             else { // the catch all is just a literal! We can push it in!
-                myLiteralLocution = new LiteralLocution()
-                    myLiteralLocution.content = piece;
+                myLiteralLocution = new LiteralLocution();
+                myLiteralLocution.content = piece;
                 locutions.push(myLiteralLocution);
             }
         });

@@ -14,20 +14,11 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
      *
      */
     var getSFDB = function() {
-        //Hack to get around some dependency issues :(
-        //c is a global instance of CiFSingleton
-        if(c === undefined && CiFSingleton === undefined) {
-            throw new Error("CiFSingleton undefined");
-        }
         if(SocialFactsDB === undefined) {
-            if(CiFSingleton !== undefined) {
-                //We'd prefer to get it from the class
-                return CiFSingleton.getInstance().SocialFactsDB;
-            } else if (c !== undefined) {
-                //But we'll settle for the global
-                return SocialFactsDB = c.SocialFactsDB;
+            if(CiF !== undefined) {
+                return CiF.SocialFactsDB;
             } else {
-                throw new Error("Can't get the SFDB anywhere");
+                throw new Error("CiF undefined");
             }
         } else {
             return SocialFactsDB;

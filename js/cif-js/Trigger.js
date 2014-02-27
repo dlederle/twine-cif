@@ -55,8 +55,7 @@ define(['SocialFactsDB', 'TriggerContext', 'Effect', 'Predicate'], function(Soci
 		 * @return	The SFDB entry for the Trigger.
 		 */
 		this.makeTriggerContext = function(timeNumber, x, y, z) {
-			var tcTriggerContext = new TriggerContext();
-			var pPredicate;
+			var tc= new TriggerContext();
 
 			//var cifCiFSingleton = CiFSingleton.getInstance();
 

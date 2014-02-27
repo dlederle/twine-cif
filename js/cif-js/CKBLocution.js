@@ -1,7 +1,8 @@
 define(['Predicate'], function(Predicate) {
     var CKBLocution = function() {
+        var Predicate = Predicate || CiF.Predicate;
         this.pred = new Predicate();
-        pred.setByTypeDefault(Predicate.CKBENTRY);
+        this.pred.setByTypeDefault(Predicate.CKBENTRY);
 
         /**********************************************************************
          * Locution Interface implementation

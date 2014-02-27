@@ -17,6 +17,7 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
             CiFSingleton = this;
             //Hack to expose SFDB do dependent modules
             CiFSingleton.SocialFactsDB = SocialFactsDB;
+            CiFSingleton.Predicate = Predicate;
 
             this._time = 0;
 
@@ -1827,7 +1828,7 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
             var checkUndefined = function(obj, reqs) {
                 reqs.forEach(function(req) {
                     if(obj[req] === undefined) {
-                        throw new Error("Invalid loading, missing " + req + "from: ", obj);
+                        throw new Error("Invalid loading, missing " + req + " from: ", obj);
                     }
                 });
             }
@@ -1908,8 +1909,7 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
             this.load.SocialGame = function(sg) {
                 var load = this;
                 sg = sg.SocialGame;
-                checkUndefined(sg, ["preconditions", "initiatorIRS", "responderIRS", "effects", "instantiations"]);
-
+                checkUndefined(sg, ["preconditions", "initiatorIRS", "responderIRS", "effects"]);
                 sg.preconditions.forEach(function(rule, i) {
                     sg.preconditions[i] = load.Rule(rule.Rule);
                 });
@@ -1918,9 +1918,11 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                 sg.effects.forEach(function(e, i) {
                     sg.effects[i] = load.Effect(e.Effect);
                 });
-                sg.instantiations.forEach(function(ins, i) {
-                    sg.instantiations[i] = load.Instantiation(ins.Instantiation);
-                });
+                if(sg.instantiations !== undefined) {
+                    sg.instantiations.forEach(function(ins, i) {
+                        sg.instantiations[i] = load.Instantiation(ins.Instantiation);
+                    });
+                }
                 return new SocialGame(sg);
             }
 
@@ -1953,10 +1955,13 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
 
             this.load.Effect = function(effect) {
                 if(effect.change) {
-                    effect.change = this.Rule(effect.change);
+                    effect.change = this.Rule(effect.change.Rule);
                 }
                 if(effect.condition) {
-                    effect.condition = this.Rule(effect.condition);
+                    effect.condition = this.Rule(effect.condition.Rule);
+                }
+                if(effect.locutions) {
+                    effect.locutions = Util.createLocutionVectors(effect.locutions);
                 }
 
                 return new Effect(effect);

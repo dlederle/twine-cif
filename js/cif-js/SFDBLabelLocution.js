@@ -3,6 +3,9 @@ define(['Predicate', 'SocialFactsDB'], function(Predicate, SocialFactsDB) {
 	var SFDBLabelLocution = function() {
         this.speaker;
 
+        var Predicate = Predicate || CiF.Predicate;
+        var SocialFactsDB = SocialFactsDB || CiF.SocialFactsDB;
+
 	    this.pred = new Predicate();
 		this.pred.setByTypeDefault(Predicate.SFDBLABEL);
 		this.sfdb = SocialFactsDB.getInstance();
