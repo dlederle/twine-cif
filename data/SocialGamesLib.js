@@ -93,7 +93,7 @@ _CiFState.SocialGamesLib = [
                             "primary":"initiator",
                             "secondary": "responder",
                             "comparator": "lessthan",
-                            "value": "41",
+                            "value": 41,
                             "negated":false,
                             "isSFDB":false,
                             "window" : 0
