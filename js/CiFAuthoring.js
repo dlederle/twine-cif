@@ -5,12 +5,12 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
     var currentNetworkID = 0;
     var CiFAuthoring = function() {
         var CiF = CiF || CiFSingleton.getInstance();
-        CiFState = {};
-        CiFState.Cast = [];
-        CiFState.SocialGamesLibrary = [];
-        CiFState.SocialNetworks = [];
-        CiFState.CulturalKB = [];
-        CiFState.SocialFactsDB = {};
+        CiFState = CiFState || {};
+        CiFState.Cast = CiFState.cast || [];
+        CiFState.SocialGamesLibrary = CiFState.SocialGamesLibrary || [];
+        CiFState.SocialNetworks = CiFState.SocialNetworks || [];
+        CiFState.CulturalKB = CiFState.CulturalKB || [];
+        CiFState.SocialFactsDB = CiFState.SocialFactsDB || {};
         CiFState.SocialFactsDB.contexts = [];
 
 
@@ -73,9 +73,9 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         var classList = function() {
             var list = $('<select id="classList">');
+            list.append('<option>Cast</option>');
             list.append('<option>SocialNetworks</option>');
-            list.append('<option>SocialGame</option>');
-            list.append('<option>Character</option>');
+            list.append('<option>SocialGameLibrary</option>');
             list.append('<option>SocialFactsDB</option>');
             list.append('<option>CulturalKB</option>');
             return list;
@@ -89,58 +89,113 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             //Sidebar
             $('#sidebar').append('<h2>CiF Authoring</h2>');
             $('#sidebar').append(classList());
-            $('#sidebar').append($('<ul id="cast">'));
             $('#classList').change(buildClass).change();
 
             //Main
         }
 
+        build.SocialGamesLibrary = function() {
 
-        build.Character = function(cast, character) {
+        }
+
+        //Loading doesn't actually work
+        build.SocialNetworks = function() {
+            console.log("and now we build our SocialNetworks!");
+            var numChars = CiFState.Cast.length;
+            var buildNetwork = function(network) {
+                var $builder = $('<form>');
+                //Make edge with from: to: value:
+                var edge = {};
+                $builder.append($('<label>' + network.type + '</label>'));
+                $builder.append($('<label>From</label>'));
+                $builder.append(selectRange(network.numChars).change(function(e) {
+                    edge.from = parseInt(this.value);
+                }));
+                $builder.append($('<label>To</label>'));
+                $builder.append(selectRange(network.numChars).change(function(e) {
+                    edge.to = parseInt(this.value);
+                }));
+                $builder.append($('<label>Numeric Value</label>'));
+                $builder.append($('<input>').change(function(e) {
+                    edge.value = parseInt(this.value);
+                }));
+
+                var $button = $('<button type="button">').click(function(e) {
+                    console.log(edge);
+                });
+                $builder.append($button);
+                return $builder;
+            }
+            var sns = CiFState.SocialNetworks;
+
+            var $sns = $('<div class="span8">');
+            ["cool", "romance", "buddy"].forEach(function(type) {
+                var network = {};
+                network.type = type;
+                network.numChars = numChars;
+                network.edges = [];
+                sns.push(sns);
+                $sns.append(buildNetwork(network));
+            });
+
+            return $sns;
+        }
+
+        build.CulturalKB = function(ckb) {
+            console.log("and now we build our CulturalKB!");
+        }
+
+        build.SocialFactsDB = function(sfdb) {
+            console.log("and now we build our SocialFactsDB!");
+        }
+
+        build.Cast = function() {
+          var $castContainer = $('<div class="row">');
+          var $charMaker = $('<div class="span4">');
+          $charMaker.append($("<h1>Construct the Cast</h1>"));
+          var $charList = $('<div class="span4">').append('<ul id="list">');
+
+          $charMaker.append(build.Character($('<div id="charMaker">'), $charList, CiFState.Cast));
+          $castContainer.append($charMaker);
+          $castContainer.append($charList);
+          return $('<div class="span8">').append($castContainer);
+        }
+
+        build.Character = function($left, $right, cast, character) {
             console.log("and now we build our Character");
-
             cast = cast || CiFState.Cast;
             character = character || {};
             character.characterName = character.characterName || "Character Name";
             character.traits = character.traits || [];
             character.networkID = character.networkID || currentNetworkID++;
+            var $list = $right.children('#list');
+            display($list, cast, "Current Cast");
 
-            var $cast = $('#cast');
-            display($cast, cast, "Current Cast");
+            $left.append('<h3>Make a new Character</h3>');
+            $left.append('<label>Character Name</label>');
+            $left.append('<input id="charName" placeholder="Character Name">');
 
-            var $charMaker = $('<div id="charMaker" class="span8">');
-            $charMaker.append('<h1>Make a new Character</h1>');
-            $charMaker.append('<label>Character Name</label>');
-            $charMaker.append('<input id="charName" placeholder="Character Name">');
-
-            $charMaker.append(build.Traits(character.traits));
+            $left.append(build.Traits(character.traits));
 
             var $save = $('<button type="button" class="btn" id="makeChar">Save Character</button>').click(function(e) {
                 //e.preventDefault();
 
                 character.characterName = $('#charName')[0].value;
-                var duped = false;
-                cast.forEach(function(ch) {
-                    if(ch.networkID === character.networkID ||
-                       ch.characterName === character.characterName) {
-                        duped = true;
-                    }
-                });
-                if(!duped) {
+                if(cast.indexOf(character) === -1) {
                     cast.push(character);
                 }
-                duped = false;
-                display($cast, cast, "Current Cast");
+                display($list, cast, "Current Cast");
             });
 
             var $newChar = $('<button type="butotn" class="btn" id="newChar">New Character</button>').click(function(e) {
                 e.preventDefault();
-                clearMain("Character");
+                $left.children().remove();
+                $left.append(build.Character($left, $right));
             });
 
-            $charMaker.append($save);
-            $charMaker.append($newChar);
-            return $charMaker;
+            $left.append($save);
+            $left.append($newChar);
+            return $left;
         }
 
         build.SocialGame = function(sgl, sg) {
@@ -240,63 +295,9 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             return $irs;
         }
 
-        //Loading doesn't actually work
-        build.SocialNetworks = function(sns) {
-            console.log("and now we build our SocialNetworks!");
-            var numChars = CiFState.Cast.length;
-            var buildNetwork = function(network) {
-                var $builder = $('<form>');
-                //Make edge with from: to: value:
-                var edge = {};
-                $builder.append($('<label>' + network.type + '</label>'));
-                $builder.append($('<label>From</label>'));
-                $builder.append(selectRange(network.numChars).change(function(e) {
-                    edge.from = parseInt(this.value);
-                }));
-                $builder.append($('<label>To</label>'));
-                $builder.append(selectRange(network.numChars).change(function(e) {
-                    edge.to = parseInt(this.value);
-                }));
-                $builder.append($('<label>Numeric Value</label>'));
-                $builder.append($('<input>').change(function(e) {
-                    edge.value = parseInt(this.value);
-                }));
-
-                var $button = $('<button type="button">').click(function(e) {
-                    console.log(edge);
-                });
-                $builder.append($button);
-                return $builder;
-            }
-            sns = sns || CiFState.SocialNetworks;
-
-            var $sns = $('<div class="span8">');
-            ["cool", "romance", "buddy"].forEach(function(type) {
-                var network = {};
-                network.type = type;
-                network.numChars = numChars;
-                network.edges = [];
-                sns.push(sns);
-                $sns.append(buildNetwork(network));
-            });
-
-            return $sns;
-        }
-
-        build.CulturalKB = function(ckb) {
-            console.log("and now we build our CulturalKB!");
-            ckb = ckb || Cast.CulturalKB;
-        }
-
-        build.SocialFactsDB = function(sfdb) {
-            console.log("and now we build our SocialFactsDB!");
-            sfdb = sfdb || Cast.sfdb;
-        }
-
         build.Context = function(ctxList, ctx) {
-            ctxList = ctxList || throw new Error("Context list please");
+            ctxList = ctxList || new Error("Context list please");
             ctx = ctx || {};
-
         }
 
         build.Locution = function(list, l) {
@@ -339,17 +340,15 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         build.Traits = function(currTraits) {
             console.log("and now we build our Traits!");
-
             var $currTraits = $('<ul id="currTraits">');
             var $traitForm = $('<form id="traitAdder">');
-
             $traitForm.append('<label>Add Traits</label>');
             $traitForm.append(traitSelector());
             $traitForm.append('<button type="button" class="btn"id="addTrait">Add Trait</button>').click(function(e) {
                 var val = e.originalEvent.currentTarget[0].value;
                 if(currTraits.indexOf(val) === -1) {
                     currTraits.push(val);
-                    display($currTraits, currTraits, "p");
+                    display($currTraits, currTraits, "Traits:", "p");
                 }
             });
             $traitForm.append($currTraits);
@@ -483,7 +482,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
         }
 
         build.Proposition = function(pList, p) {
-            pList = pList || throw new Error("Need a list");
+            pList = pList || new Error("Need a list");
             p = p || {};
         }
 
