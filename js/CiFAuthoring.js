@@ -9,6 +9,13 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
         CiFState.Cast = CiFState.cast || [];
         CiFState.SocialGamesLibrary = CiFState.SocialGamesLibrary || [];
         CiFState.SocialNetworks = CiFState.SocialNetworks || [];
+        ["cool", "romance", "buddy"].forEach(function(type) {
+            var network = {};
+            network.numChars = 0;
+            network.type = type;
+            network.edges = [];
+            CiFState.SocialNetworks.push(network);
+        });
         CiFState.CulturalKB = CiFState.CulturalKB || [];
         CiFState.SocialFactsDB = CiFState.SocialFactsDB || {};
         CiFState.SocialFactsDB.contexts = [];
@@ -16,6 +23,10 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         //Holds functions to build CiF classes
         var build = {};
+
+        var capitalize = function(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
 
         var traitSelector = function() {
             var $traitSelector = $('<select id="traits">');
@@ -27,6 +38,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         var selectRange = function(range) {
             var $select = $('<select>');
+            $select.append('<option>');
             for(var i=0; i<range; i++) {
                 $select.append('<option>' + i + '</option>');
             }
@@ -73,8 +85,8 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         var classList = function() {
             var list = $('<select id="classList">');
-            list.append('<option>Cast</option>');
             list.append('<option>SocialNetworks</option>');
+            list.append('<option>Cast</option>');
             list.append('<option>SocialGameLibrary</option>');
             list.append('<option>SocialFactsDB</option>');
             list.append('<option>CulturalKB</option>');
@@ -98,15 +110,20 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         }
 
-        //Loading doesn't actually work
         build.SocialNetworks = function() {
             console.log("and now we build our SocialNetworks!");
-            var numChars = CiFState.Cast.length;
-            var buildNetwork = function(network) {
+            //var numChars = CiFState.Cast.length;
+            var numChars = 5;
+            if(numChars < 2) {
+                var tmp = $('<h1>Social Networks</h1>');
+                tmp.append($("<h2>Please add some Characters to the Cast</h2>"));
+                return tmp;
+            }
+            var buildNetwork = function(network, $list) {
                 var $builder = $('<form>');
                 //Make edge with from: to: value:
                 var edge = {};
-                $builder.append($('<label>' + network.type + '</label>'));
+                $builder.append($('<label>' + capitalize(network.type) + ' Network</label>'));
                 $builder.append($('<label>From</label>'));
                 $builder.append(selectRange(network.numChars).change(function(e) {
                     edge.from = parseInt(this.value);
@@ -120,25 +137,35 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
                     edge.value = parseInt(this.value);
                 }));
 
-                var $button = $('<button type="button">').click(function(e) {
-                    console.log(edge);
+                var $button = $('<button type="button">Add Edge</button>').click(function(e) {
+                    //So brittle
+                    edge.from = parseInt($builder[0][0].value);
+                    edge.to = parseInt($builder[0][1].value);
+                    edge.value = parseInt($builder[0][2].value);
+                    if(edge.from == NaN || edge.to == NaN || edge.value == NaN) {}
+                    if(network.edges.indexOf(edge) === -1) {
+                        network.edges.push(edge);
+                        display($list, network.edges, capitalize(network.type), "h4");
+                        edge = {};
+                        $builder.replaceWith(buildNetwork(network, $list));
+                    }
                 });
                 $builder.append($button);
                 return $builder;
             }
-            var sns = CiFState.SocialNetworks;
-
-            var $sns = $('<div class="span8">');
-            ["cool", "romance", "buddy"].forEach(function(type) {
-                var network = {};
-                network.type = type;
-                network.numChars = numChars;
-                network.edges = [];
-                sns.push(sns);
-                $sns.append(buildNetwork(network));
+            var $sns = $('<div class="row">');
+            var $right = $('<div class="span4">');
+            var $lists = $('<div class="span4">');
+            CiFState.SocialNetworks.forEach(function(type) {
+                type.numChars = numChars;
+                var $list = $('<ul>');
+                $lists.append($list);
+                $right.append(buildNetwork(type, $list));
             });
 
-            return $sns;
+            $sns.append($right);
+            $sns.append($lists);
+            return $('<div class="span8">').append($sns)
         }
 
         build.CulturalKB = function(ckb) {
