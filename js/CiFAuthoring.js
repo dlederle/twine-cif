@@ -8,6 +8,11 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
         CiFState = {};
         CiFState.Cast = [];
         CiFState.SocialGamesLibrary = [];
+        CiFState.SocialNetworks = [];
+        CiFState.CulturalKB = [];
+        CiFState.SocialFactsDB = {};
+        CiFState.SocialFactsDB.contexts = [];
+
 
         //Holds functions to build CiF classes
         var build = {};
@@ -20,11 +25,19 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             return $traitSelector;
         }
 
-        var display = function($list, data, msg) {
+        var selectRange = function(range) {
+            var $select = $('<select>');
+            for(var i=0; i<range; i++) {
+                $select.append('<option>' + i + '</option>');
+            }
+            return $select;
+        }
+
+        var display = function($list, data, msg, tag) {
+            tag = tag || "h4";
             msg = msg || "";
-            console.log("displaying", data);
             $list.children().remove();
-            $list.append("<h2>" + msg + "</h2>");
+            $list.append("<" + tag + ">" + msg + "</" + tag + ">");
             data.forEach(function(el, i, arr) {
                 var li = $('<li>');
                 switch(typeof el) {
@@ -60,10 +73,10 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         var classList = function() {
             var list = $('<select id="classList">');
+            list.append('<option>SocialNetworks</option>');
             list.append('<option>SocialGame</option>');
             list.append('<option>Character</option>');
             list.append('<option>SocialFactsDB</option>');
-            list.append('<option>SocialNetworks</option>');
             list.append('<option>CulturalKB</option>');
             return list;
         }
@@ -102,8 +115,8 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
             $charMaker.append(build.Traits(character.traits));
 
-            var $save = $('<button class="btn" id="makeChar">Save Character</button>').click(function(e) {
-                e.preventDefault();
+            var $save = $('<button type="button" class="btn" id="makeChar">Save Character</button>').click(function(e) {
+                //e.preventDefault();
 
                 character.characterName = $('#charName')[0].value;
                 var duped = false;
@@ -120,7 +133,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
                 display($cast, cast, "Current Cast");
             });
 
-            var $newChar = $('<button class="btn" id="newChar">New Character</button>').click(function(e) {
+            var $newChar = $('<button type="butotn" class="btn" id="newChar">New Character</button>').click(function(e) {
                 e.preventDefault();
                 clearMain("Character");
             });
@@ -163,11 +176,13 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
             var $initiatorIRS = $('<div class="well">');
             $initiatorIRS.append("<h4>Build the Initiator\'s IRS</h4>");
+            $initiatorIRS.append(build.IRS(sg.initiatorIRS));
             $sgLeft.append($initiatorIRS);
 
 
             var $responderIRS= $('<div class="well">');
-            $responderIRS.append("<label>Build the Responders\'s IRS</label>");
+            $responderIRS.append(build.IRS(sg.responderIRS));
+            $responderIRS.append("<h4>Build the Responders\'s IRS</h4>");
             $sgLeft.append($responderIRS);
 
             var $effects= $('<div class="well">');
@@ -196,17 +211,104 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             $sgMain.append($sgRow);
             return $sgMain;
         }
-        build.CulturalKB = function() {
-            console.log("and now we build our CulturalKB!");
+
+        build.IRS = function(irs) {
+            irs = irs || new Error("Provide an IRS to build please");
+            var ir = {};
+            var $irs = $('<div>');
+            var $irsList = $('<ul>');
+            $irs.append($irsList);
+            display($irsList, irs, "Current IRs in Set", "p");
+            $irs.append("<p>An Influence Rule is a Rule with a weight attached</p>");
+
+            $irs.append('<label>Weight</label>');
+            var $input = $('<input id="irWeight"></input>').change(function() {
+                ir.weight = parseInt(this.value);
+            });
+            $irs.append($input);
+            var $button = $('<button type="button" class="btn" id="addIRS">Save IR</button>').click(function() {
+                //Collect data
+
+                if(irs.indexOf(ir) === -1) {
+                    irs.push(ir);
+                    ir = {};
+                    display($irsList, irs, "Current IRs in Set", "p");
+                }
+            });
+
+            $irs.append(build.Rule(irs, ir, $button));
+            return $irs;
         }
-        build.SocialNetworks = function() {
+
+        //Loading doesn't actually work
+        build.SocialNetworks = function(sns) {
             console.log("and now we build our SocialNetworks!");
+            var numChars = CiFState.Cast.length;
+            var buildNetwork = function(network) {
+                var $builder = $('<form>');
+                //Make edge with from: to: value:
+                var edge = {};
+                $builder.append($('<label>' + network.type + '</label>'));
+                $builder.append($('<label>From</label>'));
+                $builder.append(selectRange(network.numChars).change(function(e) {
+                    edge.from = parseInt(this.value);
+                }));
+                $builder.append($('<label>To</label>'));
+                $builder.append(selectRange(network.numChars).change(function(e) {
+                    edge.to = parseInt(this.value);
+                }));
+                $builder.append($('<label>Numeric Value</label>'));
+                $builder.append($('<input>').change(function(e) {
+                    edge.value = parseInt(this.value);
+                }));
+
+                var $button = $('<button type="button">').click(function(e) {
+                    console.log(edge);
+                });
+                $builder.append($button);
+                return $builder;
+            }
+            sns = sns || CiFState.SocialNetworks;
+
+            var $sns = $('<div class="span8">');
+            ["cool", "romance", "buddy"].forEach(function(type) {
+                var network = {};
+                network.type = type;
+                network.numChars = numChars;
+                network.edges = [];
+                sns.push(sns);
+                $sns.append(buildNetwork(network));
+            });
+
+            return $sns;
         }
-        build.SocialFactsDB = function() {
+
+        build.CulturalKB = function(ckb) {
+            console.log("and now we build our CulturalKB!");
+            ckb = ckb || Cast.CulturalKB;
+        }
+
+        build.SocialFactsDB = function(sfdb) {
             console.log("and now we build our SocialFactsDB!");
+            sfdb = sfdb || Cast.sfdb;
         }
-        build.Rule = function(rulesList, rule) {
-            console.log("and now we build our Rule!");
+
+        build.Context = function(ctxList, ctx) {
+            ctxList = ctxList || throw new Error("Context list please");
+            ctx = ctx || {};
+
+        }
+
+        build.Locution = function(list, l) {
+
+        }
+
+        build.LineOfDialogue = function() {
+
+        }
+
+        build.Rule = function(rulesList, rule, $button) {
+            //console.log("and now we build our Rule!");
 
             rulesList = rulesList || new Error("Provide a Rules List");
             rule = rule || {};
@@ -220,6 +322,18 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
             $ruleForm.append(build.Predicate(rule.predicates));
 
+            //Passing in the button allows IRS to overwrite
+            $button = $button || $('<button type="button" class="btn" id="addRule">Save Rule</button>').click(function(e) {
+                e.preventDefault();
+                //Collect data
+
+                if(rulesList.indexOf(rule) === -1) {
+                    rulesList.push(rule);
+                    rule = {};
+                }
+            });
+            $ruleForm.append($button);
+
             return $ruleForm
         }
 
@@ -231,19 +345,18 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
             $traitForm.append('<label>Add Traits</label>');
             $traitForm.append(traitSelector());
-            $traitForm.append('<button class="btn"id="addTrait">Add Trait</button>').submit(function(e) {
-                e.preventDefault();
+            $traitForm.append('<button type="button" class="btn"id="addTrait">Add Trait</button>').click(function(e) {
                 var val = e.originalEvent.currentTarget[0].value;
                 if(currTraits.indexOf(val) === -1) {
                     currTraits.push(val);
-                    display($currTraits, currTraits);
+                    display($currTraits, currTraits, "p");
                 }
             });
             $traitForm.append($currTraits);
             return $traitForm;
         }
 
-        build.Predicate = function(currPreds, pred) {
+        build.Predicate = function(currPreds, pred, $button) {
             var predMaker = function(attrs, p) {
                 var $maker = $('#predMaker');
                 $maker.children().remove();
@@ -308,7 +421,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             var $currPreds = $('<ul id="currPreds">');
             var $predForm = $('<form id="predAdder">');
             $predForm.append($currPreds);
-            display($currPreds, currPreds, "Predicates:");
+            display($currPreds, currPreds, "Predicates:", "p");
 
             $predForm.append('<label>Predicate type:</label>');
             var $types = $('<select id="predTypes">');
@@ -356,19 +469,22 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
                 pred.type = this.value;
             });
 
-            $predForm.append('<button class="btn" id="addPred">Add Predicate</button>').submit(function(e) {
-                e.preventDefault();
+            $button = $button || $('<button type="button" class="btn" id="addPred">SavePredicate</button>').click(function(e) {
                 //Collect data
-                console.log("adding!");
-
                 if(currPreds.indexOf(pred) === -1) {
                     currPreds.push(pred);
-                    display($currPreds, currPreds, "Predicates:");
+                    display($currPreds, currPreds, "Predicates:", "p");
                     pred = {};
                 }
             });
+            $predForm.append($button);
 
             return $predForm;
+        }
+
+        build.Proposition = function(pList, p) {
+            pList = pList || throw new Error("Need a list");
+            p = p || {};
         }
 
         buildUI();
