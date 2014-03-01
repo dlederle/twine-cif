@@ -1,4 +1,99 @@
 var _CiFState = _CiFState || {};
+_CiFState.Cast = [
+{
+    "Character": {
+        "characterName": "Robert",
+        "networkID": 0,
+        "traits": [
+            "clumsy",
+        "sex magnet",
+        "confidence"
+            ]
+    }
+},
+{
+    "Character": {
+        "characterName": "Debbie",
+        "networkID": 1,
+        "traits": [
+            "forgiving",
+        "confidence"
+            ]
+    }
+},
+{
+    "Character": {
+        "characterName": "Edward",
+        "networkID": 2,
+        "traits": [
+            "domineering",
+        "afraid of commitment"
+            ]
+    }
+}
+];
+
+_CiFState.CulturalKB = [
+{
+    "Proposition": {
+        "type": "subjective",
+            "head": "robert",
+            "connection": "likes",
+            "tail": "pirates"
+    }
+},
+{
+    "Proposition": {
+        "type": "subjective",
+        "head": "Debbie",
+        "connection": "dislikes",
+        "tail": "flowers"
+    }
+},
+{
+    "Proposition": {
+        "type": "truth",
+        "head": "pirates",
+        "connection": "are",
+        "tail": "mean"
+    }
+},
+{
+    "Proposition": {
+        "type": "subjective",
+        "head": "robert",
+        "connection": "likes",
+        "tail": "flowers"
+    }
+},
+{
+    "Proposition": {
+        "type": "truth",
+        "head": "flowers",
+        "connection": "are",
+        "tail": "lame"
+    }
+}
+];
+
+_CiFState.SocialFactsDB = {
+    "contexts" : [
+    {
+        "StatusContext": {
+            "time": "20",
+            "Predicate": {
+                "type"    : "status",
+                "status"  : "has a crush on",
+                "primary"   : "Debbie",
+                "secondary"  : "Robert",
+                "negated" : false,
+                "isSFDB"  : true
+            }
+        }
+    }
+    ]
+};
+
 _CiFState.SocialGamesLib = [
 {
     "SocialGame": {
@@ -442,3 +537,43 @@ _CiFState.SocialGamesLib = [
     }
 }//End of Rough Up
 ] //End of SocialGameLibrary
+
+
+_CiFState.SocialNetworks = [
+{
+    "type": "buddy",
+        "numChars" : "3",
+        "edges" : [
+        {"from": "0", "to": "1", "value": "10"},
+        {"from": "0", "to": "2", "value": "20"},
+        {"from": "1", "to": "0", "value": "30"},
+        {"from": "1", "to": "2", "value": "100"},
+        {"from": "2", "to": "0", "value": "50"},
+        {"from": "2", "to": "1", "value": "60"}
+    ]
+},
+{
+    "type": "cool",
+    "numChars" : "3",
+    "edges" : [
+    {"from": "0", "to": "1", "value": "10"},
+    {"from": "0", "to": "2", "value": "20"},
+    {"from": "1", "to": "0", "value": "30"},
+    {"from": "1", "to": "2", "value": "100"},
+    {"from": "2", "to": "0", "value": "50"},
+    {"from": "2", "to": "1", "value": "60"}
+    ]
+},
+{
+    "type": "romance",
+    "numChars" : "3",
+    "edges" : [
+    {"from": "0", "to": "1", "value": "10"},
+    {"from": "0", "to": "2", "value": "20"},
+    {"from": "1", "to": "0", "value": "30"},
+    {"from": "1", "to": "2", "value": "40"},
+    {"from": "2", "to": "0", "value": "50"},
+    {"from": "2", "to": "1", "value": "60"}
+    ]
+}
+]

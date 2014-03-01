@@ -85,8 +85,8 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         var classList = function() {
             var list = $('<select id="classList">');
+            list.append('<option>SocialGamesLibrary</option>');
             list.append('<option>SocialFactsDB</option>');
-            list.append('<option>SocialGameLibrary</option>');
             list.append('<option>CulturalKB</option>');
             list.append('<option>SocialNetworks</option>');
             list.append('<option>Cast</option>');
@@ -106,8 +106,18 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             //Main
         }
 
-        build.SocialGamesLibrary = function() {
+        build.SocialGamesLibrary = function(sgl) {
+            sgl = sgl || CiFState.SocialGamesLibrary;
+            var $sgl= $('<div class="row">');
+            var $right = $('<div class="span4">').append($('<h1>Create the Social Games Library</h1>'));
+            var $left = $('<div class="span4">');
+            var $list = $('<ul>');
+            $left.append($list);
 
+            $right.append(build.SocialGame(sgl, $list));
+
+            $sgl.append($right).append($left);
+            return $('<div class="span8">').append($sgl);
         }
 
         build.SocialNetworks = function() {
@@ -247,7 +257,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             return $left;
         }
 
-        build.SocialGame = function(sgl, sg) {
+        build.SocialGame = function(sgl, $list, sg) {
             console.log("and now we build our SocialGame!");
             sg = sg || {};
             sg.name = sg.name || "Name Here";
@@ -255,65 +265,58 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             sg.initiatorIRS = sg.initiatorIRS || [];
             sg.responderIRS = sg.responderIRS || [];
             sg.effects = sg.effects || [];
-
             sgl = sgl || CiFState.SocialGamesLibrary;
 
-            //Two column main div
+            var $form = $('<form>');
+            $form.append('<label>Make a new Social Game</label>');
 
-            var $sgMain =$('<div class="span8">');
-            var $sgRow = $('<div id="sg-container" class="row">');
-            var $sgLeft = $('<div id="sgMaker" class="pull-left span4">');
-            var $sgRight = $('<div class="span4">');
-
-            $sgLeft.append('<h1>Make a new Social Game</h1>');
-
-            //Name
-            $sgLeft.append('<label>Name of Social Game</label>');
-            $sgLeft.append('<input id="sgName" placeholder=' + sg.name + '>');
+            $form.append('<label>Name of Social Game</label>');
+            $form.append('<input id="sgName" placeholder=' + sg.name + '>');
 
             var $preconditionsMaker = $('<div class="well">');
-            $preconditionsMaker.append('<h4>Add Preconditions</h4>');
+            $preconditionsMaker.append('<label>Add Preconditions</label>');
             $preconditionsMaker.append('<p>Preconditions is a list of Rules</p>');
             $preconditionsMaker.append(build.Rule(sg.preconditions));
-            $sgLeft.append($preconditionsMaker);
-
+            var $preconditions = $('<ul>');
+            $preconditionsMaker.append($preconditions);
+            display($preconditions, sg.preconditions, "Saved Preconditions", "p");
+            $form.append($preconditionsMaker);
 
             var $initiatorIRS = $('<div class="well">');
-            $initiatorIRS.append("<h4>Build the Initiator\'s IRS</h4>");
+            $initiatorIRS.append("<label>Build the Initiator\'s IRS</label>");
             $initiatorIRS.append(build.IRS(sg.initiatorIRS));
-            $sgLeft.append($initiatorIRS);
-
+            var $iIRS = $('<ul>');
+            $initiatorIRS.append($iIRS);
+            display($iIRS, sg.initiatorIRS, "Saved i-IRS", "p");
+            $form.append($initiatorIRS);
 
             var $responderIRS= $('<div class="well">');
+            $responderIRS.append("<label>Build the Responders\'s IRS</label>");
             $responderIRS.append(build.IRS(sg.responderIRS));
-            $responderIRS.append("<h4>Build the Responders\'s IRS</h4>");
-            $sgLeft.append($responderIRS);
+            var $rIRS = $('<ul>');
+            $responderIRS.append($rIRS);
+            display($rIRS, sg.responderIRS, "Saved r-IRS", "p");
+            $form.append($responderIRS);
+
 
             var $effects= $('<div class="well">');
             $effects.append("<label>Build the list of Effects</label>");
-            $sgLeft.append($effects);
+            $effects.append(build.Effect(sg.effects));
+            var $eList = $('<ul>');
+            $effects.append($eList);
+            display($eList, sg.effects, "Saved effects", "p");
+            $form.append($effects);
 
-            //Lists
-            var $preList = $('<ul>');
-            $sgRight.append($preList);
-            display($preList, sg.preconditions, "Saved Preconditions");
+            var $button = $('<button type="button">').click(function() {
+                console.log(sg);
+            });
 
-            var $iIRS = $('<ul>');
-            $sgRight.append($iIRS);
-            display($iIRS, sg.initiatorIRS, "Saved i-IRS");
+            $form.append($button);
+            return $form;
+        }
 
-            var $rIRS = $('<ul>');
-            $sgRight.append($rIRS);
-            display($rIRS, sg.responderIRS, "Saved r-IRS");
+        build.Effect = function(list) {
 
-            var $effects = $('<ul>');
-            $sgRight.append($effects);
-            display($effects, sg.effects, "Saved effects");
-
-            $sgRow.append($sgLeft);
-            $sgRow.append($sgRight);
-            $sgMain.append($sgRow);
-            return $sgMain;
         }
 
         build.IRS = function(irs) {
@@ -348,7 +351,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         }
 
-        build.LineOfDialogue = function() {
+        build.LineOfDialogue = function(list, l) {
 
         }
 
@@ -360,26 +363,29 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             rule.name = rule.name || "Name of Rule";
             rule.predicates = rule.predicates || [];
 
-            var $ruleForm = $('<form id="ruleForm">');
+            var makeForm = function() {
+                var $ruleForm = $('<form id="ruleForm">');
+                $ruleForm.append('<label>Name of Rule</label>');
+                $ruleForm.append('<input id="ruleName" placeholder=' + rule.name + '>');
+                $ruleForm.append(build.Predicate(rule.predicates));
 
-            $ruleForm.append('<label>Name of Rule</label>');
-            $ruleForm.append('<input id="ruleName" placeholder=' + rule.name + '>');
+                //Passing in the button allows IRS to overwrite
+                $button = $button || $('<button type="button" class="btn" id="addRule">Save Rule</button>').click(function(e) {
+                    e.preventDefault();
 
-            $ruleForm.append(build.Predicate(rule.predicates));
+                    if(rulesList.indexOf(rule) === -1) {
+                        rulesList.push(rule);
+                        rule = {};
+                        $ruleForm.children().remove();
+                        $ruleForm = makeForm();
+                    }
+                });
+                $ruleForm.append($button);
 
-            //Passing in the button allows IRS to overwrite
-            $button = $button || $('<button type="button" class="btn" id="addRule">Save Rule</button>').click(function(e) {
-                e.preventDefault();
-                //Collect data
+                return $ruleForm;
+            }
 
-                if(rulesList.indexOf(rule) === -1) {
-                    rulesList.push(rule);
-                    rule = {};
-                }
-            });
-            $ruleForm.append($button);
-
-            return $ruleForm
+            return makeForm();
         }
 
         build.Traits = function(currTraits) {
@@ -463,66 +469,70 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
             var $currPreds = $('<ul id="currPreds">');
             var $predForm = $('<form id="predAdder">');
-            $predForm.append($currPreds);
-            display($currPreds, currPreds, "Predicates:", "p");
+            var newForm = function() {
+                $predForm.append($currPreds);
+                display($currPreds, currPreds, "Predicates:", "p");
 
-            $predForm.append('<label>Predicate type:</label>');
-            var $types = $('<select id="predTypes">');
-            $types.append('<option></option>');
-            typeList.forEach(function(type) {
-                $types.append('<option>' + type + '</option>');
-            });
-            $predForm.append($types);
+                $predForm.append('<label>Predicate type:</label>');
+                var $types = $('<select id="predTypes">');
+                $types.append('<option></option>');
+                typeList.forEach(function(type) {
+                    $types.append('<option>' + type + '</option>');
+                });
+                $predForm.append($types);
 
-            var $maker = $('<div id="predMaker">');
-            $predForm.append($maker);
-            $types.click(function() {
-                switch(this.value) {
-                    case "SFDB label":
-                        //console.log("SFDB label");
-                        $maker.replaceWith(predMaker(["primary", "secondary", "label", "negated"], pred));
-                        pred.isSFDB = true;
-                        pred.window = 0;
-                        break;
-                    case "trait":
-                        //console.log("trait");
-                        $maker.replaceWith(predMaker(["trait", "primary", "secondary", "negated"], pred));
-                        pred.isSFDB = false;
-                        pred.window = 0;
-                        break;
-                    case "network":
-                        //console.log("network");
-                        $maker.replaceWith(predMaker(["networkType", "primary", "secondary", "value", "comparator", "negated"], pred));
-                        pred.isSFDB = false;
-                        pred.window = 0;
-                        break;
-                    case "status":
-                        //console.log("status");
-                        $maker.replaceWith(predMaker(["status", "primary", "secondary", "negated"], pred));
-                        pred.isSFDB = false;
-                        pred.window = 0;
-                        break;
-                    case "relationship":
-                        //console.log("relationship");
-                        $maker.replaceWith(predMaker(["relationship", "primary", "secondary", "negated"], pred));
-                        pred.isSFDB = false;
-                        pred.window = 0;
-                        break;
-                }
-                pred.type = this.value;
-            });
+                var $maker = $('<div id="predMaker">');
+                $predForm.append($maker);
+                $types.click(function() {
+                    switch(this.value) {
+                        case "SFDB label":
+                            //console.log("SFDB label");
+                            $maker.replaceWith(predMaker(["primary", "secondary", "label", "negated"], pred));
+                            pred.isSFDB = true;
+                            pred.window = 0;
+                            break;
+                        case "trait":
+                            //console.log("trait");
+                            $maker.replaceWith(predMaker(["trait", "primary", "secondary", "negated"], pred));
+                            pred.isSFDB = false;
+                            pred.window = 0;
+                            break;
+                        case "network":
+                            //console.log("network");
+                            $maker.replaceWith(predMaker(["networkType", "primary", "secondary", "value", "comparator", "negated"], pred));
+                            pred.isSFDB = false;
+                            pred.window = 0;
+                            break;
+                        case "status":
+                            //console.log("status");
+                            $maker.replaceWith(predMaker(["status", "primary", "secondary", "negated"], pred));
+                            pred.isSFDB = false;
+                            pred.window = 0;
+                            break;
+                        case "relationship":
+                            //console.log("relationship");
+                            $maker.replaceWith(predMaker(["relationship", "primary", "secondary", "negated"], pred));
+                            pred.isSFDB = false;
+                            pred.window = 0;
+                            break;
+                    }
+                    pred.type = this.value;
+                });
 
-            $button = $button || $('<button type="button" class="btn" id="addPred">SavePredicate</button>').click(function(e) {
-                //Collect data
-                if(currPreds.indexOf(pred) === -1) {
-                    currPreds.push(pred);
-                    display($currPreds, currPreds, "Predicates:", "p");
-                    pred = {};
-                }
-            });
-            $predForm.append($button);
+                $button = $button || $('<button type="button" class="btn" id="addPred">Save Predicate</button>').click(function(e) {
+                    //Collect data
+                    if(currPreds.indexOf(pred) === -1) {
+                        currPreds.push(pred);
+                        display($currPreds, currPreds, "Predicates:", "p");
+                        pred = {};
+                        $predForm = newForm();
+                    }
+                });
+                $predForm.append($button);
 
-            return $predForm;
+                return $predForm;
+            }
+            return newForm();
         }
 
         build.Context = function(list, $list) {
