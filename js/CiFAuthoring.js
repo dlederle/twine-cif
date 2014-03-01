@@ -85,11 +85,11 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         var classList = function() {
             var list = $('<select id="classList">');
+            list.append('<option>SocialFactsDB</option>');
+            list.append('<option>SocialGameLibrary</option>');
             list.append('<option>CulturalKB</option>');
             list.append('<option>SocialNetworks</option>');
             list.append('<option>Cast</option>');
-            list.append('<option>SocialGameLibrary</option>');
-            list.append('<option>SocialFactsDB</option>');
             return list;
         }
 
@@ -185,6 +185,17 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         build.SocialFactsDB = function(sfdb) {
             console.log("and now we build our SocialFactsDB!");
+            sfdb = sfdb || CiFState.SocialFactsDB;
+            var $sfdb = $('<div class="row">');
+            var $right = $('<div class="span4">').append($('<h1>Construct the Social Facts Data Base</h1>'));
+            var $left = $('<div class="span4">');
+            var $list = $('<ul>');
+            $left.append($list);
+
+            $right.append(build.Context(sfdb.contexts, $list));
+
+            $sfdb.append($right).append($left);
+            return $('<div class="span8">').append($sfdb);
         }
 
         build.Cast = function() {
@@ -331,11 +342,6 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
             $irs.append(build.Rule(irs, ir, $button));
             return $irs;
-        }
-
-        build.Context = function(ctxList, ctx) {
-            ctxList = ctxList || new Error("Context list please");
-            ctx = ctx || {};
         }
 
         build.Locution = function(list, l) {
@@ -519,11 +525,62 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             return $predForm;
         }
 
+        build.Context = function(list, $list) {
+            list = list || new Error("Context list please");
+            var ctx = {};
+            var $form = $('<form>');
+            var types = ["status"];
+            var ctxTypeSelector = function() {
+                var sel = $('<select>');
+                sel.append($('<option>'));
+                types.forEach(function(type) {
+                    sel.append($('<option>' + capitalize(type) + '</option>'))
+                });
+                return sel
+            }
+
+            var newCtx = function() {
+                $form.append($('<label>Select Context type</label>'));
+                $form.append(ctxTypeSelector().change(function(){
+                    var data = {};
+                    switch(this.value) {
+                        case "Status":
+                            $form.append($('<label>Time:</label>'));
+                            $form.append($('<input>').change(function() {
+                                data.time = parseInt(this.value);
+                            }));
+                            data.Predicate = {};
+                            $form.append(build.Predicate([], data.Predicate));
+                            ctx["StatusContext"] = data;
+                            button();
+                            break;
+                        default:
+                    }
+                }));
+                var button = function() {
+                    $form.append($('<button type="button">New Context</button>').click(function(e) {
+                        if(list.indexOf(ctx) === -1) {
+                            list.push(ctx);
+                            ctx = {};
+                            display($list, list, "Contexts");
+
+                            $form.children().remove();
+                            $form = newCtx();
+                        }
+                    }));
+                }
+                return $form;
+            }
+
+            return newCtx();
+        }
+
         build.Proposition = function(list, $list) {
             list = list || new Error("Need a list");
             var prop = {};
+            var $form = $('<form>');
+
             var newProp = function() {
-                var $form = $('<form>');
                 $form.append($('<label>type</label>'));
                 var $sel = $('<select>');
                 $sel.append('<option>');
