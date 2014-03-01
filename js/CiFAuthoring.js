@@ -85,11 +85,11 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         var classList = function() {
             var list = $('<select id="classList">');
+            list.append('<option>CulturalKB</option>');
             list.append('<option>SocialNetworks</option>');
             list.append('<option>Cast</option>');
             list.append('<option>SocialGameLibrary</option>');
             list.append('<option>SocialFactsDB</option>');
-            list.append('<option>CulturalKB</option>');
             return list;
         }
 
@@ -154,7 +154,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
                 return $builder;
             }
             var $sns = $('<div class="row">');
-            var $right = $('<div class="span4">');
+            var $right = $('<div class="span4">').append($('<h1>Construct connections in the Social Networks</h1>'));
             var $lists = $('<div class="span4">');
             CiFState.SocialNetworks.forEach(function(type) {
                 type.numChars = numChars;
@@ -170,6 +170,17 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         build.CulturalKB = function(ckb) {
             console.log("and now we build our CulturalKB!");
+            ckb = ckb || CiFState.CulturalKB;
+            var $ckb = $('<div class="row">');
+            var $right = $('<div class="span4">').append($('<h1>Construct the Cultural Knowledge Base</h1>'));
+            var $left = $('<div class="span4">');
+            var $list = $('<ul>');
+            $left.append($list);
+
+            $right.append(build.Proposition(ckb, $list));
+
+            $ckb.append($right).append($left);
+            return $('<div class="span8">').append($ckb);
         }
 
         build.SocialFactsDB = function(sfdb) {
@@ -508,9 +519,45 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             return $predForm;
         }
 
-        build.Proposition = function(pList, p) {
-            pList = pList || new Error("Need a list");
-            p = p || {};
+        build.Proposition = function(list, $list) {
+            list = list || new Error("Need a list");
+            var prop = {};
+            var newProp = function() {
+                var $form = $('<form>');
+                $form.append($('<label>type</label>'));
+                var $sel = $('<select>');
+                $sel.append('<option>');
+                $sel.append('<option>subjective</option>');
+                $sel.append('<option>truth</option>');
+                $form.append($sel.change(function(e) {
+                    prop.type = this.value;
+                }));
+                $form.append($('<label>Head</label>'));
+                $form.append($('<input>').change(function(e) {
+                    prop.head = this.value;
+                }));
+                $form.append($('<label>Connection</label>'));
+                $form.append($('<input>').change(function(e) {
+                    prop.connection = this.value;
+                }));
+                $form.append($('<label>Tail</label>'));
+                $form.append($('<input>').change(function(e) {
+                    prop.tail = this.value;
+                }));
+
+                var $button = $('<button type="button">Add Proposition</button>').click(function(e) {
+                    if(list.indexOf(prop) === -1) {
+                        list.push(prop);
+                        display($list, list, "Propositions:", "h4");
+                        $form.replaceWith(newProp());
+                        prop = {};
+                    }
+                });
+                $form.append($button);
+                return $form;
+            }
+
+            return newProp();
         }
 
         buildUI();
