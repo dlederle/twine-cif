@@ -747,8 +747,6 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                         first = z;
                         break;
                     default:
-                        console.log("errrror", this);
-                        console.log(this.getPrimaryValue());
                         if(this.type != Predicate.CURRENTSOCIALGAME)
                             console.debug(this, "the first variable was not bound to a character!");
                         //default first is not bound

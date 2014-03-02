@@ -102,11 +102,12 @@ define(['InfluenceRuleSet', 'Rule', 'Cast'], function(InfluenceRuleSet, Rule, Ca
             if (this.preconditions.length > 0) {
                 if (this.preconditions[0].requiresThirdCharacter()) {
                     //if the precondition involves an other check preconditions for static others
+                    var me = this;
                     possibleOthers.forEach(function(otherchar) {
                         if (otherChar.characterName != initiator.characterName &&
                             otherChar.characterName != responder.characterName)
                         {
-                            if (this.preconditions[0].evaluate(initiator, responder, otherChar, this))
+                            if (me.preconditions[0].evaluate(initiator, responder, otherChar, me))
                     {
                         return true;
                     }
@@ -152,11 +153,12 @@ define(['InfluenceRuleSet', 'Rule', 'Cast'], function(InfluenceRuleSet, Rule, Ca
             if (this.preconditions.length > 0) {
                 if (this.preconditions[0].requiresThirdCharacter()) {
                     //if the precondition involves an other run the IRS for all others with a static other (for others that satisfy the SG's preconditions)
+                    var me = this;
                     possibleOthers.forEach(function(otherChar) {
                         if (otherChar.characterName != initiator.characterName &&
                             otherChar.characterName != responder.characterName) {
-                                if (this.preconditions[0].evaluate(initiator, responder, otherChar, this)) {
-                                    totalScore += influenceRuleSet.scoreRules(initiator, responder, otherChar, this, possibleOthers,"",isResponder);
+                                if (me.preconditions[0].evaluate(initiator, responder, otherChar, me)) {
+                                    totalScore += influenceRuleSet.scoreRules(initiator, responder, otherChar, me, possibleOthers,"",isResponder);
                                 }
                             }
                     });
@@ -215,14 +217,15 @@ define(['InfluenceRuleSet', 'Rule', 'Cast'], function(InfluenceRuleSet, Rule, Ca
             });
             if (requiresOther) {
                 //iterate through all possible others and check each precondition with the current other
+                var me = this;
                 possibleOthers.forEach(function(otherChar) {
                     isOtherSuitable = true; //assume the other works unilt proven otherwise
 
                     if (otherChar.characterName != initiator.characterName && otherChar.characterName != responder.characterName) {
                         //if the other is found not to be suitable for filling all precondition rules, break the loop and move on
                         //to the next possible other.
-                        this.preconditions.forEach(function(p) {
-                            if (!p.evaluate(initiator, responder, otherChar, this))
+                        me.preconditions.forEach(function(p) {
+                            if (!p.evaluate(initiator, responder, otherChar, me))
                             isOtherSuitable = false;
                         });
                         //other was true for all preconditions
@@ -230,8 +233,8 @@ define(['InfluenceRuleSet', 'Rule', 'Cast'], function(InfluenceRuleSet, Rule, Ca
                     }
                 });
             } else {
-                this.preconditions.forEach(function(pre) {
-                    if (!pre.evaluate(initiator, responder, undefined, this))
+                me.preconditions.forEach(function(pre) {
+                    if (!pre.evaluate(initiator, responder, undefined, me))
                     return false;
                 });
                 return true;

@@ -454,7 +454,7 @@ _CiFState.SocialGamesLib = [
                 }
             }
         ], //End of Effects
-        "intents": [
+            "intents": [
             {
                 "Rule": {
                     "name": "Initiator must have done some cool action in the past",
@@ -475,11 +475,11 @@ _CiFState.SocialGamesLib = [
                 }
             }
 
-            ],
+        ],
 
-        "instantiations": [
+            "instantiations": [
 
-            ]
+                ]
     }
 },//End of Brag
 

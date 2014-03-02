@@ -93,13 +93,13 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                          * predicates all evaluated to true, we add
                          * the rule's weight to the running total.
                          */
-                        this.socialGamesLib.games.forEach(function(sg) {
+                        that.socialGamesLib.games.forEach(function(sg) {
                             score = 0;
                             maxTrueRuleCount = 0;
                             currentScore = 0;
                             trueOther = undefined;
                             if(sg.thirdParty) {
-                                this.cast.characters.forEach(function(potentialPatsy) {
+                                that.cast.characters.forEach(function(potentialPatsy) {
                                     if(!((potentialPatsy.characterName.toLowerCast() === character.characterName.toLowerCase()) || (potentialPatsy.characterName.toLowerCase() === potentialResponder.characterName.toLowerCase()))) {
                                         if(sg.patsyRule.evaluate(character, potentialResponder, potentialPatsy)) {
                                             if(sg.checkPreconditions(character, potentialResponder, potentialPatsy)) {
@@ -127,7 +127,7 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                             }
                             else if (sg.thirdForIntentFormation()) {
                                 gameScore = new GameScore();
-                                this.cast.characters.forEach(function(char) {
+                                that.cast.characters.forEach(function(char) {
                                     if(char.characterName.toLowerCase() != character.characterName.toLowerCase() && char.characterName.toLowerCase() != potentialResponder.characterName.toLowerCase()) {
                                         if(sg.checkPreconditions(character, potentialResponder, char)) {
                                             currentScore = scoreInitiatorWithMicrotheories(sg, character, potentialResponder, char);
@@ -432,7 +432,7 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                             } else if (ruleRecord.type == RuleRecord.MICROTHEORY_TYPE) {
                                 ruleRecordIntentIndex = ruleRecord.influenceRule.findIntentIndex();
                                 if (ruleRecordIntentIndex < 0) {
-                                    console.debug(this, "setDebugInfo() Microtheory " + ruleRecord.name + " has a rule without an intent: " + ruleRecord.influenceRule.toString());
+                                    console.debug(that, "setDebugInfo() Microtheory " + ruleRecord.name + " has a rule without an intent: " + ruleRecord.influenceRule.toString());
                                 } else {
                                     ruleRecordIntent = ruleRecord.influenceRule.predicates[ruleRecordIntentIndex].getIntentType();
                                     if (sg.intents[0].predicates[0].getIntentType() == ruleRecordIntent) {
@@ -463,12 +463,12 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                             if (ruleRecord.type === RuleRecord.MICROTHEORY_TYPE) {
                                 ruleRecordIntentIndex = ruleRecord.influenceRule.findIntentIndex();
                                 if (ruleRecordIntentIndex < 0) {
-                                    console.debug(this, "setDebugInfo() Microtheory " + ruleRecord.name + " has a rule without an intent: " + ruleRecord.influenceRule.toString());
+                                    console.debug(that, "setDebugInfo() Microtheory " + ruleRecord.name + " has a rule without an intent: " + ruleRecord.influenceRule.toString());
                                 } else {
                                     ruleRecordIntent = ruleRecord.influenceRule.predicates[ruleRecordIntentIndex].getIntentType();
                                     if (sg.intents[0].predicates[0].getIntentType() == ruleRecordIntent) {
                                         newRuleRecord = ruleRecord.clone();
-                                        theory = this.getMicrotheoryByName(ruleRecord.name);
+                                        theory = that.getMicrotheoryByName(ruleRecord.name);
                                         theory.definition.predicates.forEach(function(pred) {
                                             newRuleRecord.influenceRule.predicates.push(pred.clone());
                                         });
@@ -687,7 +687,7 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                     theory.initiatorIRS.influenceRules.forEach(function(ir) {
                         if (ir.requiresThirdCharacter()) {
                             //loop through all characters that are not I or R, determine truth, and score.
-                            this.cast.characters.forEach(function(c) {
+                            that.cast.characters.forEach(function(c) {
                                 if (c.characterName != initiator.characterName && c.characterName != responder.characterName) {
                                     if (ir.evaluateAllNonIntent(initiator, responder, c)) {
                                         ir.allButIntentTrue = true;
@@ -1147,7 +1147,9 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
 
                 if(socialGameContext.gameName != "FORECAST") {//only score games for the initiator that don't have anything to do with forecasts.
                     var tmp = initiator.prospectiveMemory.getGameScoreByGameName(sg.name,responder);
-                    socialGameContext.initiatorScore = tmp.score;
+                    if(tmp != undefined) {
+                        socialGameContext.initiatorScore = tmp.score;
+                    }
                 }
                 socialGameContext.responderScore = score;
 
@@ -1175,24 +1177,24 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                 //update all of the status to be one turn older now that we've chosen salient effects
                 //in other words, the status lives "through" this spot in cif.time
                 //and new statuses are not decremented yet, as they start on the next time step.
-                possibleOthers.forEach(function(char) {
+                var that = this;
+                possibleOthers.forEach(function(charthis) {
                     //for now, just update the possible others (i.e. people whoa ren't present don't change)
                     char.statuses.forEach(function(status) {
-                        if (status.remainingDuration <= 1) 
-                    {
-                        var pred = new Predicate();
-                        pred.setStatusPredicate(char.characterName, status.directedToward, status.type, true);
-                        var directedToward = this.cast.getCharByName(status.directedToward);
-                        pred.valuation(char, directedToward);
+                        if (status.remainingDuration <= 1) {
+                            var pred = new Predicate();
+                            pred.setStatusPredicate(char.characterName, status.directedToward, status.type, true);
+                            var directedToward = that.cast.getCharByName(status.directedToward);
+                            pred.valuation(char, directedToward);
 
-                        var statusContext = new StatusContext();
-                        statusContext.time = this.time;
-                        statusContext.negated = true;
-                        statusContext.statusType = status.type;
-                        statusContext.to = this.cast.getCharByName(status.directedToward);
-                        statusContext.from = char;
-                        this.sfdb.addContext(statusContext);
-                    }
+                            var statusContext = new StatusContext();
+                            statusContext.time = that.time;
+                            statusContext.negated = true;
+                            statusContext.statusType = status.type;
+                            statusContext.to = that.cast.getCharByName(status.directedToward);
+                            statusContext.from = char;
+                            that.sfdb.addContext(statusContext);
+                        }
                     });
                     //decrement status counters of all players
                     char.updateStatusDurations(1);
@@ -1306,13 +1308,11 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                 var maxSaliency = -1000;
                 var mostSalientOthers = [];
                 var mostSalientEffects = [];
-                for (var i = 0; i < possibleSalientEffects.length; i++ )
-                {
+                for (var i = 0; i < possibleSalientEffects.length; i++ ) {
                     //console.debug(this, "" + sg.name + " effect id is: " + possibleSalientEffects[i].id + " and is linked to instantiation: " + possibleSalientEffects[i].instantiationID + " score was: " + possibleSalientEffects[i].salienceScore);
                     possibleSalientEffects[i].scoreSalience();
                     //console.debug(this, "Same thing after score salience: Social game: " + sg.name + " effect id is: " + possibleSalientEffects[i].id + " and is linked to instantiation: " + possibleSalientEffects[i].instantiationID + " score was: " + possibleSalientEffects[i].salienceScore);
-                    if (maxSaliency < possibleSalientEffects[i].salienceScore)
-                    {
+                    if (maxSaliency < possibleSalientEffects[i].salienceScore) {
                         maxSaliency = possibleSalientEffects[i].salienceScore;
                         mostSalientEffect = possibleSalientEffects[i];
                         mostSalientOther = possibleSalientOthers[i];
@@ -1321,8 +1321,7 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                         mostSalientEffects = [];
                         mostSalientEffects.push(possibleSalientEffects[i]);
                     }
-                    else if (maxSaliency == possibleSalientEffects[i].salienceScore)
-                    {
+                    else if (maxSaliency == possibleSalientEffects[i].salienceScore) {
                         mostSalientOthers.push(possibleSalientOthers[i]);
                         mostSalientEffects.push(possibleSalientEffects[i]);
                     }
