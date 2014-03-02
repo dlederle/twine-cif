@@ -7,7 +7,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
         var CiF = CiF || CiFSingleton.getInstance();
         CiFState = CiFState || {};
         CiFState.Cast = CiFState.cast || [];
-        CiFState.SocialGamesLibrary = CiFState.SocialGamesLibrary || [];
+        CiFState.SocialGamesLib = CiFState.SocialGamesLib|| [];
         CiFState.SocialNetworks = CiFState.SocialNetworks || [];
         ["cool", "romance", "buddy"].forEach(function(type) {
             var network = {};
@@ -85,7 +85,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         var classList = function() {
             var list = $('<select id="classList">');
-            list.append('<option>SocialGamesLibrary</option>');
+            list.append('<option>SocialGamesLib</option>');
             list.append('<option>SocialFactsDB</option>');
             list.append('<option>CulturalKB</option>');
             list.append('<option>SocialNetworks</option>');
@@ -106,8 +106,8 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             //Main
         }
 
-        build.SocialGamesLibrary = function(sgl) {
-            sgl = sgl || CiFState.SocialGamesLibrary;
+        build.SocialGamesLib= function(sgl) {
+            sgl = sgl || CiFState.SocialGamesLib;
             var $sgl= $('<div class="row">');
             var $right = $('<div class="span4">').append($('<h1>Create the Social Games Library</h1>'));
             var $left = $('<div class="span4">');
@@ -265,7 +265,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             sg.initiatorIRS = sg.initiatorIRS || [];
             sg.responderIRS = sg.responderIRS || [];
             sg.effects = sg.effects || [];
-            sgl = sgl || CiFState.SocialGamesLibrary;
+            sgl = sgl || CiFState.SocialGamesLib;
 
             var $form = $('<form>');
             $form.append('<label>Make a new Social Game</label>');

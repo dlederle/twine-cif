@@ -1,98 +1,56 @@
 var _CiFState = _CiFState || {};
+
 _CiFState.Cast = [
 {
     "Character": {
-        "characterName": "Robert",
-        "networkID": 0,
-        "traits": [
-            "clumsy",
-        "sex magnet",
-        "confident"
-            ]
+        "characterName": "Big Bad Wolf",
+            "networkID": 0,
+            "traits": [
+                "confident",
+            "dishonest"
+                ]
     }
 },
 {
     "Character": {
-        "characterName": "Debbie",
+        "characterName": "Red Riding Hood",
         "networkID": 1,
         "traits": [
             "forgiving",
-        "confident"
+        "kind",
+        "loving"
             ]
     }
 },
-{
-    "Character": {
-        "characterName": "Edward",
-        "networkID": 2,
-        "traits": [
-            "domineering",
-        "afraid of commitment"
-            ]
-    }
-}
-];
 
-_CiFState.CulturalKB = [
+    ];
+
+    _CiFState.CulturalKB = [
 {
     "Proposition": {
-        "type": "subjective",
-            "head": "robert",
-            "connection": "likes",
-            "tail": "pirates"
-    }
-},
-{
-    "Proposition": {
-        "type": "subjective",
-        "head": "Debbie",
-        "connection": "dislikes",
-        "tail": "flowers"
+        "type": "truth",
+            "head": "Big Bad Wolf",
+            "connection": "is",
+            "tail": "a wolf"
     }
 },
 {
     "Proposition": {
         "type": "truth",
-        "head": "pirates",
-        "connection": "are",
+        "head": "a wolf",
+        "connection": "likes",
+        "tail": "eating people"
+    }
+},
+{
+    "Proposition": {
+        "type": "subjective",
+        "head": "a wolf",
+        "connection": "is",
         "tail": "mean"
     }
-},
-{
-    "Proposition": {
-        "type": "subjective",
-        "head": "robert",
-        "connection": "likes",
-        "tail": "flowers"
-    }
-},
-{
-    "Proposition": {
-        "type": "truth",
-        "head": "flowers",
-        "connection": "are",
-        "tail": "lame"
-    }
 }
 ];
-
-_CiFState.SocialFactsDB = {
-    "contexts" : [
-    {
-        "StatusContext": {
-            "time": "20",
-            "Predicate": {
-                "type"    : "status",
-                "status"  : "has a crush on",
-                "primary"   : "Debbie",
-                "secondary"  : "Robert",
-                "negated" : false,
-                "isSFDB"  : true
-            }
-        }
-    }
-    ]
-};
 
 _CiFState.SocialGamesLib = [
 {
@@ -105,7 +63,7 @@ _CiFState.SocialGamesLib = [
                     "predicates" : [
                     {
                         "Predicate": {
-                            "type":"SFDB label",
+                            "type":"sfdblabel",
                             "primary":"initiator",
                             "secondary": "initiator",
                             "label": "cool",
@@ -205,6 +163,7 @@ _CiFState.SocialGamesLib = [
                     {
                         "Predicate": {
                             "type":"trait",
+                            "trait": "humble",
                             "primary":"initiator",
                             "negated":false,
                             "isSFDB":false,
@@ -277,9 +236,9 @@ _CiFState.SocialGamesLib = [
                     "predicates": [
                     {
                         "Predicate": {
-                            "type":"trait",
+                            "type": "trait",
                             "trait":"witty",
-                            "primary":"intiator",
+                            "primary":"initiator",
                             "negated":false,
                             "isSFDB":false,
                             "window": 0
@@ -298,49 +257,49 @@ _CiFState.SocialGamesLib = [
                     "condition": {
                         "Rule": {
                             "predicates": [
-                                {
-                                    "Predicate": {
-                                        "type": "SFDB label",
-                                        "primary": "initiator",
-                                        "secondary": "responder",
-                                        "label": "cool",
-                                        "negated": false,
-                                        "isSFDB": true,
-                                        "window": 0
-                                    }
+                            {
+                                "Predicate": {
+                                    "type": "sfdblabel",
+                                    "primary": "initiator",
+                                    "secondary": "responder",
+                                    "label": "cool",
+                                    "negated": false,
+                                    "isSFDB": true,
+                                    "window": 0
                                 }
+                            }
                             ]
                         }
                     },
                     "change": {
                         "Rule": {
                             "predicates": [
-                                {
-                                    "Predicate": {
-                                        "type": "network",
-                                        "networkType": "cool",
-                                        "primary": "responder",
-                                        "secondary": "initiator",
-                                        "comparator": "+",
-                                        "value": 20,
-                                        "negated": false,
-                                        "isSFDB": false,
-                                        "window": 0
-                                    }
-                                },
-                                {
-                                    "Predicate": {
-                                        "type": "network",
-                                        "networkType": "buddy",
-                                        "primary": "responder",
-                                        "secondary": "initiator",
-                                        "comparator": "+",
-                                        "value": 20,
-                                        "negated": false,
-                                        "isSFDB": false,
-                                        "window": 0
-                                    }
+                            {
+                                "Predicate": {
+                                    "type": "network",
+                                    "networkType": "cool",
+                                    "primary": "responder",
+                                    "secondary": "initiator",
+                                    "comparator": "+",
+                                    "value": 20,
+                                    "negated": false,
+                                    "isSFDB": false,
+                                    "window": 0
                                 }
+                            },
+                            {
+                                "Predicate": {
+                                    "type": "network",
+                                    "networkType": "buddy",
+                                    "primary": "responder",
+                                    "secondary": "initiator",
+                                    "comparator": "+",
+                                    "value": 20,
+                                    "negated": false,
+                                    "isSFDB": false,
+                                    "window": 0
+                                }
+                            }
                             ]
                         }
                     }
@@ -354,19 +313,19 @@ _CiFState.SocialGamesLib = [
                     "change": {
                         "Rule": {
                             "predicates": [
-                                {
-                                    "Predicate": {
-                                        "type": "network",
-                                        "networkType": "cool",
-                                        "primary": "responder",
-                                        "secondary": "initiator",
-                                        "comparator": "+",
-                                        "value": 20,
-                                        "negated": false,
-                                        "isSFDB": false,
-                                        "window": 0
-                                    }
+                            {
+                                "Predicate": {
+                                    "type": "network",
+                                    "networkType": "cool",
+                                    "primary": "responder",
+                                    "secondary": "initiator",
+                                    "comparator": "+",
+                                    "value": 20,
+                                    "negated": false,
+                                    "isSFDB": false,
+                                    "window": 0
                                 }
+                            }
                             ]
                         }
                     }
@@ -380,19 +339,19 @@ _CiFState.SocialGamesLib = [
                     "change": {
                         "Rule": {
                             "predicates": [
-                                {
-                                    "Predicate": {
-                                        "type": "network",
-                                        "networkType": "cool",
-                                        "primary": "responder",
-                                        "secondary": "initiator",
-                                        "comparator": "-",
-                                        "value": 20,
-                                        "negated": false,
-                                        "isSFDB": false,
-                                        "window": 0
-                                    }
+                            {
+                                "Predicate": {
+                                    "type": "network",
+                                    "networkType": "cool",
+                                    "primary": "responder",
+                                    "secondary": "initiator",
+                                    "comparator": "-",
+                                    "value": 20,
+                                    "negated": false,
+                                    "isSFDB": false,
+                                    "window": 0
                                 }
+                            }
                             ]
                         }
                     }
@@ -408,12 +367,12 @@ _CiFState.SocialGamesLib = [
                             "predicates": [
                             {
                                 "Predicate" : {
-                                "type": "trait",
-                                "trait": "humble",
-                                "primary": "responder",
-                                "negated": false,
-                                "isSFDB": false,
-                                "window": 0
+                                    "type": "trait",
+                                    "trait": "humble",
+                                    "primary": "responder",
+                                    "negated": false,
+                                    "isSFDB": false,
+                                    "window": 0
                                 }
                             }
                             ]
@@ -422,19 +381,19 @@ _CiFState.SocialGamesLib = [
                     "change": {
                         "Rule": {
                             "predicates": [
-                                {
-                                    "Predicate": {
-                                        "type": "network",
-                                        "networkType": "cool",
-                                        "primary": "responder",
-                                        "secondary": "initiator",
-                                        "comparator": "-",
-                                        "value": 20,
-                                        "negated": false,
-                                        "isSFDB": false,
-                                        "window": 0
-                                    }
+                            {
+                                "Predicate": {
+                                    "type": "network",
+                                    "networkType": "cool",
+                                    "primary": "responder",
+                                    "secondary": "initiator",
+                                    "comparator": "-",
+                                    "value": 20,
+                                    "negated": false,
+                                    "isSFDB": false,
+                                    "window": 0
                                 }
+                            }
                             ]
                         }
                     }
@@ -450,13 +409,13 @@ _CiFState.SocialGamesLib = [
                             "predicates": [
                             {
                                 "Predicate" : {
-                                "type": "status",
-                                "status": "jealous",
-                                "primary": "responder",
-                                "secondary": "initiator",
-                                "negated": false,
-                                "isSFDB": false,
-                                "window": 0
+                                    "type": "status",
+                                    "status": "envies",
+                                    "primary": "responder",
+                                    "secondary": "initiator",
+                                    "negated": false,
+                                    "isSFDB": false,
+                                    "window": 0
                                 }
                             }
                             ]
@@ -465,126 +424,108 @@ _CiFState.SocialGamesLib = [
                     "change": {
                         "Rule": {
                             "predicates": [
-                                {
-                                    "Predicate": {
-                                        "type": "network",
-                                        "networkType": "cool",
-                                        "primary": "responder",
-                                        "secondary": "initiator",
-                                        "comparator": "-",
-                                        "value": 20,
-                                        "negated": false,
-                                        "isSFDB": false,
-                                        "window": 0
-                                    }
-                                },
-                                {
-                                    "Predicate": {
-                                        "type": "status",
-                                        "status": "emnity",
-                                        "primary": "responder",
-                                        "secondary": "initiator",
-                                        "negated": false,
-                                        "isSFDB": false,
-                                        "window": 0
-                                    }
+                            {
+                                "Predicate": {
+                                    "type": "network",
+                                    "networkType": "cool",
+                                    "primary": "responder",
+                                    "secondary": "initiator",
+                                    "comparator": "-",
+                                    "value": 20,
+                                    "negated": false,
+                                    "isSFDB": false,
+                                    "window": 0
                                 }
+                            },
+                            {
+                                "Predicate": {
+                                    "type": "status",
+                                    "status": "angry at",
+                                    "primary": "responder",
+                                    "secondary": "initiator",
+                                    "negated": false,
+                                    "isSFDB": false,
+                                    "window": 0
+                                }
+                            }
                             ]
                         }
                     }
                 }
             }
-        ] //End of Effects
-    }
-},//End of Brag
-{
-    "SocialGame": {
-        "name": "Rough Up",
-        "preconditions" : [
+        ], //End of Effects
+        "intents": [
             {
                 "Rule": {
-                    "predicates": [
+                    "name": "Initiator must have done some cool action in the past",
+                    "predicates" : [
                     {
-                        "Predicate" : {
-                            "type": "relationship",
-                            "primary": "initiator",
-                            "secondary": "responder",
-                            "relationship": "fighting",
-                            "negated":true,
-                            "isSFDB":false,
-                            "window": 0
+                        "Predicate": {
+                            "type":"sfdblabel",
+                            "primary":"initiator",
+                            "secondary": "initiator",
+                            "label": "cool",
+                            "window": 0,
+                            "negated":false,
+                            "isSFDB": true,
+                            "intent": true
                         }
                     }
                     ]
                 }
             }
-        ], //end of Preconditions
-        "initiatorIRS": [
-            {
-                "InfluenceRule": {
-                    "weight": 10,
-                    "predicates":[
-                        {
-                            "Predicate": {
-                                "type": "trait",
-                                "trait": "aggressive",
-                                "first": "responder",
-                                "negated": false,
-                                "isSFDB": false,
-                                "window": 0
-                            }
-                        }
-                    ]
-                }
-            }
-        ],
-            "responderIRS": [
-                //TODO
-                ],
 
-            "effects" : [
-                //TODO
-                ]
+            ],
+
+        "instantiations": [
+
+            ]
     }
-}//End of Rough Up
-] //End of SocialGameLibrary
+},//End of Brag
 
+    ];
 
-_CiFState.SocialNetworks = [
+    _CiFState.SocialNetworks = [
 {
     "type": "buddy",
-        "numChars" : "3",
+        "numChars" : "2",
         "edges" : [
-        {"from": "0", "to": "1", "value": "10"},
-        {"from": "0", "to": "2", "value": "20"},
-        {"from": "1", "to": "0", "value": "30"},
-        {"from": "1", "to": "2", "value": "100"},
-        {"from": "2", "to": "0", "value": "50"},
-        {"from": "2", "to": "1", "value": "60"}
-    ]
+        {"from": "0", "to": "1", "value": "-15" },
+        {"from": "1", "to": "0", "value": "15"},
+        ]
 },
 {
     "type": "cool",
-    "numChars" : "3",
+    "numChars" : "2",
     "edges" : [
-    {"from": "0", "to": "1", "value": "10"},
-    {"from": "0", "to": "2", "value": "20"},
+    {"from": "0", "to": "1", "value": "20"},
     {"from": "1", "to": "0", "value": "30"},
-    {"from": "1", "to": "2", "value": "100"},
-    {"from": "2", "to": "0", "value": "50"},
-    {"from": "2", "to": "1", "value": "60"}
     ]
 },
 {
     "type": "romance",
-    "numChars" : "3",
+    "numChars" : "2",
     "edges" : [
-    {"from": "0", "to": "1", "value": "10"},
-    {"from": "0", "to": "2", "value": "20"},
-    {"from": "1", "to": "0", "value": "30"},
-    {"from": "1", "to": "2", "value": "40"},
-    {"from": "2", "to": "0", "value": "50"},
-    {"from": "2", "to": "1", "value": "60"}
+    {"from": "0", "to": "1", "value": "0"},
+    {"from": "1", "to": "0", "value": "20"},
     ]
 }
-]
+];
+
+_CiFState.SocialFactsDB = {
+    "contexts" : [
+    {
+        "StatusContext": {
+            "time": "20",
+            "Predicate": {
+                "type"    : "status",
+                "status"  : "anxious",
+                "primary"   : "initiator",
+                "secondary"  : "responder",
+                "negated" : false,
+                "isSFDB"  : true
+            }
+        }
+    }
+    ]
+};

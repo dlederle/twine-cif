@@ -310,11 +310,11 @@ define(['CiFSingleton', 'Rule', 'Character', 'Predicate', 'SocialGameContext', '
                 {
                     salience += 3;
                 }
-                else if (RelationshipNetwork.getRelationshipNameByNumber(pred.relationship) == "enemies")
+                else if (RelationshipNetwork.getInstance().getRelationshipNameByNumber(pred.relationship) == "enemies")
                 {
                     salience += 3;
                 }
-                else if (RelationshipNetwork.getRelationshipNameByNumber(pred.relationship) == "dating")
+                else if (RelationshipNetwork.getInstance().getRelationshipNameByNumber(pred.relationship) == "dating")
                 {
                     salience += 3;
                 }
@@ -323,7 +323,7 @@ define(['CiFSingleton', 'Rule', 'Character', 'Predicate', 'SocialGameContext', '
             if (this.lastSeenTime >= 0) {
                 //this means we've seen this effect before
                 var penalty;
-                penalty = 1000 - (CiFSingleton.getInstance().time - this.lastSeenTime);
+                penalty = 1000 - (CiF.time - this.lastSeenTime);
                 salience = salience - penalty;
             }
 

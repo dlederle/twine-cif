@@ -1,25 +1,18 @@
 require.config({
     baseUrl: "./js/cif-js",
     paths: {
-        "CiFSingleton": "CiFSingleton",
-        "jquery": "../vendor/jquery-1.11.0.min",
-        "CiFAuthoring": "../CiFAuthoring"
+        "CiFSingleton": "CiFSingleton"
     }
 });
 
-require(['CiFSingleton', 'CiFAuthoring'], function(CiFSingleton, CiFAuthoring) {
+require(['CiFSingleton'], function(CiFSingleton) {
     console.log("entering main");
     try {
         CiF = CiFSingleton.getInstance();
-        //CiF.defaultState();
-        //CiF.formIntentForAll(c.cast.characters, c.cast.characters);
-        //CiF.loadJSON(_CiFState);
-
-        if(CiFAuthoring) {
-            CiFAuthoring();
-        } else {
-            console.debug("CiFAuthoring not loaded");
-        }
+        CiF.loadJSON(_CiFState);
+        var initiator = CiF.cast.characters[0];
+        var responder = CiF.cast.characters[1];
+        CiF.playGameByName("brag", initiator, responder);
     } catch (e) {
         console.log(e.stack);
     }

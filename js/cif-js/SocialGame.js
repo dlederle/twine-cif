@@ -17,7 +17,7 @@ define(['InfluenceRuleSet', 'Rule', 'Cast'], function(InfluenceRuleSet, Rule, Ca
         this.preconditions = opts.preconditions || [];
         this.initiatorIRS = opts.initiatorIRS || new InfluenceRuleSet();
         this.responderIRS = opts.responderIRS || new InfluenceRuleSet();
-        this.effects = opts.effects || [];
+
         this.thirdPartyTalkAboutSomeone = opts.thirdPartyTalkAboutSomeone || false;
         this.thirdPartyGetSomeoneToDoSomethingForYou = opts.thirdPartyGetSomeoneToDoSomethingForYou || false;
         this.patsyRule = opts.patsyRule || new Rule();
@@ -37,6 +37,14 @@ define(['InfluenceRuleSet', 'Rule', 'Cast'], function(InfluenceRuleSet, Rule, Ca
             });
             e.id = idToUse;
             this.effects.push(e);
+        }
+
+        this.effects = [];
+        if(opts.effects) {
+            var sg = this;
+            opts.effects.forEach(function(e) {
+                sg.addEffect(e);
+            });
         }
 
         /**
@@ -137,7 +145,7 @@ define(['InfluenceRuleSet', 'Rule', 'Cast'], function(InfluenceRuleSet, Rule, Ca
          */
         this.scoreGame = function(initiator, responder, activeOtherCast, isResponder) {
             isResponder = isResponder || false;
-            var possibleOthers = activeOtherCast || Cast.getInstancE().characters;
+            var possibleOthers = activeOtherCast || CiF.cast.characters;
             var influenceRuleSet = (!isResponder) ? this.initiatorIRS : this.responderIRS;
 
             var totalScore = 0.0;
@@ -156,7 +164,9 @@ define(['InfluenceRuleSet', 'Rule', 'Cast'], function(InfluenceRuleSet, Rule, Ca
                 else {
                     // if there is a precondition, but it doesn't require a third, just score the IRS once with variable other
                     if (this.preconditions[0].evaluate(initiator, responder, undefined, this)) {
-                        totalScore += influenceRuleSet.scoreRulesWithVariableOther(initiator, responder, undefined, this, possibleOthers, "", isResponder);
+                        var _tmp = influenceRuleSet.scoreRulesWithVariableOther(initiator, responder, undefined, this, possibleOthers, "", isResponder);
+                        console.log(_tmp);
+                        totalScore += _tmp;
                     }
                 }
             }

@@ -211,10 +211,10 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                 var score = 0.0;
                 var possibleOthers = activeOtherCast || this.cast.characters;
                 //Score the social game
-                score += sg.scoreGame(initator, responder, possibleOthers, true);
-
-                if (responder.prospectiveMemory.intentScoreCache[initiator.networkID][sg.intents[0].predicates[0].getIntentType()] != ProspectiveMemory.DEFAULT_INTENT_SCORE)
-                {
+                score += sg.scoreGame(initiator, responder, possibleOthers, true);
+                var pmScore = responder.prospectiveMemory.intentScoreCache[initiator.networkID];
+                var intentType = sg.intents[0].predicates[0].getIntentType();
+                if (pmScore[intentType] != ProspectiveMemory.DEFAULT_INTENT_SCORE) {
                     score += responder.prospectiveMemory.intentScoreCache[initiator.networkID][sg.intents[0].predicates[0].getIntentType()];
                 }
                 return score;
@@ -1049,8 +1049,8 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
              * Social game play.
              *********************************************************************/
 
-            this.playGameByName = function(gameName, initiator, responder, otherundefined, otherCast) {
-                var contextContext = this.playGame(socialGamesLib.getByName(gameName), initiator, responder, other,otherCast);
+            this.playGameByName = function(gameName, initiator, responder, other, otherCast) {
+                return this.playGame(this.socialGamesLib.getByName(gameName), initiator, responder, other,otherCast);
             }
 
             this.playGame = function(sg, initiator, responder, other, otherCast, levelCast, negateResponderScore, acceptThreshold, responderBoost, forcedInstantiation) {
@@ -1060,16 +1060,20 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                 //to just set it to undefined here explicitly (since passing in, say, an instantiated yet 'blank' character with no name
                 //will cause issues and heartbreak).
                 other = undefined;
+                var possibleOthers = otherCast || this.cast.characters;
+                levelCast = levelCast || possibleOthers;
+                negateResponderScore = negateResponderScore || false;
+                acceptThreshold = acceptThreshold || 0;
+                forcedInstantiation = forcedInstantiation|| -1;
 
                 if (!levelCast) {
                     console.debug(this, "playGame() You need to pass in a level cast!!! ERROR!!!");
                 }
-                var possibleOthers = otherCast || this.cast.characters;
 
                 //get responder IRS score
                 var highestSaliencyEffect;
                 //var highestSaliencyCount:int = -1;
-                var socialGameContextContext = new SocialGameContext();
+                var socialGameContext = new SocialGameContext();
                 var score=0;
                 //keeps track of the maxiumum true IR rules of the IRSs ran to find
                 //a third character.
@@ -1083,13 +1087,18 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                 score = this.getResponderScore(sg, initiator, responder, possibleOthers);
                 score += responderBoost;
 
-                if (score >= acceptThreshold) acceptGameIntent = true;
-                else acceptGameIntent = false;
+                if (score >= acceptThreshold) {
+                    acceptGameIntent = true;
+                }
+                else {
+                    acceptGameIntent = false;
+                }
 
-                if (negateResponderScore) acceptGameIntent = !acceptGameIntent; //hee hee!  If they use a magic power, reverse whether the game is accepted or rejected!
+                if (negateResponderScore) {
+                    acceptGameIntent = !acceptGameIntent; //hee hee!  If they use a magic power, reverse whether the game is accepted or rejected!
+                }
 
                 var otherAndEffect = this.getSalientOtherAndEffect(sg, acceptGameIntent, initiator, responder, possibleOthers, levelCast, forcedInstantiation);
-
 
                 //the other to use when all cases of other being passed in and a
                 //third character being needed when one is not provided.
@@ -1137,7 +1146,8 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                 socialGameContext.time = this.time;
 
                 if(socialGameContext.gameName != "FORECAST") {//only score games for the initiator that don't have anything to do with forecasts.
-                    socialGameContext.initiatorScore = initiator.prospectiveMemory.getGameScoreByGameName(sg.name,responder).score;
+                    var tmp = initiator.prospectiveMemory.getGameScoreByGameName(sg.name,responder);
+                    socialGameContext.initiatorScore = tmp.score;
                 }
                 socialGameContext.responderScore = score;
 
@@ -1216,7 +1226,7 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
             }
 
             this.getSalientOtherAndEffect = function(sg, accepted, initiator, responder, otherCast, levelCast, forcedInstantiationID) {
-                forcedInstantiationID = forcedInstantiation || -1;
+                //forcedInstantiationID = forcedInstantiationID || -1;
                 var possibleOthers = otherCast || this.cast.characters;
 
                 if (!levelCast) {
@@ -1229,46 +1239,47 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                 var castMemberPresent = false;
 
 
-                var genericEffect; // used to store a generic effect, just to make sure that we have ONE option!
+                var genericEffect = sg.effects[0]; // used to store a generic effect, just to make sure that we have ONE option!
 
 
                 //find all valid effects
                 //--make sure to go through all others
                 sg.effects.forEach(function(effect) {
-                    if (effect.isAccept == accepted) {
-                        if (effect.condition.predicates.length == 0) genericEffect = effect; // store the generic effect for later, just in case we need it.
+                    if (effect.isAccept === accepted) {
+                        if (effect.condition.predicates.length == 0) {
+                            genericEffect = effect; // store the generic effect for later, just in case we need it.
+                        }
                         //only look at this effect if we don't care about forcing an instantiation, OR if we do force an instantiation, this effect matches the forced instantiation id.
-                        if( forcedInstantiationID == -1 || effect.instantiationID == forcedInstantiationID){
-                            if (effect.requiresThirdCharacter())
-                {
-                    possibleOthers.forEach(function(char) {
-                        castMemberPresent = false;
-                        if (char.characterName != initiator.characterName && char.characterName != responder.characterName) {
-                            //make sure the character is in the level if the instantiation requires him to be
-                            instantiation = sg.getInstantiationById(effect.instantiationID);
-                            if (instantiation.requiresOtherToPerform()) {
-                                //See if the other is in the level
-                                levelCast.forEach(function(castMember) {
-                                    if (castMember.characterName == char.characterName) {
-                                        castMemberPresent = true; // we found a match!
+                        if( forcedInstantiationID == -1 || effect.instantiationID == forcedInstantiationID) {
+                            if (effect.requiresThirdCharacter()) {
+                                possibleOthers.forEach(function(char) {
+                                    castMemberPresent = false;
+                                    if (char.characterName != initiator.characterName && char.characterName != responder.characterName) {
+                                        //make sure the character is in the level if the instantiation requires him to be
+                                        instantiation = sg.getInstantiationById(effect.instantiationID);
+                                        if (instantiation.requiresOtherToPerform()) {
+                                            //See if the other is in the level
+                                            levelCast.forEach(function(castMember) {
+                                                if (castMember.characterName == char.characterName) {
+                                                    castMemberPresent = true; // we found a match!
+                                                }
+                                            });
+                                        }
+                                        else {
+                                            castMemberPresent = true;
+                                        }
+
+                                //if we have passed the check that the character is in the level (or it doesn't matter if they are or not)
+                                if (castMemberPresent) {
+                                    //check to see if this i,r,o group satisfies the condition
+                                    if (effect.condition.evaluate(initiator, responder, char,sg)) {
+                                        possibleSalientEffects.push(effect);
+                                        possibleSalientOthers.push(char);
+                                    }
+                                }
                                     }
                                 });
                             }
-                            else {
-                                castMemberPresent = true;
-                            }
-
-                    //if we have passed the check that the character is in the level (or it doesn't matter if they are or not)
-                    if (castMemberPresent) {
-                        //check to see if this i,r,o group satisfies the condition
-                        if (effect.condition.evaluate(initiator, responder, char,sg)) {
-                            possibleSalientEffects.push(effect);
-                            possibleSalientOthers.push(char);
-                        }
-                    }
-                        }
-                    });
-                }
                             else
                             {
                                 // this is the case where we don't care about the other
@@ -1282,11 +1293,10 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                     }
                 });
 
-                if (forcedInstantiationID != -1 && possibleSalientEffects.length == 0) {
+                if (possibleSalientEffects.length == 0) {
                     // if we got here, then we WANT to force an instantiation BUT we somehow screwed up and the effect conditions of the instantiation are no longer true.
                     //In this case, just use the generic effect that we stored for this very purpose!
                     possibleSalientEffects.push(genericEffect);
-                    possibleSalientOthers.push(undefined);
                 }
 
                 //go through all valid effects and choose the ones that have the highest salience score
@@ -1911,9 +1921,12 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
             this.load.SocialGame = function(sg) {
                 var load = this;
                 sg = sg.SocialGame;
-                checkUndefined(sg, ["preconditions", "initiatorIRS", "responderIRS", "effects"]);
+                checkUndefined(sg, ["preconditions", "initiatorIRS", "responderIRS", "effects", "intents"]);
                 sg.preconditions.forEach(function(rule, i) {
                     sg.preconditions[i] = load.Rule(rule.Rule);
+                });
+                sg.intents.forEach(function(intent, i) {
+                    sg.intents[i] = load.Rule(intent.Rule);
                 });
                 sg.initiatorIRS = load.InfluenceRuleSet(sg.initiatorIRS);
                 sg.responderIRS = load.InfluenceRuleSet(sg.responderIRS);
@@ -1941,7 +1954,11 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
                 checkUndefined(ir, ["predicates"]);
                 var load = this;
                 ir.predicates.forEach(function(pred, i) {
+                    //console.log("before", ir.name, pred.Predicate);
                     ir.predicates[i] = load.Predicate(pred.Predicate);
+                    if(ir.predicates[i].type === -1) {
+                        //console.log("ERROR", ir.name, ir.predicates[i]);
+                    }
                 });
                 return new InfluenceRule(ir);
             }

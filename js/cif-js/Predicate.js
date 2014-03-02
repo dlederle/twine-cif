@@ -1,6 +1,5 @@
 define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "RomanceNetwork", "CoolNetwork", "Util", "Cast", "CulturalKB", "Status", "SocialFactsDB"], function(RelationshipNetwork, Rule, SocialNetwork, BuddyNetwork, RomanceNetwork, CoolNetwork, Util, Cast, CulturalKB, Status, SocialFactsDB) {
 
-    console.log("Predicate loaded");
     /**
      * @class Predicate
      * The Predicate class is the terminal and functional end of the logic
@@ -28,8 +27,8 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
     var Predicate = function(opts) {
 
         opts = opts || {};
-        this.type = opts.type || -1;
         this.trait = opts.trait || -1;
+        this.type = opts.type || -1;
         this.description = opts.description || "";
         this.primary = opts.primary || "";
         this.secondary = opts.secondary || "";
@@ -319,7 +318,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                 default:
                         if (Cast.getInstance().getCharByName(this.primary))
                             return this.primary;
-                        console.debug(this, "getPrimaryValue() primary could not be placed in a known class: " + this.primary + " " + this);
+                            //console.debug(this, "getPrimaryValue() primary could not be placed in a known class: " + this.primary + " " + this);
             }
             return "";
         }
@@ -607,7 +606,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
          * @param	first Character variable of the first predicate parameter.
          * @param	second Character variable of the second predicate parameter.
          */
-        var updateStatus = function(first, second) {
+        this.updateStatus = function(first, second) {
             if (this.negated)
                 first.removeStatus(this.status, second);
             else
@@ -619,7 +618,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
          * @param	first Character variable of the first predicate parameter.
          * @param	second Character variable of the second predicate parameter.
          */
-        var updateRelationship = function(first, second) {
+        this.updateRelationship = function(first, second) {
             var rel = RelationshipNetwork.getInstance();
             if (this.negated)
             {
@@ -640,7 +639,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
          * @param	first Character variable of the first predicate parameter.
          * @param	second Character variable of the second predicate parameter.
          */
-        var updateNetwork = function(first, second) {
+        this.updateNetwork = function(first, second) {
             var net;
             var firstID = first.networkID;
             var secondID;
@@ -656,6 +655,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                 net = RomanceNetwork.getInstance();
             if(this.networkType == SocialNetwork.COOL)
                 net = CoolNetwork.getInstance();
+            var me = this;
 
             switch (getOperatorByName(this.operator)) {
                 case Predicate.ADD:
@@ -679,21 +679,21 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                     Cast.getInstance().characters.forEach(function(character) {
                         if (RelationshipNetwork.getInstance().getRelationship(RelationshipNetwork.FRIENDS, first, second)
                             && first.characterName != character.characterName)
-                            net.addWeight(this.networkValue, character.networkID, firstID);
+                            net.addWeight(me.networkValue, character.networkID, firstID);
                     });
                     break;
                 case Predicate.ALLDATINGUP:
                     Cast.getInstance().characters.forEach(function(character) {
                         if (RelationshipNetwork.getInstance().getRelationship(RelationshipNetwork.DATING, first, second)
                             && first.characterName != character.characterName)
-                            net.addWeight(this.networkValue, character.networkID, firstID);
+                            net.addWeight(me.networkValue, character.networkID, firstID);
                     });
                     break;
                 case Predicate.ALLENEMYUP:
                     Cast.getInstance().characters.forEach(function(character) {
                         if (RelationshipNetwork.getInstance().getRelationship(RelationshipNetwork.ENEMIES, first, second)
                             && first.characterName != character.characterName)
-                            net.addWeight(this.networkValue, character.networkID, firstID);
+                            net.addWeight(me.networkValue, character.networkID, firstID);
                     });
                     break;
             }
@@ -713,7 +713,6 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
          * @return True of the predicate evaluates to true. False if it does not.
          */
         this.evaluate = function(x, y, z, sg) {
-
             var first;
             var second;
             var third;
@@ -732,7 +731,8 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
              */
             //if this.primary is not a reference to a character, determine if
             //it is either a role or a generic variable
-            if (!(first = Cast.getInstance().getCharByName(this.primary))) {
+            first = CiF.cast.getCharByName(this.primary);
+            if (!first) {
                 switch (this.getPrimaryValue()) {
                     case "initiator":
                     case "x":
@@ -747,12 +747,15 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                         first = z;
                         break;
                     default:
-                        if(this.type != CURRENTSOCIALGAME)
+                        console.log("errrror", this);
+                        console.log(this.getPrimaryValue());
+                        if(this.type != Predicate.CURRENTSOCIALGAME)
                             console.debug(this, "the first variable was not bound to a character!");
                         //default first is not bound
                 }
             }
-            if (!(second = Cast.getInstance().getCharByName(this.secondary))) {
+            second = CiF.cast.getCharByName(this.secondary)
+            if (!second) {
                 switch (this.getSecondaryValue()) {
                     case "initiator":
                     case "x":
@@ -770,8 +773,8 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                         second = null;
                 }
             }
-
-            if (!(third = Cast.getInstance().getCharByName(this.tertiary))) {
+            third = CiF.cast.getCharByName(this.tertiary)
+            if (!third) {
                 switch (this.getTertiaryValue()) {
                     case "initiator":
                     case "x":
@@ -794,14 +797,6 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                 }
             }
 
-            /*			var rtnstr:String = "first: ";
-                        rtnstr += first?first.characterName:"N/A" ;
-                        rtnstr += " second: ";
-                        rtnstr += second?second.characterName:"N/A";
-                        rtnstr += " type: ";
-                        rtnstr += Predicate.getNameByType(this.type);
-                        console.debug(this, rtnstr);
-                        */
             /*
              * At this point only first has to be set. Any other bindings might
              * not be valid depending on the type of the predicate. For example
@@ -838,12 +833,13 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                     if (!sg.intents) {
                         console.debug(this, "evaluate(): intent predicate evaluation: the social game context has no intent");
                     } else {
+                        var me = this;
                         sg.intents.forEach(function(rule) {
                             rule.predicates.forEach(function(pred) {
-                                if (pred.relationship == this.relationship &&
-                                    pred.primary == this.primary &&
-                                    pred.secondary == this.secondary &&
-                                    pred.negated == this.negated) {
+                                if (pred.relationship == me.relationship &&
+                                    pred.primary == me.primary &&
+                                    pred.secondary == me.secondary &&
+                                    pred.negated == me.negated) {
 
                                         return true;
                                     }
@@ -856,13 +852,14 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                     if (!sg.intents) {
                         console.debug(this, "evaluate(): intent predicate evaluation: the social game context has no intent");
                     } else {
+                        var me = this;
                         sg.intents.forEach(function(rule) {
                             rule.predicates.forEach(function(pred) {
-                                if (pred.networkType == this.networkType &&
-                                    pred.comparator == this.comparator &&
-                                    pred.primary == this.primary &&
-                                    pred.secondary == this.secondary &&
-                                    pred.negated == this.negated) {
+                                if (pred.networkType == me.networkType &&
+                                    pred.comparator == me.comparator &&
+                                    pred.primary == me.primary &&
+                                    pred.secondary == me.secondary &&
+                                    pred.negated == me.negated) {
 
                                         return true;
                                     }
@@ -876,13 +873,13 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                     if (!sg.intents) {
                         console.debug(this, "evaluate(): intent predicate evaluation: the social game context has no intent");
                     } else {
+                        var _p = this;
                         sg.intents.forEach(function(rule) {
                             rule.predicates.forEach(function(pred) {
-                                if (pred.sfdbLabel == this.sfdbLabel &&
-                                    pred.primary == this.primary &&
-                                    pred.secondary == this.secondary &&
-                                    pred.negated == this.negated) {
-
+                                if (pred.sfdbLabel == _p.sfdbLabel &&
+                                    pred.primary == _p.primary &&
+                                    pred.secondary == _p.secondary &&
+                                    pred.negated == _p.negated) {
                                         return true;
                                     }
                             });
@@ -898,29 +895,29 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
 
             if (this.numTimesUniquelyTrueFlag) {
                 //console.debug(this, this.toString());
-                var numTimesResult = evalForNumberUniquelyTrue(first, second, third, sg);
+                var numTimesResult = this.evalForNumberUniquelyTrue(first, second, third, sg);
                 return (this.negated) ? !numTimesResult : numTimesResult;
             }
 
             switch (this.type)
             {
                 case Predicate.TRAIT:
-                    return this.negated ? !evalTrait(first) : evalTrait(first);
+                    return this.negated ? !this.evalTrait(first) : this.evalTrait(first);
                 case Predicate.NETWORK:
                     //var isNetworkEvalTrue:Boolean = this.negated ? !evalNetwork(first, second) : evalNetwork(first, second);
                     //console.debug(this, "evaluate() ^ returned " + isNetworkEvalTrue);
-                    return evalNetwork(first, second);
+                    return this.evalNetwork(first, second);
                 case Predicate.STATUS:
                     //if (first == null) console.debug(this, "found it: "+this.toString());
-                    return this.negated ? !evalStatus(first, second) : evalStatus(first, second);
+                    return this.negated ? !this.evalStatus(first, second) : this.evalStatus(first, second);
                 case Predicate.CKBENTRY:
-                    return evalCKBEntry(first, second);
+                    return this.evalCKBEntry(first, second);
                 case Predicate.SFDBLABEL:
                     return this.evalSFDBLABEL(first, second, third);
                 case Predicate.RELATIONSHIP:
                     //console.debug(this, "Going in here: "+this.toString() + " first: " + first.characterName);
                     //console.debug(this, "Going in here: "+this.toString() + " second: " + second.characterName);
-                    return this.negated ? !evalRelationship(first, second) : evalRelationship(first, second);
+                    return this.negated ? !this.evalRelationship(first, second) : this.evalRelationship(first, second);
                 case Predicate.CURRENTSOCIALGAME:
                     if (!sg) return false;
                     if (this.negated) {
@@ -994,29 +991,24 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
 
             var possibleChars = (charsToUse) ? charsToUse : Cast.getInstance().characters;
 
+            var tmp = this;
             possibleChars.forEach(function(responder) {
-                if (initiator.characterName != responder.characterName)
-            {
-                if (this.requiresThirdCharacter())
-            {
-                possibleChars.forEach(function(other) {
-                    if (other.characterName != initiator.characterName && other.characterName != initiator.characterName)
-                {
-                    if (this.evaluate(initiator, responder, other))
-                {
-                    return true;
+                if (initiator.characterName != responder.characterName) {
+                    if (tmp.requiresThirdCharacter()) {
+                        possibleChars.forEach(function(other) {
+                            if (other.characterName != initiator.characterName && other.characterName != initiator.characterName) {
+                                if (tmp.evaluate(initiator, responder, other)) {
+                                    return true;
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        if (tmp.evaluate(initiator, responder)) {
+                            return true;
+                        }
+                    }
                 }
-                }
-                });
-            }
-                else
-            {
-                if (this.evaluate(initiator, responder))
-            {
-                return true;
-            }
-            }
-            }
             });
             return false;
         }
@@ -1029,6 +1021,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
          * @return True if the predicate evaluates to true. False if it does not.
          */
         this.evalIsSFDB = function(x, y, z, sg) {
+            var SocialFactsDB = getSFDB();
             return SocialFactsDB.getInstance().isPredicateInHistory(this, x, y, z);
         }
 
@@ -1081,7 +1074,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
             if (this.numTimesRoleSlot == "both") {
                 switch (this.type) {
                     case CKBENTRY:
-                        numTimesTrue = evalCKBEntryForObjects(primaryCharacterOfConsideration, secondaryCharacterOfConsideration).length;
+                        numTimesTrue = this.evalCKBEntryForObjects(primaryCharacterOfConsideration, secondaryCharacterOfConsideration).length;
                         break;
                     case SFDBLABEL:
                         numTimesTrue = sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, secondaryCharacterOfConsideration, z, this.window,this).length;
@@ -1091,52 +1084,53 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                         console.debug(this, "evalForNumberUniquelyTrue() Doesn't make sense consider 'both' role type for pred types not CKB or SFDB " + this.type);
                 }
             } else {
+                var me = this;
                 Cast.getInstance().characters.forEach(function(char) {
                     //console.debug(this,"evalForNumberUniquelyTrue() "+this.toString());
                     predTrue = false;
                     //if (!primaryCharacterOfConsideration) return false;
                     if (char.characterName != primaryCharacterOfConsideration.characterName) {
-                        switch (this.type) {
+                        switch (me.type) {
                             case TRAIT:
-                                predTrue = evalTrait(primaryCharacterOfConsideration);
+                                predTrue = me.evalTrait(primaryCharacterOfConsideration);
                                 break;
                             case NETWORK:
                                 if ("second" == numTimesRoleSlot) {
-                                    predTrue = evalNetwork(char, primaryCharacterOfConsideration);
+                                    predTrue = me.evalNetwork(char, primaryCharacterOfConsideration);
                                 } else {
-                                    predTrue = evalNetwork(primaryCharacterOfConsideration, char);
+                                    predTrue = me.evalNetwork(primaryCharacterOfConsideration, char);
                                     //console.debug(this, "evaluate() ^ returned " + isNetworkEvalTrue);
                                 }
                                 break;
                             case STATUS:
                                 if ("second" == numTimesRoleSlot) {
-                                    predTrue = evalStatus(char, primaryCharacterOfConsideration);
+                                    predTrue = me.evalStatus(char, primaryCharacterOfConsideration);
                                 } else {
-                                    predTrue = evalStatus(primaryCharacterOfConsideration, char);
+                                    predTrue = this.evalStatus(primaryCharacterOfConsideration, char);
                                 }
                                 break;
                             case CKBENTRY:
-                                predTrue = evalCKBEntry(primaryCharacterOfConsideration, char);
+                                predTrue = me.evalCKBEntry(primaryCharacterOfConsideration, char);
                                 break;
                             case SFDBLABEL:
                                 if ("second" == numTimesRoleSlot) {
                                     //predTrue = evalSFDBLABEL(char, primaryCharacterOfConsideration, z);
-                                    numTimesTrue += sfdb.findLabelFromValues(this.sfdbLabel, char, primaryCharacterOfConsideration, undefined, this.window, this).length;
+                                    numTimesTrue += sfdb.findLabelFromValues(me.sfdbLabel, char, primaryCharacterOfConsideration, undefined, me.window, me).length;
                                 } else {
                                     //predTrue = evalSFDBLABEL(primaryCharacterOfConsideration, char, z);
-                                    numTimesTrue += sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, char, undefined, this.window, this).length;
+                                    numTimesTrue += sfdb.findLabelFromValues(me.sfdbLabel, primaryCharacterOfConsideration, char, undefined, me.window, me).length;
                                 }
                                 break;
                             case RELATIONSHIP:
-                                predTrue = evalRelationship(primaryCharacterOfConsideration, char);
+                                predTrue = me.evalRelationship(primaryCharacterOfConsideration, char);
                                 break;
                             case CURRENTSOCIALGAME:
                                 //console.debug(this, "evalForNumberUniquelyTrue() Trying to print out the number of times a name of a social game is true doesn't make sense")
-                                predTrue = this.currentGameName.toLowerCase() == sg.name;
+                                predTrue = me.currentGameName.toLowerCase() == sg.name;
                                 break;
                             default:
                                 //trace(  "Predicate: evaluating a predicate without a recoginzed type.");
-                                console.debug(this, "evaluating a predicate without a recoginzed type of: " + this.type);
+                                console.debug(me, "evaluating a predicate without a recoginzed type of: " + me.type);
                         }
                         if (predTrue) numTimesTrue++;
                     }
@@ -1206,7 +1200,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
             if (this.numTimesRoleSlot == "both") {
                 switch (this.type) {
                     case CKBENTRY:
-                        numTimesTrue = evalCKBEntryForObjects(primaryCharacterOfConsideration, secondaryCharacterOfConsideration).length;
+                        numTimesTrue = this.evalCKBEntryForObjects(primaryCharacterOfConsideration, secondaryCharacterOfConsideration).length;
                         break;
                     case SFDBLABEL:
                         numTimesTrue = sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, secondaryCharacterOfConsideration, z, this.window,this).length;
@@ -1216,51 +1210,52 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                         console.debug(this, "evalForNumberUniquelyTrue() Doesn't make sense consider 'both' role type for pred types not CKB or SFDB " + this.type);
                 }
             } else {
+                var me = this;
                 Cast.getInstance().characters.forEach(function(char) {
                     //console.debug(this,"evalForNumberUniquelyTrue() "+this.toString());
                     predTrue = false;
                     if (char.characterName != primaryCharacterOfConsideration.characterName) {
-                        switch (this.type) {
+                        switch (me.type) {
                             case TRAIT:
-                                predTrue = evalTrait(primaryCharacterOfConsideration);
+                                predTrue = me.evalTrait(primaryCharacterOfConsideration);
                                 break;
                             case NETWORK:
                                 if ("second" == numTimesRoleSlot) {
-                                    predTrue = evalNetwork(char, primaryCharacterOfConsideration);
+                                    predTrue = me.evalNetwork(char, primaryCharacterOfConsideration);
                                 } else {
-                                    predTrue = evalNetwork(primaryCharacterOfConsideration, char);
+                                    predTrue = me.evalNetwork(primaryCharacterOfConsideration, char);
                                     //console.debug(this, "evaluate() ^ returned " + isNetworkEvalTrue);
                                 }
                                 break;
                             case STATUS:
                                 if ("second" == numTimesRoleSlot) {
-                                    predTrue = evalStatus(char, primaryCharacterOfConsideration);
+                                    predTrue = me.evalStatus(char, primaryCharacterOfConsideration);
                                 } else {
-                                    predTrue = evalStatus(primaryCharacterOfConsideration, char);
+                                    predTrue = me.evalStatus(primaryCharacterOfConsideration, char);
                                 }
                                 break;
                             case CKBENTRY:
-                                predTrue = evalCKBEntry(primaryCharacterOfConsideration, char);
+                                predTrue = me.evalCKBEntry(primaryCharacterOfConsideration, char);
                                 break;
                             case SFDBLABEL:
                                 if ("second" == numTimesRoleSlot) {
                                     //predTrue = evalSFDBLABEL(char, primaryCharacterOfConsideration, z);
-                                    numTimesTrue += sfdb.findLabelFromValues(this.sfdbLabel, char, primaryCharacterOfConsideration, undefined, this.window, this).length;
+                                    numTimesTrue += sfdb.findLabelFromValues(me.sfdbLabel, char, primaryCharacterOfConsideration, undefined, me.window, me).length;
                                 } else {
                                     //predTrue = evalSFDBLABEL(primaryCharacterOfConsideration, char, z);
-                                    numTimesTrue += sfdb.findLabelFromValues(this.sfdbLabel, primaryCharacterOfConsideration, char, undefined, this.window, this).length;
+                                    numTimesTrue += sfdb.findLabelFromValues(me.sfdbLabel, primaryCharacterOfConsideration, char, undefined, me.window, me).length;
                                 }
                                 break;
                             case RELATIONSHIP:
-                                predTrue = evalRelationship(primaryCharacterOfConsideration, char);
+                                predTrue = me.evalRelationship(primaryCharacterOfConsideration, char);
                                 break;
                             case CURRENTSOCIALGAME:
                                 //console.debug(this, "evalForNumberUniquelyTrue() Trying to print out the number of times a name of a social game is true doesn't make sense")
-                                predTrue = this.currentGameName.toLowerCase() == sg.name;
+                                predTrue = me.currentGameName.toLowerCase() == sg.name;
                                 break;
                             default:
                                 //trace(  "Predicate: evaluating a predicate without a recoginzed type.");
-                                console.debug(this, "evaluating a predicate without a recoginzed type of: " + this.type);
+                                console.debug(me, "evaluating a predicate without a recoginzed type of: " + me.type);
                         }
                         if (predTrue) {
                             numTimesTrue++;
@@ -1296,7 +1291,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
          * @param first The character for which the existence of the trait is ascertained.
          * @return True if the character has the trait. False if the trait is not present.
          */
-        var evalTrait = function(first) {
+        this.evalTrait = function(first) {
             if (first.hasTrait(this.trait))
                 return true;
             return false;
@@ -1322,7 +1317,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
          * @param first The character for which the existence of the trait is ascertained.
          * @return True if the character has the trait. False if the trait is not present.
          */
-        var evalRelationship = function(first, second) {
+        this.evalRelationship = function(first, second) {
             var sn = RelationshipNetwork.getInstance();
             //console.debug(this, "evalRelationship: " + first.characterName + " " + second.characterName + " " + this.toString());
             if (sn.getRelationship(this.relationship, first, second))
@@ -1337,7 +1332,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
          * @param first The character for which the existence of the status is ascertained.
          * @return True if the character has the status. False if the status is not present.
          */
-        var evalStatus = function(first, second) {
+        this.evalStatus = function(first, second) {
             //console.debug(this, "evalStatus() 1=" + first.characterName + " 2=" + second.characterName + " " + this.toString());
             return first.hasStatus(this.status, second);
         }
@@ -1347,7 +1342,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
          * @param {Character} second
          * @return
          */
-        var evalNetwork = function(first, second) {
+        this.evalNetwork = function(first, second) {
             var net;
             var firstID = first.networkID;
             var secondID;
@@ -1391,6 +1386,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                         var relationshipCount = 0.0;
                         var i = 0;
 
+                        var me = this;
                         cast.characters.forEach(function(char) {
                             //first's friends opinion about second
 
@@ -1398,19 +1394,19 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                             //first is robert
                             //second is karen
                             if (char.characterName != first.characterName && char.characterName != second.characterName) {
-                                if(Predicate.getNumberFromComparator(this.comparator) == Predicate.FRIENDSOPINION) {
+                                if(Predicate.getNumberFromComparator(me.comparator) == Predicate.FRIENDSOPINION) {
                                     if (rel.getRelationship(RelationshipNetwork.FRIENDS, char, first)) {
                                         //console.debug(this, char.characterName + "'s opinion used: " + net.getWeight(char.networkID, second.networkID), 5);
                                         sum += net.getWeight(char.networkID, second.networkID);
                                         relationshipCount++;
                                     }
-                                } else if(Predicate.getNumberFromComparator(this.comparator) == DATINGOPINION) {
+                                } else if(Predicate.getNumberFromComparator(me.comparator) == DATINGOPINION) {
                                     if (rel.getRelationship(RelationshipNetwork.DATING, char, first)) {
                                         //console.debug(this, char.characterName + "'s opinion used: " + net.getWeight(char.networkID, second.networkID), 5);
                                         sum += net.getWeight(char.networkID, second.networkID);
                                         relationshipCount++;
                                     }
-                                } else if(Predicate.getNumberFromComparator(this.comparator) == ENEMIESOPINION) {
+                                } else if(Predicate.getNumberFromComparator(me.comparator) == ENEMIESOPINION) {
                                     if (rel.getRelationship(RelationshipNetwork.ENEMIES, char, first)) {
                                         //console.debug(this, char.characterName + "'s opinion used: " + net.getWeight(char.networkID, second.networkID), 5);
                                         sum += net.getWeight(char.networkID, second.networkID);
@@ -1435,7 +1431,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
             return Util.xor(this.negated, false);
         }
 
-        var evalCKBEntry = function(first, second) {
+        this.evalCKBEntry = function(first, second) {
             //get instance of CKB
             var ckb = CulturalKB.getInstance();
             var firstResults = [];
@@ -1545,19 +1541,20 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
             var SocialFactsDB = getSFDB();
             var sfdb = SocialFactsDB.getInstance();
 
+            var me = this;
             //if it is a category of label
             if (this.sfdbLabel <= SocialFactsDB.LAST_CATEGORY_COUNT && this.sfdbLabel >= 0) {
                 SocialFactsDB.CATEGORIES[this.sfdbLabel].forEach(function(fromCategoryLabel) {
-                    if (SocialFactsDB.getInstance().findLabelFromValues(fromCategoryLabel, first, second, undefined, this.window, this).length > 0)
-                    return (this.negated) ? false : true;
+                    if (SocialFactsDB.getInstance().findLabelFromValues(fromCategoryLabel, first, second, undefined, me.window, me).length > 0)
+                    return (me.negated) ? false : true;
                 });
             } else {
                 //normal look up
-                if (SocialFactsDB.getInstance().findLabelFromValues(this.sfdbLabel, first, second, undefined, this.window, this).length > 0) {
-                    return (this.negated) ? false : true;
+                if (SocialFactsDB.getInstance().findLabelFromValues(me.sfdbLabel, first, second, undefined, me.window, me).length > 0) {
+                    return (me.negated) ? false : true;
                 }
             }
-            return (this.negated) ? true : false;
+            return (me.negated) ? true : false;
         }
 
         /**
@@ -1681,7 +1678,7 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
                     returnstr += "relationship(" + this.primary + ", " + this.secondary + ", " + RelationshipNetwork.getRelationshipNameByNumber(this.relationship) + ")";
                     break;
                 default:
-                    console.debug(this, "tried to make a predicate of unknown type a String.");
+                    throw new Error("tried to make a predicate of unknown type a String.");
                     return "";
             }
             if (isSFDB) returnstr = "[" + returnstr + " window(" + this.window +")]";

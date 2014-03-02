@@ -20,7 +20,6 @@ define(['CiFSingleton', 'Predicate', 'Rule', 'Effect', 'Util', 'SocialFactsDB'],
      */
 
     var SocialGameContext = function() {
-        console.log("In SGC");
         this.isBackstory = false;
         this.queryCKB = new Predicate();
         this.gameName = "";

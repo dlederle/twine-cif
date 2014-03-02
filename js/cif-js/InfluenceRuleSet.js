@@ -29,7 +29,7 @@ define(['CiFSingleton', 'InfluenceRule', 'Rule', 'RuleRecord'], function(CiFSing
          * rules.
          */
         this.scoreRulesWithVariableOther = function(initiator, responder, other, sg, activeOtherCast, microtheoryName, isResponder) {
-            var possibleOthers = activeOtherCast || CiFSingleton.getInstance().cast.characters;
+            var possibleOthers = activeOtherCast || CiF.cast.characters;
             var isResponder = isResponder || false;
             var microtheoryName = microtheoryName || "";
             var score = 0.0;
@@ -37,6 +37,7 @@ define(['CiFSingleton', 'InfluenceRule', 'Rule', 'RuleRecord'], function(CiFSing
             this.truthCount = 0;
             this.lastScores = [];
             this.lastTruthValues = [];
+            var irs = this;
 
             this.influenceRules.forEach(function(ir) {
                 if (ir.weight != 0) {
@@ -59,46 +60,43 @@ define(['CiFSingleton', 'InfluenceRule', 'Rule', 'RuleRecord'], function(CiFSing
                                     }
                         score += ir.weight;
                         //this data might be broken city USA because of the way we handle others above. Use ruleRecords instead.
-                        this.lastScores.push(score);
-                        this.lastTruthValues.push(true);
-                        ++this.truthCount;
+                        irs.lastScores.push(score);
+                        irs.lastTruthValues.push(true);
+                        ++irs.truthCount;
                                 }
                                 else {
-                                    this.lastScores.push(0.0);
-                                    this.lastTruthValues.push(false);
+                                    irs.lastScores.push(0.0);
+                                    irs.lastTruthValues.push(false);
                                 }
                             }
                         });
                     }
-                }
-                else {
-                    if (ir.evaluate(initiator, responder, undefined, sg)) {
-                        ruleRecord = new RuleRecord();
-                        ruleRecord.type = (microtheoryName != "")?RuleRecord.MICROTHEORY_TYPE: RuleRecord.SOCIAL_GAME_TYPE;
-                        ruleRecord.name = (microtheoryName != "")?microtheoryName: sg.name;
-                        ruleRecord.influenceRule = ir;
-                        ruleRecord.initiator = initiator.characterName;
-                        ruleRecord.responder = responder.characterName;
-                        if (isResponder)
-                        {
-                            responder.prospectiveMemory.responseSGRuleRecords.push(ruleRecord);
-                        }
-                        else
-                        {
-                            initiator.prospectiveMemory.ruleRecords.push(ruleRecord);
-                        }
+                    else {
+                        if (ir.evaluate(initiator, responder, undefined, sg)) {
+                            ruleRecord = new RuleRecord();
+                            ruleRecord.type = (microtheoryName != "")?RuleRecord.MICROTHEORY_TYPE: RuleRecord.SOCIAL_GAME_TYPE;
+                            ruleRecord.name = (microtheoryName != "")?microtheoryName: sg.name;
+                            ruleRecord.influenceRule = ir;
+                            ruleRecord.initiator = initiator.characterName;
+                            ruleRecord.responder = responder.characterName;
+                            if (isResponder) {
+                                responder.prospectiveMemory.responseSGRuleRecords.push(ruleRecord);
+                            }
+                            else {
+                                initiator.prospectiveMemory.ruleRecords.push(ruleRecord);
+                            }
 
-                        score += ir.weight;
+                            score += ir.weight;
 
-                        //this data might be broken city USA because of the way we handle others above. Use ruleRecords instead.
-                        this.lastScores.push(score);
-                        this.lastTruthValues.push(true);
-                        ++this.truthCount;
-                    }
-                    else
-                    {
-                        this.lastScores.push(0.0);
-                        this.lastTruthValues.push(false);
+                            //this data might be broken city USA because of the way we handle others above. Use ruleRecords instead.
+                            irs.lastScores.push(score);
+                            irs.lastTruthValues.push(true);
+                            ++irs.truthCount;
+                        }
+                        else {
+                            irs.lastScores.push(0.0);
+                            irs.lastTruthValues.push(false);
+                        }
                     }
                 }
             });
@@ -116,7 +114,7 @@ define(['CiFSingleton', 'InfluenceRule', 'Rule', 'RuleRecord'], function(CiFSing
          * rules.
          */
         this.scoreRules = function(initiator, responder, other, sg, activeOtherCast, microtheoryName, isResponder) {
-            var possibleOthers = activeOtherCast || CiFSingleton.getInstance().cast.characters;
+            var possibleOthers = activeOtherCast || CiF.cast.characters;
             var isResponder = isResponder || false;
             var microtheoryName = microtheoryName || "";
             var score = 0.0;
@@ -124,6 +122,7 @@ define(['CiFSingleton', 'InfluenceRule', 'Rule', 'RuleRecord'], function(CiFSing
             this.truthCount = 0;
             this.lastScores = [];
             this.lastTruthValues = [];
+            var irs = this;
 
             //var numberCount:int = 0;
 
@@ -132,7 +131,7 @@ define(['CiFSingleton', 'InfluenceRule', 'Rule', 'RuleRecord'], function(CiFSing
                 if (ir.weight != 0) {
                     //console.debug(this, "game: " + sg.name +" scoreRules() Rule: " + ir.toString());
                     if (ir.requiresThirdCharacter()) {
-                        if (!other) console.debug(this, "scoreRules() No other passed in! Fatal bug with rule: " + ir.toString());
+                        if (!other) console.debug(irs, "scoreRules() No other passed in! Fatal bug with rule: " + ir.toString());
 
                         if (ir.evaluate(initiator, responder, other, sg)) {
                             ruleRecord = new RuleRecord();
@@ -152,13 +151,13 @@ define(['CiFSingleton', 'InfluenceRule', 'Rule', 'RuleRecord'], function(CiFSing
                             score += ir.weight;
 
                             //this data might be broken city USA because of the way we handle others above. Use ruleRecords instead.
-                            this.lastScores.push(score);
-                            this.lastTruthValues.push(true);
-                            ++this.truthCount;
+                            irs.lastScores.push(score);
+                            irs.lastTruthValues.push(true);
+                            ++irs.truthCount;
                         }
                         else {
-                            this.lastScores.push(0.0);
-                            this.lastTruthValues.push(false);
+                            irs.lastScores.push(0.0);
+                            irs.lastTruthValues.push(false);
                         }
                     }
                     else {
@@ -182,13 +181,13 @@ define(['CiFSingleton', 'InfluenceRule', 'Rule', 'RuleRecord'], function(CiFSing
                             }
                             score += ir.weight;
                             //this data might be broken city USA because of the way we handle others above. Use ruleRecords instead.
-                            this.lastScores.push(score);
-                            this.lastTruthValues.push(true);
-                            ++this.truthCount;
+                            irs.lastScores.push(score);
+                            irs.lastTruthValues.push(true);
+                            ++irs.truthCount;
                         }
                         else {
-                            this.lastScores.push(0.0);
-                            this.lastTruthValues.push(false);
+                            irs.lastScores.push(0.0);
+                            irs.lastTruthValues.push(false);
                         }
                     }
                 }
@@ -242,9 +241,10 @@ define(['CiFSingleton', 'InfluenceRule', 'Rule', 'RuleRecord'], function(CiFSing
          * @return
          */
         this.removeRuleWithID = function(ruleID) {
+            var irs = this;
             this.influenceRules.forEach(function(r, i) {
                 if(r.id === ruleID) {
-                    this.influenceRules.splice(i, 1);
+                    irs.influenceRules.splice(i, 1);
                     return;
                 }
             });
