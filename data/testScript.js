@@ -20,7 +20,6 @@ _CiFState.Cast = [
             "humble",
         "kind",
         "loving",
-        "envies"
             ]
     }
 }

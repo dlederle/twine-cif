@@ -1869,10 +1869,11 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
             }
 
             this.load.Character = function(character) {
+                var tmp = JSON.parse(JSON.stringify(character));
                 var load = this;
-                checkUndefined(character, ["traits"]);
-                character.traits.forEach(function(trait, i) {
-                    character.traits[i] = load.Trait(trait);
+                checkUndefined(tmp, ["traits"]);
+                tmp.traits.forEach(function(trait, i) {
+                    tmp.traits[i] = load.Trait(trait);
                 });
                 return new Character(character);
             }
@@ -1882,9 +1883,10 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
             }
 
             this.load.SocialFactsDB = function(sfdb) {
-                checkUndefined(sfdb, ["contexts"]);
+                var tmp = JSON.parse(JSON.stringify(sfdb));
+                checkUndefined(tmp, ["contexts"]);
                 var load = this;
-                sfdb.contexts.forEach(function(context) {
+                tmp.contexts.forEach(function(context) {
                     //Creates a new context and pushes it into the SFDB
                     var type = Object.keys(context)[0];
                     //Calls different load functions depending on the context type
@@ -1911,8 +1913,9 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
             }
 
             this.load.SocialGamesLib = function(sgl) {
+                var tmp = JSON.parse(JSON.stringify(sgl));
                 var load = this;
-                sgl.forEach(function(sg) {
+                tmp.forEach(function(sg) {
                     SocialGamesLib.getInstance().addGame(load.SocialGame(sg))
                 });
             }

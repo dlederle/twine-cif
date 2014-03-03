@@ -11,9 +11,6 @@ require(['CiFSingleton', 'CiFAuthoring'], function(CiFSingleton, CiFAuthoring) {
     console.log("entering main");
     try {
         CiF = CiFSingleton.getInstance();
-        //CiF.defaultState();
-        //CiF.formIntentForAll(c.cast.characters, c.cast.characters);
-
         CiFAuthoring();
     } catch (e) {
         console.log(e.stack);

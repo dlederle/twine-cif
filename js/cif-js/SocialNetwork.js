@@ -87,7 +87,7 @@ define([], function() {
             var opinionTotal = 0;
             network.forEach(function(el, i, arr) {
                 if(i != charID) {
-                    opinionTotal += network[i][charID];
+                    opinionTotal += network[i][charID] || 0;
                 }
             });
             return (opinionTotal / (network.length - 1));

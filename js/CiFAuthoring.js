@@ -1,28 +1,31 @@
-var CiFState;//GLOBAL FOR DEBUGGING
+var _CiFState;//GLOBAL FOR DEBUGGING
 //Tool for Authoring CiF data
 define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
-    var currentNetworkID = 0;
+    var currentNetworkID;
     var CiFAuthoring = function() {
         var CiF = CiF || CiFSingleton.getInstance();
-        CiFState = CiFState || {};
-        CiFState.Cast = CiFState.cast || [];
-        CiFState.SocialGamesLib = CiFState.SocialGamesLib|| [];
-        CiFState.SocialNetworks = CiFState.SocialNetworks || [];
-        ["cool", "romance", "buddy"].forEach(function(type) {
-            var network = {};
-            network.numChars = 0;
-            network.type = type;
-            network.edges = [];
-            CiFState.SocialNetworks.push(network);
-        });
-        CiFState.CulturalKB = CiFState.CulturalKB || [];
-        CiFState.SocialFactsDB = CiFState.SocialFactsDB || {};
-        CiFState.SocialFactsDB.contexts = [];
+        _CiFState = _CiFState || {};
+        _CiFState.Cast = _CiFState.Cast || [];
+        currentNetworkID = _CiFState.Cast.length;
+        _CiFState.SocialGamesLib = _CiFState.SocialGamesLib|| [];
+        _CiFState.SocialNetworks = _CiFState.SocialNetworks;
+        if(_CiFState.SocialNetworks === undefined) {
+            _CiFState.SocialNetwork = [];
+            ["cool", "romance", "buddy"].forEach(function(type) {
+                var network = {};
+                network.numChars = currentNetworkID;
+                network.type = type;
+                network.edges = [];
+                _CiFState.SocialNetworks.push(network);
+            });
+        }
+        _CiFState.CulturalKB = _CiFState.CulturalKB || [];
+        _CiFState.SocialFactsDB = _CiFState.SocialFactsDB;
+        if(_CiFState.SocialFactsDB === undefined) {
+            _CiFState.SocialFactsDB = {"contexts":[]};
+        }
 
-
-        //Holds functions to build CiF classes
-        var build = {};
 
         var capitalize = function(str) {
             return str.charAt(0).toUpperCase() + str.slice(1);
@@ -54,23 +57,32 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
                 var li = $('<li>');
                 switch(typeof el) {
                     case "object":
-                        for(var key in el) {
-                            li.append("<br>");
-                            li.append(key + ": " + el[key]);
-                        }
+                        li.append("<br>");
+                        li.append(JSON.stringify(el));
                         break;
                     default:
                         li.append(el.toString());
                 }
-                //TODO: add button instead of click on li
-                li.click(function(e) {
-                    $(this).remove();
+                li.append($('<p>Remove</p>').click(function(e) {
+                    li.remove();
                     arr = arr.splice(i, 1);
-               });
+                }));
+                /*
+                 * TODO: Gonna require some refactoring to work
+                if(typeof el === "object") {
+                    li.append($('<p>Edit</p>').click(function(e) {
+                        var klass = Object.keys(el)[0];
+                        console.log(build[klass](data, $list, el));
+                    }));
+                }
+                */
 
                 $list.append(li);
             });
         }
+
+        //Holds functions to build CiF classes
+        var build = {};
 
         var clearMain = function(klass) {
             $('#main').children().remove();
@@ -85,35 +97,126 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         var classList = function() {
             var list = $('<select id="classList">');
+            list.append('<option>Cast</option>');
             list.append('<option>SocialGamesLib</option>');
             list.append('<option>SocialFactsDB</option>');
             list.append('<option>CulturalKB</option>');
             list.append('<option>SocialNetworks</option>');
-            list.append('<option>Cast</option>');
             return list;
         }
 
-        var buildUI = function() {
+        var buildUI = function(pane) {
+            $('body').children('div').remove();
             $('body').append('<div id="container" class="row"/>');
             $('#container').append('<div id="sidebar" class="span3"/>');
             $('#container').append('<div id="main" class="row"/>');
+            var $log = $('<div id="errorLog">');
+            $('#sidebar').append($log);
+            pane();
+        }
 
+        var buildAuthoringUI = function() {
             //Sidebar
             $('#sidebar').append('<h2>CiF Authoring</h2>');
             $('#sidebar').append(classList());
             $('#classList').change(buildClass).change();
+            $('#sidebar').append($('<button type="button">Switch to Testing</button>').click(function(e) {
+                buildUI(buildTestUI);
+            }));
+        }
 
-            //Main
+        var buildTestUI = function() {
+            $('#sidebar').append('<h2>CiF Testing</h2>');
+            var $holder = $('<div class="span8">').append('<h1>Load and test your data</h1>');
+            $('#main').append($holder);
+            $('#sidebar').append($('<button type="button">Switch to Authoring</button>').click(function(e) {
+                buildUI(buildAuthoringUI);
+            }));
+            $('#sidebar').append($('<button>Load Current State into CiF</button>').click(function(e) {
+                CiF.loadJSON(_CiFState);
+                $holder.append(testSG());
+            }));
+
+        }
+
+        var testSG = function() {
+            var $tester = $('<div>');
+            $tester.append('<h3>Test a Social Game</h3>');
+
+            var $sgSelect = $('<select>');
+            CiF.socialGamesLib.games.forEach(function(game) {
+                $sgSelect.append('<option>' + game.name + '</option>');
+            });
+            $tester.append($sgSelect);
+
+            $tester.append("<label>Choose initiator</label>");
+            var $initiatorSelect = $('<select>');
+            $initiatorSelect.append('<option>');
+            CiF.cast.characters.forEach(function(chara) {
+                $initiatorSelect.append('<option>' + chara.characterName+ '</option>');
+            });
+            $tester.append($initiatorSelect);
+
+
+            $tester.append("<label>Choose responder</label>");
+            var $responderSelect = $('<select>');
+            $responderSelect.append('<option>');
+            CiF.cast.characters.forEach(function(chara) {
+                $responderSelect.append('<option>' + chara.characterName + '</option>');
+            });
+            $tester.append($responderSelect);
+
+            $tester.append($('<button>Test Game</button>').click(function(e) {
+                var name = $sgSelect[0].value;
+                var initiatorName = $initiatorSelect[0].value;
+                var responderName = $responderSelect[0].value;
+                var initiator = CiF.cast.getCharByName(initiatorName);
+                var responder = CiF.cast.getCharByName(responderName);
+
+                $tester.append($('<h4>Average Opinions about characters before game</h4>'));
+                $tester.append(getOpinions(initiator, responder));
+                playSG(name, initiator, responder);
+                $tester.append($('<h4>Average Opinions about characters after game</h4>'));
+                $tester.append(getOpinions(initiator, responder));
+            }));
+            return $tester;
+        }
+
+        var getOpinions = function(initiator, responder) {
+            var $table = $('<table>');
+            var networks = [
+                {name: "Buddy", network: CiF.buddyNetwork},
+                {name: "Cool", network: CiF.coolNetwork},
+                {name: "Romance", network: CiF.romanceNetwork}
+            ];
+            networks.forEach(function(network) {
+                $table.append($('<th>' + network.name + '</th>'));
+                var $body = $('<tbody>');
+                $body.append('<tr><td>Initiator: ' + network.network.getAverageOpinion(initiator.networkID) + '</td></tr>');
+                $body.append('<tr><td>Responder: ' + network.network.getAverageOpinion(responder.networkID) + '</td></tr>');
+                $table.append($body);
+            });
+            return $table;
+        }
+
+        var playSG = function(game, initiator, responder) {
+            try {
+                CiF.playGameByName(game, initiator, responder);
+            } catch(e) {
+                console.log(e.stack);
+                $('#errorLog').append(e.stack);
+            }
         }
 
         build.SocialGamesLib= function(sgl) {
-            sgl = sgl || CiFState.SocialGamesLib;
+            sgl = sgl || _CiFState.SocialGamesLib;
             var $sgl= $('<div class="row">');
             var $right = $('<div class="span4">').append($('<h1>Create the Social Games Library</h1>'));
             var $left = $('<div class="span4">');
             var $list = $('<ul>');
             $left.append($list);
 
+            display($list, sgl, "Current Social Games");
             $right.append(build.SocialGame(sgl, $list));
 
             $sgl.append($right).append($left);
@@ -122,14 +225,14 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         build.SocialNetworks = function() {
             console.log("and now we build our SocialNetworks!");
-            //var numChars = CiFState.Cast.length;
-            var numChars = 5;
+            var numChars = _CiFState.Cast.length;
             if(numChars < 2) {
                 var tmp = $('<h1>Social Networks</h1>');
                 tmp.append($("<h2>Please add some Characters to the Cast</h2>"));
                 return tmp;
             }
             var buildNetwork = function(network, $list) {
+                display($list, network.edges, capitalize(network.type), "h4");
                 var $builder = $('<form>');
                 //Make edge with from: to: value:
                 var edge = {};
@@ -166,7 +269,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             var $sns = $('<div class="row">');
             var $right = $('<div class="span4">').append($('<h1>Construct connections in the Social Networks</h1>'));
             var $lists = $('<div class="span4">');
-            CiFState.SocialNetworks.forEach(function(type) {
+            _CiFState.SocialNetworks.forEach(function(type) {
                 type.numChars = numChars;
                 var $list = $('<ul>');
                 $lists.append($list);
@@ -180,7 +283,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         build.CulturalKB = function(ckb) {
             console.log("and now we build our CulturalKB!");
-            ckb = ckb || CiFState.CulturalKB;
+            ckb = ckb || _CiFState.CulturalKB;
             var $ckb = $('<div class="row">');
             var $right = $('<div class="span4">').append($('<h1>Construct the Cultural Knowledge Base</h1>'));
             var $left = $('<div class="span4">');
@@ -195,7 +298,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         build.SocialFactsDB = function(sfdb) {
             console.log("and now we build our SocialFactsDB!");
-            sfdb = sfdb || CiFState.SocialFactsDB;
+            sfdb = sfdb || _CiFState.SocialFactsDB;
             var $sfdb = $('<div class="row">');
             var $right = $('<div class="span4">').append($('<h1>Construct the Social Facts Data Base</h1>'));
             var $left = $('<div class="span4">');
@@ -214,7 +317,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
           $charMaker.append($("<h1>Construct the Cast</h1>"));
           var $charList = $('<div class="span4">').append('<ul id="list">');
 
-          $charMaker.append(build.Character($('<div id="charMaker">'), $charList, CiFState.Cast));
+          $charMaker.append(build.Character($('<div id="charMaker">'), $charList, _CiFState.Cast));
           $castContainer.append($charMaker);
           $castContainer.append($charList);
           return $('<div class="span8">').append($castContainer);
@@ -222,7 +325,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         build.Character = function($left, $right, cast, character) {
             console.log("and now we build our Character");
-            cast = cast || CiFState.Cast;
+            cast = cast || _CiFState.Cast;
             character = character || {};
             character.characterName = character.characterName || "Character Name";
             character.traits = character.traits || [];
@@ -241,7 +344,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
                 character.characterName = $('#charName')[0].value;
                 if(cast.indexOf(character) === -1) {
-                    cast.push(character);
+                    cast.push({"Character": character});
                 }
                 display($list, cast, "Current Cast");
             });
@@ -258,6 +361,8 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
         }
 
         build.SocialGame = function(sgl, $list, sg) {
+            var $tmp = $('<div>').append($('<h1>Under construction...</h1>'));
+            return $tmp;
             console.log("and now we build our SocialGame!");
             sg = sg || {};
             sg.name = sg.name || "Name Here";
@@ -265,7 +370,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             sg.initiatorIRS = sg.initiatorIRS || [];
             sg.responderIRS = sg.responderIRS || [];
             sg.effects = sg.effects || [];
-            sgl = sgl || CiFState.SocialGamesLib;
+            sgl = sgl || _CiFState.SocialGamesLib;
 
             var $form = $('<form>');
             $form.append('<label>Make a new Social Game</label>');
@@ -308,6 +413,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             $form.append($effects);
 
             var $button = $('<button type="button">').click(function() {
+                console.log("NOTHING IS HAPPENING");
                 console.log(sg);
             });
 
@@ -337,7 +443,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
                 //Collect data
 
                 if(irs.indexOf(ir) === -1) {
-                    irs.push(ir);
+                    irs.push({"InfluenceRule": ir});
                     ir = {};
                     display($irsList, irs, "Current IRs in Set", "p");
                 }
@@ -374,7 +480,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
                     e.preventDefault();
 
                     if(rulesList.indexOf(rule) === -1) {
-                        rulesList.push(rule);
+                        rulesList.push({"Rule": rule});
                         rule = {};
                         $ruleForm.children().remove();
                         $ruleForm = makeForm();
@@ -522,7 +628,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
                 $button = $button || $('<button type="button" class="btn" id="addPred">Save Predicate</button>').click(function(e) {
                     //Collect data
                     if(currPreds.indexOf(pred) === -1) {
-                        currPreds.push(pred);
+                        currPreds.push({"Predicate": pred});
                         display($currPreds, currPreds, "Predicates:", "p");
                         pred = {};
                         $predForm = newForm();
@@ -537,6 +643,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         build.Context = function(list, $list) {
             list = list || new Error("Context list please");
+            display($list, list, "Contexts");
             var ctx = {};
             var $form = $('<form>');
             var types = ["status"];
@@ -570,7 +677,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
                 var button = function() {
                     $form.append($('<button type="button">New Context</button>').click(function(e) {
                         if(list.indexOf(ctx) === -1) {
-                            list.push(ctx);
+                            list.push({"StatusContext": ctx});
                             ctx = {};
                             display($list, list, "Contexts");
 
@@ -587,6 +694,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
         build.Proposition = function(list, $list) {
             list = list || new Error("Need a list");
+            display($list, list, "Propositions:", "h4");
             var prop = {};
             var $form = $('<form>');
 
@@ -614,7 +722,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
 
                 var $button = $('<button type="button">Add Proposition</button>').click(function(e) {
                     if(list.indexOf(prop) === -1) {
-                        list.push(prop);
+                        list.push({"Proposition": prop});
                         display($list, list, "Propositions:", "h4");
                         $form.replaceWith(newProp());
                         prop = {};
@@ -627,7 +735,7 @@ define(['jquery', 'CiFSingleton'], function($, CiFSingleton) {
             return newProp();
         }
 
-        buildUI();
+        buildUI(buildAuthoringUI);
     }
     return CiFAuthoring;
 });
