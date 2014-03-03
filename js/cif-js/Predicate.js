@@ -27,8 +27,15 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
     var Predicate = function(opts) {
 
         opts = opts || {};
-        this.trait = opts.trait || -1;
-        this.type = opts.type || -1;
+
+        if(opts.trait=== undefined) {
+            opts.trait = -1;
+        }
+        this.trait = opts.trait;
+        if(opts.type === undefined) {
+            opts.type = -1;
+        }
+        this.type = opts.type;
         this.description = opts.description || "";
         this.primary = opts.primary || "";
         this.secondary = opts.secondary || "";
@@ -36,7 +43,6 @@ define(["RelationshipNetwork", "Rule", "SocialNetwork", "BuddyNetwork", "Romance
         this.networkValue = opts.networkValue || 0;
         this.status = opts.status || 0;
         this.comparator = "~";
-        this.status = -1;
         this.networkType = -1;
         this.firstSubjectiveLink = "";
         this.secondSubjectiveLink = "";

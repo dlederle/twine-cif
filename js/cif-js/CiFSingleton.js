@@ -1952,6 +1952,7 @@ define(_CiFDeps, function(SocialNetwork, RelationshipNetwork, BuddyNetwork, Roma
             this.load.InfluenceRule = function(ir) {
                 checkUndefined(ir, ["predicates"]);
                 var load = this;
+                ir.weight = parseInt(ir.weight);
                 ir.predicates.forEach(function(pred, i) {
                     //console.log("before", ir.name, pred.Predicate);
                     ir.predicates[i] = load.Predicate(pred.Predicate);

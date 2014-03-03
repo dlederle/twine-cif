@@ -7,6 +7,7 @@ _CiFState.Cast = [
             "networkID": 0,
             "traits": [
                 "confident",
+            "attention hog",
             "dishonest"
                 ]
     }
@@ -16,16 +17,17 @@ _CiFState.Cast = [
         "characterName": "Red Riding Hood",
         "networkID": 1,
         "traits": [
-            "forgiving",
+            "humble",
         "kind",
-        "loving"
+        "loving",
+        "envies"
             ]
     }
-},
+}
 
-    ];
+];
 
-    _CiFState.CulturalKB = [
+_CiFState.CulturalKB = [
 {
     "Proposition": {
         "type": "truth",
@@ -74,6 +76,23 @@ _CiFState.SocialGamesLib = [
                     }
                     ]
                 }
+            },
+            {
+                "Rule": {
+                    "name": "Initiator must be dishonest",
+                    "predicates" : [
+                    {
+                        "Predicate": {
+                            "type":"trait",
+                            "trait": "dishonest",
+                            "primary":"initiator",
+                            "window": 0,
+                            "negated":false,
+                            "isSFDB":false
+                        }
+                    }
+                    ]
+                }
             }
         ],
             "initiatorIRS" : [
@@ -115,7 +134,7 @@ _CiFState.SocialGamesLib = [
             },
             {
                 "InfluenceRule": {
-                    "weight":"10",
+                    "weight":"5",
                     "name": "Initiator and Responder are decently buddies",
                     "predicates": [
                     {
@@ -136,7 +155,7 @@ _CiFState.SocialGamesLib = [
             },
             {
                 "InfluenceRule": {
-                    "weight":"-20",
+                    "weight":"20",
                     "name": "Initiator and Responder are not very good buddies",
                     "predicates": [
                     {
@@ -157,12 +176,12 @@ _CiFState.SocialGamesLib = [
             },
             {
                 "InfluenceRule": {
-                    "weight":"-30",
+                    "weight":"30",
                     "name": "Initiator is Humble",
                     "predicates": [
                     {
                         "Predicate": {
-                            "type":"trait",
+                            "type": "trait",
                             "trait": "humble",
                             "primary":"initiator",
                             "negated":false,
@@ -490,8 +509,8 @@ _CiFState.SocialGamesLib = [
     "type": "buddy",
         "numChars" : "2",
         "edges" : [
-        {"from": "0", "to": "1", "value": "-15" },
-        {"from": "1", "to": "0", "value": "15"},
+        {"from": "0", "to": "1", "value": "40" },
+        {"from": "1", "to": "0", "value": "40"},
         ]
 },
 {
@@ -522,6 +541,20 @@ _CiFState.SocialFactsDB = {
                 "status"  : "anxious",
                 "primary"   : "initiator",
                 "secondary"  : "responder",
+                "negated" : false,
+                "isSFDB"  : true
+            }
+        }
+    },
+    {
+        "StatusContext": {
+            "time": "20",
+            "Predicate": {
+                "type"    : "network",
+                "networkType": "cool",
+                "comparator": "greaterthan",
+                "value": 0,
+                "primary"   : "initiator",
                 "negated" : false,
                 "isSFDB"  : true
             }

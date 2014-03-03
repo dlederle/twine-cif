@@ -167,7 +167,6 @@ define(['InfluenceRuleSet', 'Rule', 'Cast'], function(InfluenceRuleSet, Rule, Ca
                     // if there is a precondition, but it doesn't require a third, just score the IRS once with variable other
                     if (this.preconditions[0].evaluate(initiator, responder, undefined, this)) {
                         var _tmp = influenceRuleSet.scoreRulesWithVariableOther(initiator, responder, undefined, this, possibleOthers, "", isResponder);
-                        console.log(_tmp);
                         totalScore += _tmp;
                     }
                 }
